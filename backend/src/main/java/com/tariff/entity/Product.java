@@ -11,8 +11,7 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "hs_code", nullable = false, length = 10)
@@ -28,15 +27,17 @@ public class Product {
     @JoinColumn(name = "industry_id", nullable = false)
     private Industry industry;
 
+    private double basePrice;
     // default constructor: required by JPA
     public Product() {
         
     }
 
-    public Product(String hsCode, String name, String description, Industry industry){
+    public Product(String hsCode, String name, String description, Industry industry, double basePrice){
         this.name = name;
         this.description = description;
         this.industry = industry;
+        this.basePrice = basePrice;
     }
 
     // getters & setters
@@ -78,8 +79,10 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", isoCode='" + hsCode + '\'' +
-                ", currency='" + description + '\'' +
+                ", hsCode='" + hsCode + '\'' +
+                ", description='" + description + '\'' +
+                ", industry=" + industry + '\'' +
+                ", basePrice=" + basePrice +
                 '}';
     }
 
