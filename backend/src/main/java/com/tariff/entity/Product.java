@@ -17,7 +17,7 @@ public class Product {
     @Column(name = "hs_code", nullable = false, length = 10)
     private String hsCode;
 
-    @Column(nullable = false, length = 200)
+    
     private String name;
 
     @Column(columnDefinition = "TEXT") //Description will be optional
@@ -34,6 +34,7 @@ public class Product {
     }
 
     public Product(String hsCode, String name, String description, Industry industry, double basePrice){
+        this.hsCode = hsCode;
         this.name = name;
         this.description = description;
         this.industry = industry;
