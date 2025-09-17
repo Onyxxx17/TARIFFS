@@ -3,9 +3,9 @@ package com.tariff.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tariff.entity.TariffRule;
+import com.tariff.entity.Product;
 
 @Repository
-public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>{
     
 }

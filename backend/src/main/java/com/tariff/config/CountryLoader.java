@@ -17,6 +17,7 @@ public class CountryLoader implements CommandLineRunner{
         countryRepository.save(new Country("Singapore", "SGD", "SGP"));
         countryRepository.save(new Country("Canada", "CAN", "CAD"));
         countryRepository.save(new Country("United Kingdom", "GBR", "GBP"));
+        countryRepository.save(new Country("USA", "USA", "USD"));
 
     }
 }

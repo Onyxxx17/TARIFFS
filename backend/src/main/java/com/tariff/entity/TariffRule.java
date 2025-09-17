@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class TariffRule {
@@ -15,17 +17,21 @@ public class TariffRule {
     @GeneratedValue
     private Long id;
     
-    @Column(name = "from_country", nullable = false)
-    private String fromCountry; // Exporter country
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "from_country_id", referencedColumnName = "id")
+    private Country fromCountry;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "to_country_id", referencedColumnName = "id")
+    private Country toCountry;
     
-    @Column(name = "to_country", nullable = false)
-    private String toCountry; // Importer country
+    @ManyToOne
+    @JoinColumn(name = "industry_id", nullable = false)
+    private Industry industry;
     
-    @Column(name = "industry", nullable = false)
-    private String industry;
-    
-    @Column(name = "product")
-    private String product; // Optional, if specific
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
     
     @Column(name = "rate", precision = 10, scale = 4, nullable = false)
     private BigDecimal rate; // Percentage
@@ -43,8 +49,8 @@ public class TariffRule {
     public TariffRule() {}
 
     // Constructor with all fields
-    public TariffRule(String fromCountry, String toCountry, String industry, 
-                     String product, BigDecimal rate, BigDecimal additionalFee,
+    public TariffRule(Country fromCountry, Country toCountry, Industry industry, 
+                     Product product, BigDecimal rate, BigDecimal additionalFee,
                      LocalDate effectiveDate, LocalDate expiryDate) {
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
@@ -57,7 +63,7 @@ public class TariffRule {
     }
 
     // Constructor without optional fields
-    public TariffRule(String fromCountry, String toCountry, String industry, 
+    public TariffRule(Country fromCountry, Country toCountry, Industry industry, 
                      BigDecimal rate, LocalDate effectiveDate) {
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
@@ -76,35 +82,35 @@ public class TariffRule {
         this.id = id;
     }
 
-    public String getFromCountry() {
+    public Country getFromCountry() {
         return fromCountry;
     }
 
-    public void setFromCountry(String fromCountry) {
+    public void setFromCountry(Country fromCountry) {
         this.fromCountry = fromCountry;
     }
 
-    public String getToCountry() {
+    public Country getToCountry() {
         return toCountry;
     }
 
-    public void setToCountry(String toCountry) {
+    public void setToCountry(Country toCountry) {
         this.toCountry = toCountry;
     }
 
-    public String getIndustry() {
+    public Industry getIndustry() {
         return industry;
     }
 
-    public void setIndustry(String industry) {
+    public void setIndustry(Industry industry) {
         this.industry = industry;
     }
 
-    public String getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(String product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 
