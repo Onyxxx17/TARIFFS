@@ -74,11 +74,11 @@ jobs:
     - name: Copy JAR to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        source: "tariff-0.0.1-SNAPSHOT.jar"
-        target: "/home/ubuntu/"
+         host: ${{ secrets.EC2_HOST }}
+         username: ${{ secrets.EC2_USER }}
+         key: ${{ secrets.EC2_KEY }}
+         source: "tariff-jar/tariff-0.0.1-SNAPSHOT.jar"  # <- correct folder
+         target: "/home/ubuntu/"
 
     - name: Deploy on EC2
       uses: appleboy/ssh-action@v0.1.5
