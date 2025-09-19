@@ -1,7 +1,5 @@
 package com.tariff.entity;
 
-
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,10 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,16 +36,13 @@ public class Country {
 
     private String currency;
 
-    // define relationship between country and importrecord - many-to-one
-    @ManyToOne
-    @JoinColumn(name = "import_record_id")
-    private ImportRecord importRecord;
-
     // one-to-many with product
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products;
 
     @ManyToMany(mappedBy = "countries")
+    @JsonIgnore
     private Set<TariffRule> tariffRules = new HashSet<>();
 
     public Country(String name, String isoCode, String currency) {

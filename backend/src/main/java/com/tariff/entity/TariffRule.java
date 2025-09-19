@@ -37,21 +37,10 @@ public class TariffRule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "country_id", referencedColumnName = "id")
-    private Country country;
-
-    
-    @ManyToOne
-    @JoinColumn(name = "industry_id", nullable = false)
-    private Industry industry;
     
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @OneToMany(mappedBy = "tariffRule", cascade = CascadeType.ALL)
-    private List<ImportRecord> importRecord;
 
     @ManyToMany
     @JoinTable(name="country_tariff_rules", joinColumns=@JoinColumn(name="country_id"),
@@ -73,12 +62,9 @@ public class TariffRule {
 
 
     // Constructor with all fields
-    public TariffRule(Country country, Industry industry, 
-                     Product product, BigDecimal rate, BigDecimal additionalFee,
+    public TariffRule(BigDecimal rate, BigDecimal additionalFee,
                      LocalDate effectiveDate, LocalDate expiryDate) {
-        this.country = country;
-        this.industry = industry;
-        this.product = product;
+        
         this.rate = rate;
         this.additionalFee = additionalFee;
         this.effectiveDate = effectiveDate;
@@ -86,10 +72,7 @@ public class TariffRule {
     }
 
     // Constructor without optional fields
-    public TariffRule(Country country, Industry industry, 
-                     BigDecimal rate, LocalDate effectiveDate) {
-        this.country = country;
-        this.industry = industry;
+    public TariffRule(BigDecimal rate, LocalDate effectiveDate) {
         this.rate = rate;
         this.effectiveDate = effectiveDate;
     }

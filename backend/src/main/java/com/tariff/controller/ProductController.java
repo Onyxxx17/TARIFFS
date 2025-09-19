@@ -1,55 +1,63 @@
 package com.tariff.controller;
 
+import com.tariff.entity.Product;
+import com.tariff.service.ProductService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.tariff.entity.Product;
-import com.tariff.repository.ProductRepository;
-
-
 @RestController
-@RequestMapping("api/products")
+@RequestMapping("/api/products")
 public class ProductController {
-    @Autowired
-    private ProductRepository productRepository;
-
-   // GET all product
+    
+    private ProductService productService;
+    
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+    
     @GetMapping
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        return productService.listProduct();
     }
-
-    // GET Product by ID
+    
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable Long id) {
-        return productRepository.findById(id).orElse(null);
+        return productService.getProduct(id);
     }
-
-    // POST create new Product
+    
+    @GetMapping("/country/{countryId}")
+    public List<Product> getProductsByCountry(@PathVariable Long countryId) {
+        return productService.getProductsByCountryId(countryId);
+    }
+    
+    @GetMapping("/industry/{industryId}")
+    public List<Product> getProductsByIndustry(@PathVariable Long industryId) {
+        return productService.getProductsByIndustryId(industryId);
+    }
+    
     @PostMapping
-    public Product createProduct(@RequestBody Product Product) {
-        return productRepository.save(Product);
+    public Product createProduct(@RequestBody Product product) {
+        return productService.addProduct(product);
     }
-
-    // PUT update Product
-    // @PutMapping("/{id}")
-    // public Product updateProduct(@PathVariable Long id, @RequestBody Product Product) {
-    //     Product.setId(id);
-    //     return productRepository.save(Product);
-    // }
-
-    // DELETE Product
+    
+    @PostMapping("/country/{countryId}/industry/{industryId}")
+    public Product createProductWithCountryAndIndustry(
+            @PathVariable Long countryId,
+            @PathVariable Long industryId,
+            @RequestBody Product product) {
+        return productService.addProductByCountryAndIndustry(countryId, industryId, product);
+    }
+    
+    @PutMapping("/{id}")
+    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        return productService.updateProduct(id, product);
+    }
+    
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        productRepository.deleteById(id);
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok().build();
     }
 }

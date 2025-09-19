@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -34,13 +35,7 @@ public class ImportRecord {
     private LocalDate date;
     private double calculatedTariffAmount;
 
-    @OneToMany(mappedBy = "importRecord", cascade = CascadeType.ALL)
-    private List<Country> countries;
-    
-    @ManyToOne
-    @JoinColumn(name = "tariff_rule_id")
-    private TariffRule tariffRule;
-
+    @JsonIgnore
     @OneToOne(mappedBy = "importRecord", cascade = CascadeType.ALL) 
     private Product product;
 

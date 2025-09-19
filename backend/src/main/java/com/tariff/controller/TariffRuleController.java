@@ -1,55 +1,81 @@
 package com.tariff.controller;
 
+import com.tariff.entity.TariffRule;
+import com.tariff.service.TariffRuleService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.tariff.entity.TariffRule;
-import com.tariff.repository.TariffRuleRepository;
-
-
 @RestController
-@RequestMapping("api/tariffs")
+@RequestMapping("/api/tariff-rules")
 public class TariffRuleController {
-    @Autowired
-    private TariffRuleRepository tariffRuleRepository;
-
-   // GET all countries
+    
+    private TariffRuleService tariffRuleService;
+    
+    public TariffRuleController(TariffRuleService tariffRuleService) {
+        this.tariffRuleService = tariffRuleService;
+    }
+    
     @GetMapping
     public List<TariffRule> getAllTariffRules() {
-        return tariffRuleRepository.findAll();
+        return tariffRuleService.listTariffRule();
     }
-
-    // GET TariffRule by ID
+    
     @GetMapping("/{id}")
     public TariffRule getTariffRuleById(@PathVariable Long id) {
-        return tariffRuleRepository.findById(id).orElse(null);
+        return tariffRuleService.getTariffRule(id);
     }
-
-    // POST create new country
+    
+    @GetMapping("/country/{countryId}")
+    public List<TariffRule> getTariffRulesByCountry(@PathVariable Long countryId) {
+        return tariffRuleService.getTariffRulesByCountryId(countryId);
+    }
+    
+    @GetMapping("/product/{productId}")
+    public List<TariffRule> getTariffRulesByProduct(@PathVariable Long productId) {
+        return tariffRuleService.getTariffRulesByProductId(productId);
+    }
+    
     @PostMapping
     public TariffRule createTariffRule(@RequestBody TariffRule tariffRule) {
-        return tariffRuleRepository.save(tariffRule);
+        return tariffRuleService.addTariffRule(tariffRule);
     }
-
-    // PUT update country
-    // @PutMapping("/{id}")
-    // public TariffRule updateTariffRule(@PathVariable Long id, @RequestBody TariffRule tariffRule) {
-    //     tariffRule.setId(id);
-    //     return tariffRuleRepository.save(tariffRule);
-    // }
-
-    // DELETE country
+    
+    @PostMapping("/country/{countryId}/product/{productId}")
+    public TariffRule createTariffRuleWithCountryAndProduct(
+            @PathVariable Long countryId,
+            @PathVariable Long productId,
+            @RequestBody TariffRule tariffRule) {
+        return tariffRuleService.addTariffRuleByCountryAndProduct(countryId, productId, tariffRule);
+    }
+    
+    @PutMapping("/{id}")
+    public TariffRule updateTariffRule(@PathVariable Long id, @RequestBody TariffRule tariffRule) {
+        return tariffRuleService.updateTariffRule(id, tariffRule);
+    }
+    
+    @PutMapping("/country/{countryId}/product/{productId}/{id}")
+    public TariffRule updateTariffRuleWithCountryAndProduct(
+            @PathVariable Long countryId,
+            @PathVariable Long productId,
+            @PathVariable Long id,
+            @RequestBody TariffRule tariffRule) {
+        return tariffRuleService.updateTariffRule(countryId, productId, id, tariffRule);
+    }
+    
     @DeleteMapping("/{id}")
-    public void deleteTariffRule(@PathVariable Long id) {
-        tariffRuleRepository.deleteById(id);
+    public ResponseEntity<?> deleteTariffRule(@PathVariable Long id) {
+        tariffRuleService.deleteTariffRule(id);
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("/country/{countryId}/product/{productId}/{id}")
+    public ResponseEntity<?> deleteTariffRuleWithCountryAndProduct(
+            @PathVariable Long countryId,
+            @PathVariable Long productId,
+            @PathVariable Long id) {
+        tariffRuleService.deleteTariffRule(countryId, productId, id);
+        return ResponseEntity.ok().build();
     }
 }

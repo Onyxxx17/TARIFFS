@@ -1,55 +1,45 @@
 package com.tariff.controller;
 
+import com.tariff.entity.Country;
+import com.tariff.service.CountryService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.tariff.entity.Country;
-import com.tariff.repository.CountryRepository;
-
-
 @RestController
-@RequestMapping("api/countries")
+@RequestMapping("/api/countries")
 public class CountryController {
-    @Autowired
-    private CountryRepository countryRepository;
-
-   // GET all countries
+    
+    private CountryService countryService;
+    
+    public CountryController(CountryService countryService) {
+        this.countryService = countryService;
+    }
+    
     @GetMapping
     public List<Country> getAllCountries() {
-        return countryRepository.findAll();
+        return countryService.listCountry();
     }
-
-    // GET country by ID
+    
     @GetMapping("/{id}")
     public Country getCountryById(@PathVariable Long id) {
-        return countryRepository.findById(id).orElse(null);
+        return countryService.getCountry(id);
     }
-
-    // POST create new country
+    
     @PostMapping
     public Country createCountry(@RequestBody Country country) {
-        return countryRepository.save(country);
+        return countryService.addCountry(country);
     }
-
-    // PUT update country
-    // @PutMapping("/{id}")
-    // public Country updateCountry(@PathVariable Long id, @RequestBody Country country) {
-    //     country.setId(id);
-    //     return countryRepository.save(country);
-    // }
-
-    // DELETE country
+    
+    @PutMapping("/{id}")
+    public Country updateCountry(@PathVariable Long id, @RequestBody Country country) {
+        return countryService.updateCountry(id, country);
+    }
+    
     @DeleteMapping("/{id}")
-    public void deleteCountry(@PathVariable Long id) {
-        countryRepository.deleteById(id);
+    public ResponseEntity<?> deleteCountry(@PathVariable Long id) {
+        countryService.deleteCountry(id);
+        return ResponseEntity.ok().build();
     }
 }

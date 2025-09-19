@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,9 +37,7 @@ public class Industry {
     private String description;
 
     @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL)
-    private List<TariffRule> tariffRules;
-
-    @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products;
 
 

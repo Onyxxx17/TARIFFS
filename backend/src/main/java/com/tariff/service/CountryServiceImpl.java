@@ -2,57 +2,54 @@ package com.tariff.service;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tariff.entity.Country;
+import com.tariff.exception.CountryNotFoundException;
 import com.tariff.repository.CountryRepository;
-import com.tariff.repository.ImportRecordRepository;
-import com.tariff.exception.*;
 
+@Service
+@Transactional
 public class CountryServiceImpl implements CountryService {
-
+    
     private CountryRepository countryRepository;
-    private ImportRecordRepository importRecordRepository;
-
+    
+    public CountryServiceImpl(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
+    
     @Override
     public List<Country> listCountry() {
         return countryRepository.findAll();
     }
-
-
+    
     @Override
     public Country getCountry(Long id) {
-        return countryRepository.findById(id).map(country -> {
-            return country;
-        }).orElseThrow(() -> new CountryNotFoundException(id));
+        return countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFoundException(id));
     }
-
-    public List<Country> getAllBooksByImportRecordId(@PathVariable (value = "countryId") Long importRecordId) {
-        if(!importRecordRepository.existsById(importRecordId)) {
-            throw new ImportRecordNotFoundException(importRecordId);
-        }
-        return countryRepository.findByImportRecordId(importRecordId);
-    }
-
+    
     @Override
     public Country addCountry(Country country) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addCountry'");
+        return countryRepository.save(country);
     }
-
+    
     @Override
     public Country updateCountry(Long id, Country country) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateCountry'");
+        return countryRepository.findById(id).map(existingCountry -> {
+            existingCountry.setName(country.getName());
+            existingCountry.setIsoCode(country.getIsoCode());   
+            existingCountry.setCurrency(country.getCurrency()); 
+            return countryRepository.save(existingCountry);
+        }).orElseThrow(() -> new CountryNotFoundException(id));
     }
-
+    
     @Override
     public void deleteCountry(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteCountry'");
+        if (!countryRepository.existsById(id)) {
+            throw new CountryNotFoundException(id);
+        }
+        countryRepository.deleteById(id);
     }
-
-
-
-    
 }
