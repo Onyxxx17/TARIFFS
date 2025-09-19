@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 
 ### 4. Update country
-PUT {{baseUrl}}/1
+PUT {{baseUrl}}/2
 Content-Type: application/json
 
 {
@@ -30,4 +30,4 @@ Content-Type: application/json
 }
 
 ### 5. Delete country
-DELETE {{baseUrl}}/2
+DELETE {{baseUrl}}/211

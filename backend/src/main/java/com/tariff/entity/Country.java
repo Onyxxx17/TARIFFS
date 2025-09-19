@@ -2,13 +2,14 @@ package com.tariff.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+
 import jakarta.persistence.Id;
 
 
 @Entity
 public class Country {
     @Id @GeneratedValue
-    private long id;
+    private Long id;
 
     private String name;
 
