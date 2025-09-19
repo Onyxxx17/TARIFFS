@@ -41,11 +41,11 @@ public class CountryController {
     }
 
     // PUT update country
-    @PutMapping("/{id}")
-    public Country updateCountry(@PathVariable Long id, @RequestBody Country country) {
-        country.setId(id);
-        return countryRepository.save(country);
-    }
+    // @PutMapping("/{id}")
+    // public Country updateCountry(@PathVariable Long id, @RequestBody Country country) {
+    //     country.setId(id);
+    //     return countryRepository.save(country);
+    // }
 
     // DELETE country
     @DeleteMapping("/{id}")

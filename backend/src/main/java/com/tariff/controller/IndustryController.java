@@ -36,16 +36,16 @@ public class IndustryController {
 
     // POST create new Industry
     @PostMapping
-    public Industry createIndustry(@RequestBody Industry Industry) {
-        return industryRepository.save(Industry);
+    public Industry createIndustry(@RequestBody Industry industry) {
+        return industryRepository.save(industry);
     }
 
     // PUT update Industry
-    @PutMapping("/{id}")
-    public Industry updateIndustry(@PathVariable Long id, @RequestBody Industry Industry) {
-        Industry.setId(id);
-        return industryRepository.save(Industry);
-    }
+    // @PutMapping("/{id}")
+    // public Industry updateIndustry(@PathVariable Long id, @RequestBody Industry industry) {
+    //     industry.setId(id);
+    //     return industryRepository.save(industry);
+    // }
 
     // DELETE Industry
     @DeleteMapping("/{id}")

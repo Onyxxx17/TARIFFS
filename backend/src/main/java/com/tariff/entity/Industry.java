@@ -1,59 +1,50 @@
 package com.tariff.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class Industry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-   
+
     private String name;   // e.g., Agriculture, Electronics, Textiles
 
     @Column(length = 255)
     private String description;
 
-    // default constructor: required by JPA
-    public Industry() {
-        
-    }
+    @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL)
+    private List<TariffRule> tariffRules;
+
+    @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL)
+    private List<Product> products;
+
 
     public Industry(String name, String description) {
         this.name = name;
         this.description = description;
     }
-
-    // getters & setters
-
-
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 
 }

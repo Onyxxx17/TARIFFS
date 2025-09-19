@@ -41,11 +41,11 @@ public class ProductController {
     }
 
     // PUT update Product
-    @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product Product) {
-        Product.setId(id);
-        return productRepository.save(Product);
-    }
+    // @PutMapping("/{id}")
+    // public Product updateProduct(@PathVariable Long id, @RequestBody Product Product) {
+    //     Product.setId(id);
+    //     return productRepository.save(Product);
+    // }
 
     // DELETE Product
     @DeleteMapping("/{id}")

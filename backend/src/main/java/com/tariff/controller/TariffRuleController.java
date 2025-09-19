@@ -41,11 +41,11 @@ public class TariffRuleController {
     }
 
     // PUT update country
-    @PutMapping("/{id}")
-    public TariffRule updateTariffRule(@PathVariable Long id, @RequestBody TariffRule tariffRule) {
-        tariffRule.setId(id);
-        return tariffRuleRepository.save(tariffRule);
-    }
+    // @PutMapping("/{id}")
+    // public TariffRule updateTariffRule(@PathVariable Long id, @RequestBody TariffRule tariffRule) {
+    //     tariffRule.setId(id);
+    //     return tariffRuleRepository.save(tariffRule);
+    // }
 
     // DELETE country
     @DeleteMapping("/{id}")

@@ -1,5 +1,8 @@
 package com.tariff.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,14 +10,29 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+
 public class Product {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "hs_code", nullable = false, length = 10)
+    @Column(name = "hs_code", length = 10)
     private String hsCode;
 
     
@@ -24,14 +42,22 @@ public class Product {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "industry_id", nullable = false)
+    @JoinColumn(name = "industry_id")
     private Industry industry;
 
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country country;
+
+    @OneToOne
+    @JoinColumn(name = "import_record_id")
+    private ImportRecord importRecord;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<TariffRule> tariffRules;
+
     private double basePrice;
-    // default constructor: required by JPA
-    public Product() {
-        
-    }
+    
 
     public Product(String hsCode, String name, String description, Industry industry, double basePrice){
         this.hsCode = hsCode;
@@ -41,50 +67,6 @@ public class Product {
         this.basePrice = basePrice;
     }
 
-    // getters & setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getHsCode() {
-        return hsCode;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setHsCode(String hsCode) {
-        this.hsCode = hsCode;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", hsCode='" + hsCode + '\'' +
-                ", description='" + description + '\'' +
-                ", industry=" + industry + '\'' +
-                ", basePrice=" + basePrice +
-                '}';
-    }
+    
 
 }

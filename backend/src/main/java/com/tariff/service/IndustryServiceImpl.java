@@ -1,5 +1,5 @@
 package com.tariff.service;
 
-public class TariffService {
+public class IndustryServiceImpl {
     
 }
