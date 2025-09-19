@@ -28,7 +28,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class Country {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -54,5 +56,4 @@ public class Country {
         this.currency = currency;
     }
 
-    
 }

@@ -24,7 +24,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public Country getCountry(Long id) {
         return countryRepository.findById(id)
-            .orElseThrow(() -> new CountryNotFoundException(id));
+                .orElseThrow(() -> new CountryNotFoundException(id));
     }
 
     @Override
@@ -43,12 +43,12 @@ public class CountryServiceImpl implements CountryService {
         if (countryRepository.existsByNameOrIsoCode(country.getName(), country.getIsoCode())) {
             if (countryRepository.existsByName(country.getName())) {
                 throw new DuplicateCountryException(
-                    String.format("Country with name '%s' already exists", country.getName())
+                        String.format("Country with name '%s' already exists", country.getName())
                 );
             }
             if (countryRepository.existsByIsoCode(country.getIsoCode())) {
                 throw new DuplicateCountryException(
-                    String.format("Country with ISO code '%s' already exists", country.getIsoCode())
+                        String.format("Country with ISO code '%s' already exists", country.getIsoCode())
                 );
             }
         }
@@ -60,22 +60,22 @@ public class CountryServiceImpl implements CountryService {
         if (!countryRepository.existsById(id)) {
             throw new CountryNotFoundException(id);
         }
-        
+
         // Check for duplicates but exclude the current country being updated
         Optional<Country> existingByName = countryRepository.findByName(country.getName());
         if (existingByName.isPresent() && !existingByName.get().getId().equals(id)) {
             throw new DuplicateCountryException(
-                String.format("Country with name '%s' already exists", country.getName())
+                    String.format("Country with name '%s' already exists", country.getName())
             );
         }
-        
+
         Optional<Country> existingByIsoCode = countryRepository.findByIsoCode(country.getIsoCode());
         if (existingByIsoCode.isPresent() && !existingByIsoCode.get().getId().equals(id)) {
             throw new DuplicateCountryException(
-                String.format("Country with ISO code '%s' already exists", country.getIsoCode())
+                    String.format("Country with ISO code '%s' already exists", country.getIsoCode())
             );
         }
-        
+
         country.setId(id);
         return countryRepository.save(country);
     }
@@ -87,17 +87,17 @@ public class CountryServiceImpl implements CountryService {
         }
         countryRepository.deleteById(id);
     }
-    
+
     @Override
     public boolean existsByName(String name) {
         return countryRepository.existsByName(name);
     }
-    
+
     @Override
     public boolean existsByIsoCode(String isoCode) {
         return countryRepository.existsByIsoCode(isoCode);
     }
-    
+
     @Override
     public boolean existsByNameOrIsoCode(String name, String isoCode) {
         return countryRepository.existsByNameOrIsoCode(name, isoCode);
