@@ -15,9 +15,9 @@ export default function Header() {
         "fixed top-0 inset-x-0 z-50 h-[72px] border-b",
         scrolled ? "bg-white/95 shadow-sm" : "bg-white/90", //if scrolled is false, the bg is a bit transparent
         "backdrop-blur",
-      ].join(" ")}
+      ].join(" ")} 
     >
-      <div className="max-w-8xl mx-auto h-full px-9 flex items-center justify-between">
+      <div className="max-w-8xl mx-auto h-20 px-9 flex items-center justify-between" >
         {/* clickable sq shape to homepage via logo */}
         <a
           href="/"
