@@ -31,8 +31,8 @@ import lombok.ToString;
 public class ImportRecord {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int quantity;
-    private LocalDate date;
+    private int value;
+    private int year;
     private double calculatedTariffAmount;
 
     @JsonIgnore
@@ -40,14 +40,22 @@ public class ImportRecord {
     private Product product;
 
     @ManyToOne
+    @JoinColumn(name = "from_country_id")
+    private Country fromCountry;
+
+    @ManyToOne
+    @JoinColumn(name = "to_country_id")
+    private Country toCountry;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     // constructor for ImportRecord
-    public ImportRecord(int quantity, LocalDate date, double calculatedTariffAmount) {
+    public ImportRecord(int value, int year, double calculatedTariffAmount) {
 
-        this.quantity = quantity;
-        this.date = date;
+        this.value = value;
+        this.year = year;
         this.calculatedTariffAmount = calculatedTariffAmount;
     }
 

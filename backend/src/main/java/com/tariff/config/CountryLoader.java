@@ -53,7 +53,7 @@ public class CountryLoader implements CommandLineRunner {
                     Country existingCountry = countryRepository.findByName(name).orElse(null);
                     
                     if (existingCountry == null) {
-                        Country country = new Country(name, iso3Code, "USD");
+                        Country country = new Country(name, iso3Code);
                         countryRepository.save(country);
                         System.out.println("Saved country: " + name);
                     }

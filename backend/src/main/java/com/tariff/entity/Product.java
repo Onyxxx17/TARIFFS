@@ -57,15 +57,14 @@ public class Product {
     @JsonIgnore
     private List<TariffRule> tariffRules;
 
-    private double basePrice;
+    private double value;
     
 
-    public Product(String hsCode, String name, String description, Industry industry, double basePrice){
+    public Product(String hsCode, String name, String description, double value){
         this.hsCode = hsCode;
         this.name = name;
         this.description = description;
-        this.industry = industry;
-        this.basePrice = basePrice;
+        this.value = value;
     }
 
     

@@ -33,13 +33,11 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column
     private String isoCode;
-
-    private String currency;
 
     // one-to-many with product
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
@@ -50,10 +48,13 @@ public class Country {
     @JsonIgnore
     private Set<TariffRule> tariffRules = new HashSet<>();
 
-    public Country(String name, String isoCode, String currency) {
+    @OneToMany(mappedBy = "fromCountry", cascade = CascadeType.ALL) 
+    @JsonIgnore
+    private List<ImportRecord> importRecords;
+
+    public Country(String name, String isoCode) {
         this.name = name;
         this.isoCode = isoCode;
-        this.currency = currency;
     }
 
 }

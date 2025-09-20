@@ -78,12 +78,7 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setName(product.getName());
             existingProduct.setHsCode(product.getHsCode());
             existingProduct.setDescription(product.getDescription());
-            if (product.getCountry() != null) {
-                existingProduct.setCountry(product.getCountry());
-            }
-            if (product.getIndustry() != null) {
-                existingProduct.setIndustry(product.getIndustry());
-            }
+            existingProduct.setValue(product.getValue());
             return productRepository.save(existingProduct);
         }).orElseThrow(() -> new ProductNotFoundException(id));
     }

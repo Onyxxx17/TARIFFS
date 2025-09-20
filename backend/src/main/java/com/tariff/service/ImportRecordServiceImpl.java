@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tariff.entity.ImportRecord;
+import com.tariff.exception.CountryNotFoundException;
 import com.tariff.exception.ImportRecordNotFoundException;
 import com.tariff.exception.ProductNotFoundException;
 import com.tariff.exception.UserNotFoundException;
 import com.tariff.repository.ImportRecordRepository;
 import com.tariff.repository.ProductRepository;
+import com.tariff.repository.CountryRepository;
 import com.tariff.repository.UserRepository;
 
 @Service
@@ -20,10 +22,11 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     private ImportRecordRepository importRecordRepository;
     private ProductRepository productRepository;
     private UserRepository userRepository;
+    private CountryRepository countryRepository;
     
     public ImportRecordServiceImpl(ImportRecordRepository importRecordRepository,
                                   ProductRepository productRepository,
-                                  UserRepository userRepository) {
+                                  UserRepository userRepository,CountryRepository countryRepository ) {
         this.importRecordRepository = importRecordRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
@@ -38,6 +41,22 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     public ImportRecord getImportRecord(Long id) {
         return importRecordRepository.findById(id)
                 .orElseThrow(() -> new ImportRecordNotFoundException(id));
+    }
+
+    @Override
+    public List<ImportRecord> getImportRecordsByFromCountryId(Long fromCountryId) {
+        if (!countryRepository.existsById(fromCountryId)) {
+            throw new CountryNotFoundException(fromCountryId);
+        }
+        return importRecordRepository.findByFromCountryId(fromCountryId);
+    }
+    
+    @Override
+    public List<ImportRecord> getImportRecordsByToCountryId(Long toCountryId) {
+        if (!countryRepository.existsById(toCountryId)) {
+            throw new CountryNotFoundException(toCountryId);
+        }
+        return importRecordRepository.findByToCountryId(toCountryId);
     }
     
 
@@ -56,7 +75,7 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         return importRecordRepository.findByUserId(userId);
     }
     
-  
+
     public ImportRecord addImportRecordByProductAndUser(Long productId, Long userId, ImportRecord importRecord) {
         return productRepository.findById(productId).map(product -> {
             return userRepository.findById(userId).map(user -> {
@@ -71,9 +90,20 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     public ImportRecord addImportRecord(ImportRecord importRecord) {
         return importRecordRepository.save(importRecord);
     }
+
+    @Override
+    public ImportRecord addImportRecordByCountryPair(Long fromCountryId, Long toCountryId, ImportRecord importRecord) {
+        return countryRepository.findById(fromCountryId).map(fromCountry -> {
+            return countryRepository.findById(toCountryId).map(toCountry -> {
+                importRecord.setFromCountry(fromCountry);
+                importRecord.setToCountry(toCountry);
+                return importRecordRepository.save(importRecord);
+            }).orElseThrow(() -> new CountryNotFoundException(toCountryId));
+        }).orElseThrow(() -> new CountryNotFoundException(fromCountryId));
+    }
     
   
-    public ImportRecord updateImportRecord(Long productId, Long userId, Long id, ImportRecord importRecord) {
+    public ImportRecord updateImportRecordByProductAndUser(Long productId, Long userId, Long id, ImportRecord importRecord) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
         }
@@ -82,15 +112,32 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         }
         return importRecordRepository.findByIdAndProductIdAndUserId(id, productId, userId)
                 .map(existingRecord -> {
-                    existingRecord.setQuantity(importRecord.getQuantity());
-                    existingRecord.setDate(importRecord.getDate());
+                    existingRecord.setValue(importRecord.getValue());
+                    existingRecord.setYear(importRecord.getYear());
+                    existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
+                    return importRecordRepository.save(existingRecord);
+                }).orElseThrow(() -> new ImportRecordNotFoundException(id));
+    }
+
+    @Override
+    public ImportRecord updateImportRecordByCountries(Long fromCountryId, Long toCountryId, ImportRecord importRecord, Long id) {
+        if (!countryRepository.existsById(fromCountryId)) {
+            throw new CountryNotFoundException(fromCountryId);
+        }
+        if (!countryRepository.existsById(toCountryId)) {
+            throw new CountryNotFoundException(toCountryId);
+        }
+        return importRecordRepository.findByIdAndFromCountryId(fromCountryId, id)
+                .map(existingRecord -> {
+                    existingRecord.setValue(importRecord.getValue());
+                    existingRecord.setYear(importRecord.getYear());
                     existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
                     return importRecordRepository.save(existingRecord);
                 }).orElseThrow(() -> new ImportRecordNotFoundException(id));
     }
     
    
-    public void deleteImportRecord(Long productId, Long userId, Long id) {
+    public void deleteImportRecordByProductAndUser(Long productId, Long userId, Long id) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
         }
@@ -108,11 +155,10 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     public ImportRecord updateImportRecord(Long id, ImportRecord importRecord) {
         return importRecordRepository.findById(id).map(existingRecord -> {
 
-            existingRecord.setQuantity(importRecord.getQuantity());
+            existingRecord.setValue(importRecord.getValue());
 
-            if (importRecord.getDate() != null) {
-                existingRecord.setDate(importRecord.getDate());
-            }
+            existingRecord.setYear(importRecord.getYear());
+
             
             existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
            
@@ -133,5 +179,20 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         }
         importRecordRepository.deleteById(id);
        
+    }
+
+    @Override
+    public void deleteImportRecordByCountries(Long fromCountryId, Long toCountryId, Long id) {
+        if (!countryRepository.existsById(fromCountryId)) {
+            throw new CountryNotFoundException(fromCountryId);
+        }
+        if (!countryRepository.existsById(toCountryId)) {
+            throw new CountryNotFoundException(toCountryId);
+        }
+        importRecordRepository.findByIdAndFromCountryId(fromCountryId, id)
+                .map(importRecord -> {
+                    importRecordRepository.delete(importRecord);
+                    return importRecord;
+                }).orElseThrow(() -> new ImportRecordNotFoundException(id));
     }
 }
