@@ -1,0 +1,275 @@
+### Country API Requests
+
+### Get all countries
+GET http://localhost:8080/api/countries
+
+### Get country by ID
+GET http://localhost:8080/api/countries/1
+
+### Create new country
+POST http://localhost:8080/api/countries
+Content-Type: application/json
+
+{
+  "countryCode":"C798",
+  "name":"Tuvalu"
+}
+
+### Update country
+# PUT http://localhost:8080/api/countries/1
+# Content-Type: application/json
+
+# {
+#   "name": "Singapore",
+#   "isoCode": "SG",
+#   "currency": "SGD"
+# }
+
+### Delete country
+# DELETE http://localhost:8080/api/countries/1
+
+###############################################
+
+### Industry API Requests
+
+### Get all industries
+GET http://localhost:8080/api/industries
+
+### Get industry by ID
+GET http://localhost:8080/api/industries/1
+
+### Create new industry
+POST http://localhost:8080/api/industries
+Content-Type: application/json
+
+{
+  "name": "Electronics"
+}
+
+### Update industry
+PUT http://localhost:8080/api/industries/1
+Content-Type: application/json
+
+{
+  "name": "Electronics Manufacturing"
+}
+
+### Delete industry
+DELETE http://localhost:8080/api/industries/4
+
+###############################################
+
+### Product API Requests
+
+### Get all products
+GET http://localhost:8080/api/products
+
+### Get product by ID
+GET http://localhost:8080/api/products/1
+
+### Get products by country
+GET http://localhost:8080/api/products/country/1
+
+### Get products by industry
+GET http://localhost:8080/api/products/industry/1
+
+### Create new product (simple)
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "Laptop",
+  "hsCode": "8471.30",
+  "description": "Portable computer"
+}
+
+### Create product with country and industry
+POST http://localhost:8080/api/products/country/1/industry/1
+Content-Type: application/json
+
+{
+  "name": "Smartphone",
+  "hsCode": "8517.12",
+  "description": "Mobile phone"
+}
+
+### Update product
+PUT http://localhost:8080/api/products/1
+Content-Type: application/json
+
+{
+  "name": "Gaming Laptop",
+  "hsCode": "8471.30",
+  "description": "High-performance portable computer"
+}
+
+### Delete product
+DELETE http://localhost:8080/api/products/1
+
+###############################################
+
+### User API Requests
+
+### Get all users
+GET http://localhost:8080/api/users
+
+### Get user by ID
+GET http://localhost:8080/api/users/1
+
+### Get user by username
+GET http://localhost:8080/api/users/username/john_doe
+
+### Create new user
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "password123",
+  "role": "USER"
+}
+
+### Update user
+PUT http://localhost:8080/api/users/1
+Content-Type: application/json
+
+{
+  "username": "john_doe_updated",
+  "password": "newpassword123",
+  "role": "ADMIN"
+}
+
+### Delete user
+DELETE http://localhost:8080/api/users/1
+
+###############################################
+
+### TariffRule API Requests
+
+### Get all tariff rules
+GET http://localhost:8080/api/tariff-rules
+
+### Get tariff rule by ID
+GET http://localhost:8080/api/tariff-rules/1
+
+### Get tariff rules by country
+GET http://localhost:8080/api/tariff-rules/country/1
+
+### Get tariff rules by product
+GET http://localhost:8080/api/tariff-rules/product/1
+
+### Create new tariff rule (simple)
+POST http://localhost:8080/api/tariff-rules
+Content-Type: application/json
+
+{
+  "rate": 15.50,
+  "additionalFee": 100.00,
+  "effectiveDate": "2024-01-01",
+  "expiryDate": "2024-12-31"
+}
+
+### Create tariff rule with country and product
+POST http://localhost:8080/api/tariff-rules/country/1/product/1
+Content-Type: application/json
+
+{
+  "rate": 12.75,
+  "additionalFee": 50.00,
+  "effectiveDate": "2024-01-01",
+  "expiryDate": "2024-12-31"
+}
+
+### Update tariff rule (simple)
+PUT http://localhost:8080/api/tariff-rules/1
+Content-Type: application/json
+
+{
+  "rate": 18.00,
+  "additionalFee": 120.00,
+  "effectiveDate": "2024-01-01",
+  "expiryDate": "2024-12-31"
+}
+
+### Update tariff rule with country and product
+PUT http://localhost:8080/api/tariff-rules/country/1/product/1/1
+Content-Type: application/json
+
+{
+  "rate": 14.50,
+  "additionalFee": 80.00,
+  "effectiveDate": "2024-01-01",
+  "expiryDate": "2024-12-31"
+}
+
+### Delete tariff rule (simple)
+DELETE http://localhost:8080/api/tariff-rules/1
+
+### Delete tariff rule with country and product
+DELETE http://localhost:8080/api/tariff-rules/country/1/product/1/1
+
+###############################################
+
+### ImportRecord API Requests
+
+### Get all import records
+GET http://localhost:8080/api/import-records
+
+### Get import record by ID
+GET http://localhost:8080/api/import-records/1
+
+### Get import records by product
+GET http://localhost:8080/api/import-records/product/1
+
+### Get import records by user
+GET http://localhost:8080/api/import-records/user/1
+
+### Create new import record (simple)
+POST http://localhost:8080/api/import-records
+Content-Type: application/json
+
+{
+  "quantity": 100,
+  "date": "2024-09-20T10:30:00",
+  "calculatedTariffAmount": 1500.00,
+  "value": 10000.00
+}
+
+### Create import record with product and user
+POST http://localhost:8080/api/import-records/product/1/user/1
+Content-Type: application/json
+
+{
+  "quantity": 50,
+  "date": "2024-09-20T10:30:00",
+  "calculatedTariffAmount": 750.00,
+  "value": 5000.00
+}
+
+### Update import record (simple)
+PUT http://localhost:8080/api/import-records/1
+Content-Type: application/json
+
+{
+  "quantity": 150,
+  "date": "2024-09-20T11:00:00",
+  "calculatedTariffAmount": 2250.00,
+  "value": 15000.00
+}
+
+### Update import record with product and user
+PUT http://localhost:8080/api/import-records/product/1/user/1/1
+Content-Type: application/json
+
+{
+  "quantity": 200,
+  "date": "2024-09-20T12:00:00",
+  "calculatedTariffAmount": 3000.00,
+  "value": 20000.00
+}
+
+### Delete import record (simple)
+DELETE http://localhost:8080/api/import-records/1
+
+### Delete import record with product and user
+DELETE http://localhost:8080/api/import-records/product/1/user/1/1
