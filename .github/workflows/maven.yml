@@ -1,3 +1,5 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches: [ "main" ]
@@ -104,12 +106,11 @@ jobs:
           script: |
             # Stop existing service
             sudo systemctl stop tariff || true
-
+            
             # Start service (systemd file unchanged)
             sudo systemctl start tariff
             sudo systemctl enable tariff
-            sudo systemctl status tariff
-
+            
             # Wait for startup and check
             sleep 30
             if systemctl is-active --quiet tariff; then
@@ -119,4 +120,4 @@ jobs:
               echo "❌ Service failed to start"
               sudo systemctl status tariff --no-pager
               exit 1
-              
+            fi
