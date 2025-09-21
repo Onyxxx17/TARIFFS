@@ -108,13 +108,15 @@ jobs:
             # Start service (systemd file unchanged)
             sudo systemctl start tariff
             sudo systemctl enable tariff
+            sudo systemctl status tariff
 
             # Wait for startup and check
             sleep 30
             if systemctl is-active --quiet tariff; then
               echo "✅ Service is running successfully!"
-              curl -f http://localhost:8080/api/countries/1 || echo "⚠️ App did not respond"
+              curl -f http://localhost:8080/api/countries/C004 || echo "⚠️ App did not respond"
             else
               echo "❌ Service failed to start"
               sudo systemctl status tariff --no-pager
               exit 1
+              
