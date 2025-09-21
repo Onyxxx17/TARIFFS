@@ -10,18 +10,18 @@ import com.tariff.entity.TariffRule;
 
 public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
     // For many-to-one relationship with fromCountry and toCountry
-    List<TariffRule> findByFromCountryId(Long fromCountryId);
-    List<TariffRule> findByToCountryId(Long toCountryId);
-    List<TariffRule> findByFromCountryIdOrToCountryId(Long fromCountryId, Long toCountryId);
-    List<TariffRule> findByFromCountryIdAndToCountryId(Long fromCountryId, Long toCountryId);
+    List<TariffRule> findByFromCountryCountryCode(String fromCountryCode);
+    List<TariffRule> findByToCountryCountryCode(String toCountryCode);
+    List<TariffRule> findByFromCountryCountryCodeOrToCountryCountryCode(String fromCountryCode, String toCountryCode);
+    List<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCode(String fromCountryCode, String toCountryCode);
     
     List<TariffRule> findByProductId(Long productId);
-    List<TariffRule> findByFromCountryIdAndProductId(Long fromCountryId, Long productId);
-    List<TariffRule> findByToCountryIdAndProductId(Long toCountryId, Long productId);
-    List<TariffRule> findByFromCountryIdAndToCountryIdAndProductId(Long fromCountryId, Long toCountryId, Long productId);
+    List<TariffRule> findByFromCountryCountryCodeAndProductId(String fromCountryCode, Long productId);
+    List<TariffRule> findByToCountryCountryCodeAndProductId(String toCountryCode, Long productId);
+    List<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCodeAndProductId(String fromCountryCode, String toCountryCode, Long productId);
     
     Optional<TariffRule> findByIdAndProductId(Long id, Long productId);
     List<TariffRule> findByEffectiveYearBetween(int startYear, int endYear);
-    List<TariffRule> findByFromCountryIdAndEffectiveYearBetween(Long fromCountryId, int startYear, int endYear);
-    List<TariffRule> findByToCountryIdAndEffectiveYearBetween(Long toCountryId, int startYear, int endYear);
+    List<TariffRule> findByFromCountryCountryCodeAndEffectiveYearBetween(String fromCountryCode, int startYear, int endYear);
+    List<TariffRule> findByToCountryCountryCodeAndEffectiveYearBetween(String toCountryCode, int startYear, int endYear);
 }

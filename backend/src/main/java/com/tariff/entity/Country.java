@@ -24,25 +24,22 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode
 public class Country {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String countryCode;
 
     @Column
     private String name;
+    public Country(String countryCode, String name) {
+        this.countryCode = countryCode;
+        this.name = name;
+    }
 
-    @Column
-    private String isoCode;
+    public Country(){
 
-    // one-to-many with product
-    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Product> products;
+    }
 
     @OneToMany(mappedBy = "fromCountry", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -51,10 +48,5 @@ public class Country {
     @OneToMany(mappedBy = "fromCountry", cascade = CascadeType.ALL) 
     @JsonIgnore
     private List<ImportRecord> importRecords;
-
-    public Country(String name, String isoCode) {
-        this.name = name;
-        this.isoCode = isoCode;
-    }
 
 }

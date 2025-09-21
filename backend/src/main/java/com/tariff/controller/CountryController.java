@@ -22,9 +22,9 @@ public class CountryController {
         return countryService.listCountry();
     }
     
-    @GetMapping("/{id}")
-    public Country getCountryById(@PathVariable Long id) {
-        return countryService.getCountry(id);
+    @GetMapping("/{countryCode}")
+    public Country getCountryByCode(@PathVariable String countryCode) {
+        return countryService.getCountry(countryCode);
     }
     
     @PostMapping
@@ -32,14 +32,14 @@ public class CountryController {
         return countryService.addCountry(country);
     }
     
-    @PutMapping("/{id}")
-    public Country updateCountry(@PathVariable Long id, @RequestBody Country country) {
-        return countryService.updateCountry(id, country);
+    @PutMapping("/{countryCode}")
+    public Country updateCountry(@PathVariable String countryCode, @RequestBody Country country) {
+        return countryService.updateCountry(countryCode, country);
     }
     
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCountry(@PathVariable Long id) {
-        countryService.deleteCountry(id);
+    @DeleteMapping("/{countryCode}")
+    public ResponseEntity<?> deleteCountry(@PathVariable String countryCode) {
+        countryService.deleteCountry(countryCode);
         return ResponseEntity.ok().build();
     }
 }
