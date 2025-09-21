@@ -22,48 +22,48 @@ public class CountryLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String url = "https://wits.worldbank.org/API/V1/wits/datasource/trn/country/ALL";
-        RestTemplate restTemplate = new RestTemplate();
+        // String url = "https://wits.worldbank.org/API/V1/wits/datasource/trn/country/ALL";
+        // RestTemplate restTemplate = new RestTemplate();
 
-        try {
-            String xmlResponse = restTemplate.getForObject(url, String.class);
+        // try {
+        //     String xmlResponse = restTemplate.getForObject(url, String.class);
             
-            // Remove BOM if present
-            if (xmlResponse.startsWith("\uFEFF")) {
-                xmlResponse = xmlResponse.substring(1);
-            }
-            // This handles the BOM characters which was causing errors
-            if (xmlResponse.startsWith("ï»¿")) {
-                xmlResponse = xmlResponse.substring(3);
-            }
+        //     // Remove BOM if present
+        //     if (xmlResponse.startsWith("\uFEFF")) {
+        //         xmlResponse = xmlResponse.substring(1);
+        //     }
+        //     // This handles the BOM characters which was causing errors
+        //     if (xmlResponse.startsWith("ï»¿")) {
+        //         xmlResponse = xmlResponse.substring(3);
+        //     }
             
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new ByteArrayInputStream(xmlResponse.getBytes("UTF-8")));
+        //     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        //     DocumentBuilder builder = factory.newDocumentBuilder();
+        //     Document document = builder.parse(new ByteArrayInputStream(xmlResponse.getBytes("UTF-8")));
             
-            NodeList countryNodes = document.getElementsByTagName("wits:country");
+        //     NodeList countryNodes = document.getElementsByTagName("wits:country");
             
-            for (int i = 0; i < countryNodes.getLength(); i++) {
-                Element countryElement = (Element) countryNodes.item(i);
+        //     for (int i = 0; i < countryNodes.getLength(); i++) {
+        //         Element countryElement = (Element) countryNodes.item(i);
                 
-                String name = countryElement.getElementsByTagName("wits:name").item(0).getTextContent();
-                String iso3Code = countryElement.getElementsByTagName("wits:iso3Code").item(0).getTextContent();
+        //         String name = countryElement.getElementsByTagName("wits:name").item(0).getTextContent();
+        //         String iso3Code = countryElement.getElementsByTagName("wits:iso3Code").item(0).getTextContent();
                 
-                if (name != null && !name.trim().isEmpty()) {
-                    Country existingCountry = countryRepository.findByName(name).orElse(null);
+        //         if (name != null && !name.trim().isEmpty()) {
+        //             Country existingCountry = countryRepository.findByName(name).orElse(null);
                     
-                    if (existingCountry == null) {
-                        Country country = new Country(name, iso3Code);
-                        countryRepository.save(country);
-                        System.out.println("Saved country: " + name);
-                    }
-                }
-            }
+        //             if (existingCountry == null) {
+        //                 Country country = new Country(name, iso3Code);
+        //                 countryRepository.save(country);
+        //                 System.out.println("Saved country: " + name);
+        //             }
+        //         }
+        //     }
             
-        } catch (Exception e) {
-            System.err.println("Error loading countries: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // } catch (Exception e) {
+        //     System.err.println("Error loading countries: " + e.getMessage());
+        //     e.printStackTrace();
+        // }
     }
 }
 

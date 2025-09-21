@@ -33,7 +33,7 @@ public class ImportRecord {
     private Long id;
     private int value;
     private int year;
-    private double calculatedTariffAmount;
+    // private double calculatedTariffAmount;
 
     @JsonIgnore
     @OneToOne(mappedBy = "importRecord", cascade = CascadeType.ALL) 
@@ -52,11 +52,11 @@ public class ImportRecord {
     private User user;
 
     // constructor for ImportRecord
-    public ImportRecord(int value, int year, double calculatedTariffAmount) {
+    public ImportRecord(int value, int year) {
 
         this.value = value;
         this.year = year;
-        this.calculatedTariffAmount = calculatedTariffAmount;
+        // this.calculatedTariffAmount = calculatedTariffAmount;
     }
 
 }

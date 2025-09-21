@@ -1,6 +1,8 @@
 package com.tariff.service;
 
 import java.util.List;
+import java.util.stream.*;
+import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,14 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         }
         return importRecordRepository.findByToCountryId(toCountryId);
     }
+
+    @Override
+    public List<ImportRecord> getImportRecordsByFromCountryIdAndToCountryId(Long fromCountryId, Long toCountryId) {
+        List<ImportRecord> recordsByFromCountryId = getImportRecordsByFromCountryId(fromCountryId);
+        List<ImportRecord> recordsByToCountryId = getImportRecordsByFromCountryId(toCountryId);
+        return Stream.concat(recordsByFromCountryId.stream(), recordsByToCountryId.stream())
+                                    .collect(Collectors.toList());
+    }
     
 
     public List<ImportRecord> getImportRecordsByProductId(Long productId) {
@@ -114,7 +124,6 @@ public class ImportRecordServiceImpl implements ImportRecordService {
                 .map(existingRecord -> {
                     existingRecord.setValue(importRecord.getValue());
                     existingRecord.setYear(importRecord.getYear());
-                    existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
                     return importRecordRepository.save(existingRecord);
                 }).orElseThrow(() -> new ImportRecordNotFoundException(id));
     }
@@ -127,11 +136,10 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         if (!countryRepository.existsById(toCountryId)) {
             throw new CountryNotFoundException(toCountryId);
         }
-        return importRecordRepository.findByIdAndFromCountryId(fromCountryId, id)
+        return importRecordRepository.findByFromCountryIdAndToCountryId(fromCountryId, toCountryId)
                 .map(existingRecord -> {
                     existingRecord.setValue(importRecord.getValue());
                     existingRecord.setYear(importRecord.getYear());
-                    existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
                     return importRecordRepository.save(existingRecord);
                 }).orElseThrow(() -> new ImportRecordNotFoundException(id));
     }
@@ -160,7 +168,7 @@ public class ImportRecordServiceImpl implements ImportRecordService {
             existingRecord.setYear(importRecord.getYear());
 
             
-            existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
+            // existingRecord.setCalculatedTariffAmount(importRecord.getCalculatedTariffAmount());
            
             if (importRecord.getProduct() != null) {
                 existingRecord.setProduct(importRecord.getProduct());
@@ -189,7 +197,7 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         if (!countryRepository.existsById(toCountryId)) {
             throw new CountryNotFoundException(toCountryId);
         }
-        importRecordRepository.findByIdAndFromCountryId(fromCountryId, id)
+        importRecordRepository.findByFromCountryIdAndToCountryId(fromCountryId, toCountryId)
                 .map(importRecord -> {
                     importRecordRepository.delete(importRecord);
                     return importRecord;

@@ -44,9 +44,9 @@ public class Country {
     @JsonIgnore
     private List<Product> products;
 
-    @ManyToMany(mappedBy = "countries")
+    @OneToMany(mappedBy = "fromCountry", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<TariffRule> tariffRules = new HashSet<>();
+    private List<TariffRule> tariffRules;
 
     @OneToMany(mappedBy = "fromCountry", cascade = CascadeType.ALL) 
     @JsonIgnore

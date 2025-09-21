@@ -18,6 +18,7 @@ public interface ImportRecordService {
 
     List<ImportRecord> getImportRecordsByToCountryId(Long toCountryId);
 
+    List<ImportRecord> getImportRecordsByFromCountryIdAndToCountryId(Long fromCountryId, Long toCountryId);
 
     ImportRecord addImportRecord(ImportRecord importRecord);
 
