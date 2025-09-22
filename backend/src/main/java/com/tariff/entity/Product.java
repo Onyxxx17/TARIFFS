@@ -5,13 +5,29 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+
 public class Product {
 
     @Id 
@@ -22,12 +38,9 @@ public class Product {
     
     private String name;
 
-    @Column(columnDefinition = "TEXT") //Description will be optional
-    private String description;
-
     @ManyToOne
-    @JoinColumn(name = "industry_id")
-    private Industry industry;
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -37,16 +50,23 @@ public class Product {
     @JsonIgnore
     private List<ImportRecord> importRecords;
 
-    public Product() {
-    }
-    
-    public Long getId() {
-        return id;
+     public Product(Long id, String name, Category category) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        // this.description = description;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // public Product() {
+    // }
+    
+    // public Long getId() {
+    //     return id;
+    // }
+
+    // public void setId(Long id) {
+    //     this.id = id;
+    // }
 
     // public String getHsCode() {
     //     return hsCode;
@@ -56,50 +76,47 @@ public class Product {
     //     this.hsCode = hsCode;
     // }
 
-    public String getName() {
-        return name;
-    }
+    // public String getName() {
+    //     return name;
+    // }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    // public void setName(String name) {
+    //     this.name = name;
+    // }
 
-    public String getDescription() {
-        return description;
-    }
+    // public String getDescription() {
+    //     return description;
+    // }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    // public void setDescription(String description) {
+    //     this.description = description;
+    // }
 
-    public Industry getIndustry() {
-        return industry;
-    }
+    // public Category getCategoryy() {
+    //     return category;
+    // }
 
-    public void setIndustry(Industry industry) {
-        this.industry = industry;
-    }
+    // public void setCategory(Category category) {
+    //     this.category = category;
+    // }
 
-    public List<TariffRule> getTariffRules() {
-        return tariffRules;
-    }
+    // public List<TariffRule> getTariffRules() {
+    //     return tariffRules;
+    // }
 
-    public void setTariffRules(List<TariffRule> tariffRules) {
-        this.tariffRules = tariffRules;
-    }
+    // public void setTariffRules(List<TariffRule> tariffRules) {
+    //     this.tariffRules = tariffRules;
+    // }
 
-    public List<ImportRecord> getImportRecords() {
-        return importRecords;
-    }
+    // public List<ImportRecord> getImportRecords() {
+    //     return importRecords;
+    // }
 
-    public void setImportRecords(List<ImportRecord> importRecords) {
-        this.importRecords = importRecords;
-    }
+    // public void setImportRecords(List<ImportRecord> importRecords) {
+    //     this.importRecords = importRecords;
+    // }
 
-    public Product(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+   
     
 
 }

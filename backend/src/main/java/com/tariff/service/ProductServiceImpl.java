@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tariff.entity.Product;
 import com.tariff.exception.CountryNotFoundException;
-import com.tariff.exception.IndustryNotFoundException;
+import com.tariff.exception.CategoryNotFoundException;
 import com.tariff.exception.ProductNotFoundException;
 import com.tariff.repository.CountryRepository;
-import com.tariff.repository.IndustryRepository;
+import com.tariff.repository.CategoryRepository;
 import com.tariff.repository.ProductRepository;
 
 @Service
@@ -18,12 +18,12 @@ import com.tariff.repository.ProductRepository;
 public class ProductServiceImpl implements ProductService {
     
     private ProductRepository productRepository;
-    private IndustryRepository industryRepository;
+    private CategoryRepository categoryRepository;
     
     public ProductServiceImpl(ProductRepository productRepository,
-                            IndustryRepository industryRepository) {
+                            CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
-        this.industryRepository = industryRepository;
+        this.categoryRepository = categoryRepository;
     }
     
     @Override
@@ -39,19 +39,19 @@ public class ProductServiceImpl implements ProductService {
     
 
     @Override
-    public List<Product> getProductsByIndustryId(Long industryId) {
-        if (!industryRepository.existsById(industryId)) {
-            throw new IndustryNotFoundException(industryId);
+    public List<Product> getProductsByCategoryId(Long categoryId) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException(categoryId);
         }
-        return productRepository.findByIndustryId(industryId);
+        return productRepository.findByCategoryId(categoryId);
     }
     
     @Override
-    public Product addProductByIndustry(Long industryId, Product product) {
-        return industryRepository.findById(industryId).map(industry -> {
-            product.setIndustry(industry);
+    public Product addProductByCategory(Long categoryId, Product product) {
+        return categoryRepository.findById(categoryId).map(category -> {
+            product.setCategory(category);
             return productRepository.save(product);
-        }).orElseThrow(() -> new IndustryNotFoundException(industryId));
+        }).orElseThrow(() -> new CategoryNotFoundException(categoryId));
     }
     
    
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(Long id, Product product) {
         return productRepository.findById(id).map(existingProduct -> {
             existingProduct.setName(product.getName());
-            existingProduct.setDescription(product.getDescription());
+            // existingProduct.setDescription(product.getDescription());
             return productRepository.save(existingProduct);
         }).orElseThrow(() -> new ProductNotFoundException(id));
     }
