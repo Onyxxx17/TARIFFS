@@ -1,10 +1,12 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches: [ "main" ]
     paths: [ "backend/**" ]
   pull_request:
     branches: [ "main" ]
-    paths: [ "backend/**" ] 
+    paths: [ "backend/**" ]
   workflow_dispatch:
 
 jobs:
@@ -13,21 +15,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Run tests
-      run: |
-        cd backend
-        chmod +x mvnw
-        ./mvnw clean test
+      - name: Run tests
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          cd backend
+          chmod +x mvnw
+          ./mvnw clean test
 
   build:
     name: Build Application
@@ -35,21 +41,25 @@ jobs:
     needs: test
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build with Maven
-      run: |
-        cd backend
-        chmod +x mvnw
-        ./mvnw clean package -DskipTests
+      - name: Build with Maven
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          cd backend
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
 
   deploy:
     name: Deploy to EC2
@@ -58,59 +68,56 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build package for deployment
-      run: |
-        cd backend
-        chmod +x mvnw
-        ./mvnw clean package -DskipTests
+      - name: Build package for deployment
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          cd backend
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
 
-    - name: Copy JAR to EC2
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        source: "backend/target/tariff-0.0.1-SNAPSHOT.jar"
-        target: "/home/ubuntu/"
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "backend/target/tariff-0.0.1-SNAPSHOT.jar"
+          target: "/home/ubuntu/"
 
-    - name: Deploy on EC2
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          # Stop existing service
-          sudo systemctl stop tariff || true
-          
-          # Set proper permissions
-          sudo chmod +x /home/ubuntu/tariff-0.0.1-SNAPSHOT.jar
-          
-          # Start service
-          sudo systemctl start tariff
-          
-          # Wait for startup and check status
-          sleep 30
-          if systemctl is-active --quiet tariff; then
-            echo "✅ Service is running successfully!"
-            # Basic connectivity test instead of specific endpoint
-            if curl -f http://localhost:8080/api/status || curl -f https://localhost:8080/api/hello; then
-              echo "✅ Application is responding!"
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            # Stop existing service
+            sudo systemctl stop tariff || true
+            
+            # Start service (systemd file unchanged)
+            sudo systemctl start tariff
+            sudo systemctl enable tariff
+            
+            # Wait for startup and check
+            sleep 30
+            if systemctl is-active --quiet tariff; then
+              echo "✅ Service is running successfully!"
+              curl -f http://localhost:8080/api/countries/C004 || echo "⚠️ App did not respond"
             else
-              echo "⚠️  Service running but application not responding as expected"
+              echo "❌ Service failed to start"
+              sudo systemctl status tariff --no-pager
+              exit 1
             fi
-          else
-            echo "❌ Service failed to start"
-            sudo systemctl status tariff --no-pager
-            exit 1
-          fi
