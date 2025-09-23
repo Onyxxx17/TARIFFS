@@ -27,9 +27,9 @@ public class ProductController {
         return productService.getProduct(id);
     }
     
-    @GetMapping("/industry/{industryId}")
-    public List<Product> getProductsByIndustry(@PathVariable Long industryId) {
-        return productService.getProductsByIndustryId(industryId);
+    @GetMapping("/category/{categoryId}")
+    public List<Product> getProductsByCategory(@PathVariable Long categoryId) {
+        return productService.getProductsByCategoryId(categoryId);
     }
     
     @PostMapping
@@ -37,11 +37,11 @@ public class ProductController {
         return productService.addProduct(product);
     }
     
-    @PostMapping("/industry/{industryId}")
-    public Product createProductWithIndustry(
-            @PathVariable Long industryId,
+    @PostMapping("/category/{categoryId}")
+    public Product createProductWithCategory(
+            @PathVariable Long categoryId,
             @RequestBody Product product) {
-        return productService.addProductByIndustry(industryId, product);
+        return productService.addProductByCategory(categoryId, product);
     }
     
     @PutMapping("/{id}")

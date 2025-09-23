@@ -8,10 +8,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.tariff.entity.Country;
-import com.tariff.entity.Industry;
+import com.tariff.entity.Category;
 import com.tariff.entity.TariffRule;
 import com.tariff.repository.CountryRepository;
-import com.tariff.repository.IndustryRepository;
+import com.tariff.repository.CategoryRepository;
 import com.tariff.repository.TariffRuleRepository;
 
 // @Component
@@ -24,7 +24,7 @@ public class TariffRuleLoader implements CommandLineRunner {
     private CountryRepository countryRepository;
 
     @Autowired
-    private IndustryRepository industryRepository;
+    private CategoryRepository categoryyRepository;
 
     @Override
     public void run(String... args) throws Exception {
