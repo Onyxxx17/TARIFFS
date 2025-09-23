@@ -3,19 +3,20 @@ package com.tariff.dto.request;
 import java.math.BigDecimal;
 
 public class TariffCalculationRequest {
-    private String fromCountryId;
-    private String toCountryId;
+
+    private String fromCountry;
+    private String toCountry;
     private Long productId;
     private BigDecimal unitCost;
     private Integer quantity;
     private Integer effectiveYear;
 
-    public String getFromCountryId() {
-        return fromCountryId;
+    public String getFromCountry() {
+        return fromCountry;
     }
 
-    public String getToCountryId() {
-        return toCountryId;
+    public String getToCountry() {
+        return toCountry;
     }
 
     public Long getProductId() {
@@ -34,12 +35,12 @@ public class TariffCalculationRequest {
         return effectiveYear;
     }
 
-    public void setFromCountryId(String fromCountryId) {
-        this.fromCountryId = fromCountryId;
+    public void setFromCountry(String fromCountryId) {
+        this.fromCountry = fromCountryId;
     }
 
-    public void setToCountryId(String toCountryId) {
-        this.toCountryId = toCountryId;
+    public void setToCountry(String toCountryId) {
+        this.toCountry = toCountryId;
     }
 
     public void setProductId(Long productId) {
@@ -54,7 +55,7 @@ public class TariffCalculationRequest {
         this.quantity = quantity;
     }
 
-    public void setEffectiveYear(Integer effectiveYear){
+    public void setEffectiveYear(Integer effectiveYear) {
         this.effectiveYear = effectiveYear;
     }
 }

@@ -70,4 +70,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+    @ExceptionHandler(TariffRuleNotFoundException.class)
+public ResponseEntity<Map<String, Object>> handleTariffRuleNotFoundException(
+        TariffRuleNotFoundException ex, WebRequest request) {
+
+    Map<String, Object> errorResponse = new HashMap<>();
+    errorResponse.put("timestamp", LocalDateTime.now());
+    errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+    errorResponse.put("error", "Not Found");
+    errorResponse.put("message", ex.getMessage());
+    errorResponse.put("path", request.getDescription(false).replace("uri=", ""));
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import GeoChart from "./components/GeoCharts";
-import CountrySelect, { type CountryOption } from "./components/CountrySelect";
+import GeoChart from "./GeoCharts";
+import CountrySelect, { type CountryOption } from "./CountrySelect";
 import TariffResult from "./TariffResult";
 
 type Picked = { name: string; code?: string } | null;
@@ -10,18 +10,19 @@ export default function TariffCalculatorSection() {
   const [phase, setPhase] = useState<"to" | "from">("to");
   const [to, setTo] = useState<Picked>(null);
   const [from, setFrom] = useState<Picked>(null);
-
-  // result sheet 
+  const [tariffResult, setTariffResult] = useState(null);
+  // result sheet
   const [showResult, setShowResult] = useState(false);
 
   // form fields
   const [desc, setDesc] = useState("");
   const [hs, setHs] = useState("");
   const [value, setValue] = useState("");
+  const [quantity, setQuantity] = useState("");
 
   const [year, setYear] = useState("");
   const years = Array.from({ length: 2025 - 1996 + 1 }, (_, i) => 1996 + i);
-
+  const [error, setError] = useState("");
 
   // map inputs
   const onCountryPickFromMap = (p: { name: string; code?: string }) => {
@@ -58,19 +59,71 @@ export default function TariffCalculatorSection() {
     setShowResult(false);
   };
 
-  // show sheet 
-  const submit = () => {
-    const payload = {
-      toCountry: to?.code,
-      fromCountry: from?.code,
-      description: desc.trim() || undefined,
-      hsCode: hs.trim() || undefined,
-      productValue: value ? Number(value) : undefined,
-    };
-    console.log("Submit payload:", payload);
+  // show sheet
+  const submit = async () => {
+  setError(""); // clear previous error
 
+  // Validation
+  if (!from?.name || !to?.name || !hs || !value || !quantity || !year) {
+    setError("All fields except product description are required.");
     setShowResult(true);
+    setTariffResult(null);
+    return;
+  }
+
+  if(to.name === from.name) {
+    setError("Countries cannot be the same.");
+    setShowResult(true);
+    setTariffResult(null);
+    return;
+  }
+
+  let formattedHs = hs.trim();
+  if (formattedHs.length === 5) {
+    formattedHs = "0" + formattedHs;
+  }
+  if (formattedHs.length !== 6 || !/^\d{6}$/.test(formattedHs)) {
+    setError("HS Code must be exactly 6 digits.");
+    setShowResult(true);
+    setTariffResult(null);
+    return;
+  }
+
+  const payload = {
+    fromCountry: from.name,
+    toCountry: to.name,
+    productId: Number(formattedHs),
+    unitCost: value ? Number(value) : undefined,
+    quantity: quantity ? Number(quantity) : undefined,
+    effectiveYear: year ? Number(year) : undefined,
+    description: desc || undefined,
   };
+
+  try {
+    const response = await fetch(
+      "http://localhost:8080/api/tariffs/calculate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.message || "Tariff calculation failed");
+      setShowResult(true);
+      setTariffResult(null);
+      return;
+    }
+    setShowResult(true);
+    setTariffResult(result);
+  } catch (error) {
+    setError("Network error");
+    setShowResult(true);
+    setTariffResult(null);
+  }
+};
 
   const toValue: CountryOption | null = to
     ? { name: to.name, code: to.code ?? "" }
@@ -118,7 +171,6 @@ export default function TariffCalculatorSection() {
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm w-200 mx-auto">
           {/* Header */}
           <div className="px-6 pt-6">
-            
             {/* title for form  */}
             <div className="text-center mb-6">
               <h3 className="mt-3 text-2xl font-semibold text-slate-900">
@@ -129,7 +181,7 @@ export default function TariffCalculatorSection() {
                 costs.
               </p>
             </div>
-            
+
             <div className="flex items-center gap-3" />
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-7">
               <CountrySelect
@@ -144,26 +196,36 @@ export default function TariffCalculatorSection() {
                 onPick={onPickFrom}
                 placeholder="Type or click a Country"
               />
-              
+
               <div>
-                <label htmlFor="quantity" className="text-sm font-medium text-gray-700" style={{fontSize: "12px", marginRight: "10px"}}>
+                <label
+                  htmlFor="quantity"
+                  className="text-sm font-medium text-gray-700"
+                  style={{ fontSize: "12px", marginRight: "10px" }}
+                >
                   Quantity:
-                </label>  
+                </label>
                 <input
-                  id="name"
-                  type="text"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
+                  name="quantity"
+                  id="quantity"
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
                   placeholder="Enter the quantity"
                   className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
-             <div>
-                <label htmlFor="quantity" className="w-full text-sm font-medium text-gray-700" style={{fontSize: "12px", marginRight: "10px"}}>
-                    Year:
-                </label> 
-                <select     
+              <div>
+                <label
+                  htmlFor="quantity"
+                  className="w-full text-sm font-medium text-gray-700"
+                  style={{ fontSize: "12px", marginRight: "10px" }}
+                >
+                  Year:
+                </label>
+                <select
                   id="year"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
@@ -180,7 +242,9 @@ export default function TariffCalculatorSection() {
                 </select>
               </div>
 
-              {year && <p className="text-sm text-gray-600">You selected: {year}</p>}
+              {year && (
+                <p className="text-sm text-gray-600">You selected: {year}</p>
+              )}
             </div>
 
             <div className="mt-3 flex items-center gap-3">
@@ -293,10 +357,8 @@ export default function TariffCalculatorSection() {
         {/* Result sheet  */}
         {showResult && (
           <TariffResult
-            to={to}
-            from={from}
-            description={desc || undefined}
-            hsCode={hs || undefined}
+            tariffResult={tariffResult}
+            error = {error}
             onReset={() => setShowResult(false)}
             onEdit={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           />
