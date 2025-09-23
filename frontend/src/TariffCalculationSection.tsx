@@ -19,6 +19,10 @@ export default function TariffCalculatorSection() {
   const [hs, setHs] = useState("");
   const [value, setValue] = useState("");
 
+  const [year, setYear] = useState("");
+  const years = Array.from({ length: 2025 - 1996 + 1 }, (_, i) => 1996 + i);
+
+
   // map inputs
   const onCountryPickFromMap = (p: { name: string; code?: string }) => {
     const picked = p.code ? { name: p.name, code: p.code } : { name: p.name };
@@ -83,7 +87,7 @@ export default function TariffCalculatorSection() {
           {/*  badge */}
           <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200/70 bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
             <span className="h-2 w-2 rounded-full bg-blue-600" />
-            Calculate Import Duty & Taxes
+            Calculate Tariffs
           </span>
 
           {/* headline */}
@@ -118,7 +122,7 @@ export default function TariffCalculatorSection() {
             {/* title for form  */}
             <div className="text-center mb-6">
               <h3 className="mt-3 text-2xl font-semibold text-slate-900">
-                Calculate Import Duty & Taxes
+                Calculate Tariffs
               </h3>
               <p className="mt-1 text-sm text-slate-500">
                 Pick countries and enter basic product info to estimate landed
@@ -129,17 +133,54 @@ export default function TariffCalculatorSection() {
             <div className="flex items-center gap-3" />
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-7">
               <CountrySelect
-                label="Importing to"
+                label="Tariffs to:"
                 value={toValue}
                 onPick={onPickTo}
                 placeholder="Type or click a Country"
               />
               <CountrySelect
-                label="Importing from"
+                label="Tariffs from: "
                 value={fromValue}
                 onPick={onPickFrom}
                 placeholder="Type or click a Country"
               />
+              
+              <div>
+                <label htmlFor="quantity" className="text-sm font-medium text-gray-700" style={{fontSize: "12px", marginRight: "10px"}}>
+                  Quantity:
+                </label>  
+                <input
+                  id="name"
+                  type="text"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder="Enter the quantity"
+                  className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+             <div>
+                <label htmlFor="quantity" className="w-full text-sm font-medium text-gray-700" style={{fontSize: "12px", marginRight: "10px"}}>
+                    Year:
+                </label> 
+                <select     
+                  id="year"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="" disabled>
+                    -- Choose a year --
+                  </option>
+                  {years.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {year && <p className="text-sm text-gray-600">You selected: {year}</p>}
             </div>
 
             <div className="mt-3 flex items-center gap-3">
