@@ -14,6 +14,8 @@ import com.tariff.entity.TariffRule;
 
 public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
     // For many-to-one relationship with fromCountry and toCountry
+
+    long count();
     List<TariffRule> findByFromCountryCountryCode(String fromCountryCode);
     List<TariffRule> findByToCountryCountryCode(String toCountryCode);
     List<TariffRule> findByFromCountryCountryCodeOrToCountryCountryCode(String fromCountryCode, String toCountryCode);
