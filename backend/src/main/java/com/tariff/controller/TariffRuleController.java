@@ -27,9 +27,22 @@ public class TariffRuleController {
         return tariffRuleService.getTariffRule(id);
     }
     
-    @GetMapping("/country/{countryId}")
-    public List<TariffRule> getTariffRulesByCountry(@PathVariable Long countryId) {
-        return tariffRuleService.getTariffRulesByCountryId(countryId);
+    // Backward compatibility - returns rules where country is either from or to
+    @GetMapping("/country/{countryCode}")
+    public List<TariffRule> getTariffRulesByCountry(@PathVariable String countryCode) {
+        return tariffRuleService.getTariffRulesByCountryCode(countryCode);
+    }
+    
+    // New endpoint for from country
+    @GetMapping("/from-country/{fromCountryCode}")
+    public List<TariffRule> getTariffRulesByFromCountry(@PathVariable String fromCountryCode) {
+        return tariffRuleService.getTariffRulesByFromCountryCode(fromCountryCode);
+    }
+    
+    // New endpoint for to country
+    @GetMapping("/to-country/{toCountryCode}")
+    public List<TariffRule> getTariffRulesByToCountry(@PathVariable String toCountryCode) {
+        return tariffRuleService.getTariffRulesByToCountryCode(toCountryCode);
     }
     
     @GetMapping("/product/{productId}")
@@ -42,12 +55,24 @@ public class TariffRuleController {
         return tariffRuleService.addTariffRule(tariffRule);
     }
     
-    @PostMapping("/country/{countryId}/product/{productId}")
+    // Backward compatibility - sets both from and to country to the same country
+    @PostMapping("/country/{countryCode}/product/{productId}")
     public TariffRule createTariffRuleWithCountryAndProduct(
-            @PathVariable Long countryId,
+            @PathVariable String fromCountryCode,
+            @PathVariable String toCountryCode,
             @PathVariable Long productId,
             @RequestBody TariffRule tariffRule) {
-        return tariffRuleService.addTariffRuleByCountryAndProduct(countryId, productId, tariffRule);
+        return tariffRuleService.addTariffRuleByCountriesAndProduct(fromCountryCode, toCountryCode, productId, tariffRule);
+    }
+    
+    // New endpoint for creating tariff rules with separate from and to countries
+    @PostMapping("/from-country/{fromCountryCode}/to-country/{toCountryCode}/product/{productId}")
+    public TariffRule createTariffRuleWithCountriesAndProduct(
+            @PathVariable String fromCountryCode,
+            @PathVariable String toCountryCode,
+            @PathVariable Long productId,
+            @RequestBody TariffRule tariffRule) {
+        return tariffRuleService.addTariffRuleByCountriesAndProduct(fromCountryCode, toCountryCode, productId, tariffRule);
     }
     
     @PutMapping("/{id}")
@@ -55,13 +80,26 @@ public class TariffRuleController {
         return tariffRuleService.updateTariffRule(id, tariffRule);
     }
     
-    @PutMapping("/country/{countryId}/product/{productId}/{id}")
+    // Backward compatibility - updates rule associated with country (either from or to)
+    @PutMapping("/country/{countryCode}/product/{productId}/{id}")
     public TariffRule updateTariffRuleWithCountryAndProduct(
-            @PathVariable Long countryId,
+            @PathVariable String fromCountryCode,
+            @PathVariable String toCountryCode,
             @PathVariable Long productId,
             @PathVariable Long id,
             @RequestBody TariffRule tariffRule) {
-        return tariffRuleService.updateTariffRule(countryId, productId, id, tariffRule);
+        return tariffRuleService.updateTariffRule(fromCountryCode, toCountryCode, productId, id, tariffRule);
+    }
+    
+    // New endpoint for updating tariff rules with specific from and to countries
+    @PutMapping("/from-country/{fromCountryCode}/to-country/{toCountryCode}/product/{productId}/{id}")
+    public TariffRule updateTariffRuleWithCountriesAndProduct(
+            @PathVariable String fromCountryCode,
+            @PathVariable String toCountryCode,
+            @PathVariable Long productId,
+            @PathVariable Long id,
+            @RequestBody TariffRule tariffRule) {
+        return tariffRuleService.updateTariffRule(fromCountryCode, toCountryCode, productId, id, tariffRule);
     }
     
     @DeleteMapping("/{id}")
@@ -70,12 +108,25 @@ public class TariffRuleController {
         return ResponseEntity.ok().build();
     }
     
-    @DeleteMapping("/country/{countryId}/product/{productId}/{id}")
+    // Backward compatibility - deletes rule associated with country (either from or to)
+    @DeleteMapping("/country/{countryCode}/product/{productId}/{id}")
     public ResponseEntity<?> deleteTariffRuleWithCountryAndProduct(
-            @PathVariable Long countryId,
+            @PathVariable String fromCountryCode,
+            @PathVariable String toCountryCode,
             @PathVariable Long productId,
             @PathVariable Long id) {
-        tariffRuleService.deleteTariffRule(countryId, productId, id);
+        tariffRuleService.deleteTariffRule(fromCountryCode, toCountryCode, productId, id);
+        return ResponseEntity.ok().build();
+    }
+    
+    // New endpoint for deleting tariff rules with specific from and to countries
+    @DeleteMapping("/from-country/{fromCountryCode}/to-country/{toCountryCode}/product/{productId}/{id}")
+    public ResponseEntity<?> deleteTariffRuleWithCountriesAndProduct(
+            @PathVariable String fromCountryCode,
+            @PathVariable String toCountryCode,
+            @PathVariable Long productId,
+            @PathVariable Long id) {
+        tariffRuleService.deleteTariffRule(fromCountryCode, toCountryCode, productId, id);
         return ResponseEntity.ok().build();
     }
 }

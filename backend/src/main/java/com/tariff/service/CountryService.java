@@ -9,21 +9,15 @@ public interface CountryService {
 
     List<Country> listCountry();
 
-    Country getCountry(Long id);
+    Country getCountry(String countryCode);
 
     Optional<Country> getCountryByName(String name);
 
-    Optional<Country> getCountryByIsoCode(String isoCode);
-
     Country addCountry(Country country);
 
-    Country updateCountry(Long id, Country country);
+    Country updateCountry(String countryCode, Country country);
 
-    void deleteCountry(Long id);
+    void deleteCountry(String countryCode);
 
     boolean existsByName(String name);
-
-    boolean existsByIsoCode(String isoCode);
-
-    boolean existsByNameOrIsoCode(String name, String isoCode);
 }

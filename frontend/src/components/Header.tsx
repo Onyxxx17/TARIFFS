@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function Header() {
@@ -43,18 +44,18 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="px-3 py-2 rounded-lg border border-slate-400 text-sm text-slate-700 hover:bg-slate-100"
           >
             Log in
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="signup"
             className="px-4 py-2 rounded-lg bg-gradient-to-b from-blue-600 to-blue-700 text-white text-sm font-semibold shadow-[0_8px_18px_rgba(59,130,246,.35)]"
           >
             Sign up
-          </a>
+          </Link>
         </div>
       </div>
     </header>

@@ -42,39 +42,44 @@ public class TariffRule {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToMany
-    @JoinTable(name="country_tariff_rules", joinColumns=@JoinColumn(name="country_id"),
-    inverseJoinColumns= @JoinColumn(name="tariff_rule_id"))
-    private Set<Country> countries = new HashSet<>();
+    // @ManyToMany
+    // @JoinTable(name="country_tariff_rules", joinColumns=@JoinColumn(name="country_id"),
+    // inverseJoinColumns= @JoinColumn(name="tariff_rule_id"))
+    // private Set<Country> countries = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "from_country_id")
+    private Country fromCountry;
+
+    @ManyToOne
+    @JoinColumn(name = "to_country_id")
+    private Country toCountry;
 
     
-    @Column(name = "rate", precision = 10, scale = 4, nullable = false)
+    @Column(name = "rate", precision = 10, scale = 4)
     private BigDecimal rate; // Percentage
     
     @Column(name = "additional_fee", precision = 15, scale = 2)
     private BigDecimal additionalFee; // Fixed amount, optional
     
-    @Column(name = "effective_date", nullable = false)
-    private LocalDate effectiveDate;
+    @Column(name = "effective_year", columnDefinition = "INTEGER")
+    private int effectiveYear;
     
-    @Column(name = "expiry_date")
-    private LocalDate expiryDate; // Optional
-
 
     // Constructor with all fields
     public TariffRule(BigDecimal rate, BigDecimal additionalFee,
-                     LocalDate effectiveDate, LocalDate expiryDate) {
+                     int effectiveYear) {
         
         this.rate = rate;
         this.additionalFee = additionalFee;
-        this.effectiveDate = effectiveDate;
-        this.expiryDate = expiryDate;
+        this.effectiveYear = effectiveYear;
+       
     }
 
     // Constructor without optional fields
-    public TariffRule(BigDecimal rate, LocalDate effectiveDate) {
+    public TariffRule(BigDecimal rate, int effectiveYear) {
         this.rate = rate;
-        this.effectiveDate = effectiveDate;
+        this.effectiveYear = effectiveYear;
     }
 
 

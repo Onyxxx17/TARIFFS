@@ -1,6 +1,5 @@
 package com.tariff.service;
 
-import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -41,15 +40,31 @@ public class TariffRuleServiceImpl implements TariffRuleService {
                 .orElseThrow(() -> new TariffRuleNotFoundException(id));
     }
     
-  
-    public List<TariffRule> getTariffRulesByCountryId(Long countryId) {
-        if (!countryRepository.existsById(countryId)) {
-            throw new CountryNotFoundException(countryId);
+    @Override
+    public List<TariffRule> getTariffRulesByCountryCode(String countryCode) {
+        if (!countryRepository.existsById(countryCode)) {
+            throw new CountryNotFoundException(countryCode);
         }
-        return tariffRuleRepository.findByCountriesId(countryId);
+        return tariffRuleRepository.findByFromCountryCountryCodeOrToCountryCountryCode(countryCode, countryCode);
     }
     
+    @Override
+    public List<TariffRule> getTariffRulesByFromCountryCode(String fromCountryCode) {
+        if (!countryRepository.existsById(fromCountryCode)) {
+            throw new CountryNotFoundException(fromCountryCode);
+        }
+        return tariffRuleRepository.findByFromCountryCountryCode(fromCountryCode);
+    }
+    
+    @Override
+    public List<TariffRule> getTariffRulesByToCountryCode(String toCountryCode) {
+        if (!countryRepository.existsById(toCountryCode)) {
+            throw new CountryNotFoundException(toCountryCode);
+        }
+        return tariffRuleRepository.findByToCountryCountryCode(toCountryCode);
+    }
    
+    @Override
     public List<TariffRule> getTariffRulesByProductId(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
@@ -58,40 +73,58 @@ public class TariffRuleServiceImpl implements TariffRuleService {
     }
     
     
-    public TariffRule addTariffRuleByCountryAndProduct(Long countryId, Long productId, TariffRule tariffRule) {
-        return countryRepository.findById(countryId).map(country -> {
+    public TariffRule addTariffRuleByCountryAndProduct(String countryCode, Long productId, TariffRule tariffRule) {
+        return countryRepository.findById(countryCode).map(country -> {
             return productRepository.findById(productId).map(product -> {
-                // Initialize countries collection if null
-                if (tariffRule.getCountries() == null) {
-                    tariffRule.setCountries(new HashSet<>());
-                }
-                // Add the country to the countries collection
-                tariffRule.getCountries().add(country);
+                // Set both fromCountry and toCountry to the same country for backward compatibility
+                tariffRule.setFromCountry(country);
+                tariffRule.setToCountry(country);
                 tariffRule.setProduct(product);
                 return tariffRuleRepository.save(tariffRule);
             }).orElseThrow(() -> new ProductNotFoundException(productId));
-        }).orElseThrow(() -> new CountryNotFoundException(countryId));
+        }).orElseThrow(() -> new CountryNotFoundException(countryCode));
+    }
+    
+    @Override
+    public TariffRule addTariffRuleByCountriesAndProduct(String fromCountryCode, String toCountryCode, Long productId, TariffRule tariffRule) {
+        return countryRepository.findById(fromCountryCode).map(fromCountry -> {
+            return countryRepository.findById(toCountryCode).map(toCountry -> {
+                return productRepository.findById(productId).map(product -> {
+                    tariffRule.setFromCountry(fromCountry);
+                    tariffRule.setToCountry(toCountry);
+                    tariffRule.setProduct(product);
+                    return tariffRuleRepository.save(tariffRule);
+                }).orElseThrow(() -> new ProductNotFoundException(productId));
+            }).orElseThrow(() -> new CountryNotFoundException(toCountryCode));
+        }).orElseThrow(() -> new CountryNotFoundException(fromCountryCode));
     }
     
     @Override
     public TariffRule addTariffRule(TariffRule tariffRule) {
         return tariffRuleRepository.save(tariffRule);
     }
-    
  
-    public TariffRule updateTariffRule(Long countryId, Long productId, Long id, TariffRule tariffRule) {
-        // Verify country and product exist
-        if (!countryRepository.existsById(countryId)) {
-            throw new CountryNotFoundException(countryId);
+  
+
+    
+    @Override
+    public TariffRule updateTariffRule(String fromCountryCode, String toCountryCode, Long productId, Long id, TariffRule tariffRule) {
+        // Verify countries and product exist
+        if (!countryRepository.existsById(fromCountryCode)) {
+            throw new CountryNotFoundException(fromCountryCode);
+        }
+        if (!countryRepository.existsById(toCountryCode)) {
+            throw new CountryNotFoundException(toCountryCode);
         }
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
         }
         
-        // Find the tariff rule and verify it's associated with the product
+        // Find the tariff rule and verify it's associated with the countries and product
         return tariffRuleRepository.findById(id)
                 .filter(tr -> tr.getProduct() != null && tr.getProduct().getId().equals(productId))
-                .filter(tr -> tr.getCountries().stream().anyMatch(c -> c.getId().equals(countryId)))
+                .filter(tr -> tr.getFromCountry() != null && tr.getFromCountry().getCountryCode().equals(fromCountryCode))
+                .filter(tr -> tr.getToCountry() != null && tr.getToCountry().getCountryCode().equals(toCountryCode))
                 .map(existingRule -> {
                     // Update basic fields
                     if (tariffRule.getRate() != null) {
@@ -100,30 +133,51 @@ public class TariffRuleServiceImpl implements TariffRuleService {
                     if (tariffRule.getAdditionalFee() != null) {
                         existingRule.setAdditionalFee(tariffRule.getAdditionalFee());
                     }
-                    if (tariffRule.getEffectiveDate() != null) {
-                        existingRule.setEffectiveDate(tariffRule.getEffectiveDate());
-                    }
-                    if (tariffRule.getExpiryDate() != null) {
-                        existingRule.setExpiryDate(tariffRule.getExpiryDate());
-                    }
+                    existingRule.setEffectiveYear(tariffRule.getEffectiveYear());
+                    
                     return tariffRuleRepository.save(existingRule);
                 }).orElseThrow(() -> new TariffRuleNotFoundException(id));
     }
-    
  
-    public void deleteTariffRule(Long countryId, Long productId, Long id) {
+    
+    public void deleteTariffRule(String countryCode, Long productId, Long id) {
         // Verify country and product exist
-        if (!countryRepository.existsById(countryId)) {
-            throw new CountryNotFoundException(countryId);
+        if (!countryRepository.existsById(countryCode)) {
+            throw new CountryNotFoundException(countryCode);
         }
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
         }
         
-        // Find the tariff rule and verify it's associated with both product and country
+        // Find the tariff rule and verify it's associated with the product and has the country as either from or to
         tariffRuleRepository.findById(id)
                 .filter(tr -> tr.getProduct() != null && tr.getProduct().getId().equals(productId))
-                .filter(tr -> tr.getCountries().stream().anyMatch(c -> c.getId().equals(countryId)))
+                .filter(tr -> (tr.getFromCountry() != null && tr.getFromCountry().getCountryCode().equals(countryCode)) ||
+                             (tr.getToCountry() != null && tr.getToCountry().getCountryCode().equals(countryCode)))
+                .map(tariffRule -> {
+                    tariffRuleRepository.delete(tariffRule);
+                    return tariffRule;
+                }).orElseThrow(() -> new TariffRuleNotFoundException(id));
+    }
+    
+    @Override
+    public void deleteTariffRule(String fromCountryCode, String toCountryCode, Long productId, Long id) {
+        // Verify countries and product exist
+        if (!countryRepository.existsById(fromCountryCode)) {
+            throw new CountryNotFoundException(fromCountryCode);
+        }
+        if (!countryRepository.existsById(toCountryCode)) {
+            throw new CountryNotFoundException(toCountryCode);
+        }
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException(productId);
+        }
+        
+        // Find the tariff rule and verify it's associated with the countries and product
+        tariffRuleRepository.findById(id)
+                .filter(tr -> tr.getProduct() != null && tr.getProduct().getId().equals(productId))
+                .filter(tr -> tr.getFromCountry() != null && tr.getFromCountry().getCountryCode().equals(fromCountryCode))
+                .filter(tr -> tr.getToCountry() != null && tr.getToCountry().getCountryCode().equals(toCountryCode))
                 .map(tariffRule -> {
                     tariffRuleRepository.delete(tariffRule);
                     return tariffRule;
@@ -132,24 +186,22 @@ public class TariffRuleServiceImpl implements TariffRuleService {
 
     @Override
     public TariffRule updateTariffRule(Long id, TariffRule tariffRule) {
-            return tariffRuleRepository.findById(id).map(existingRule -> {
+        return tariffRuleRepository.findById(id).map(existingRule -> {
             if (tariffRule.getRate() != null) {
                 existingRule.setRate(tariffRule.getRate());
             }
             if (tariffRule.getAdditionalFee() != null) {
                 existingRule.setAdditionalFee(tariffRule.getAdditionalFee());
             }
-            if (tariffRule.getEffectiveDate() != null) {
-                existingRule.setEffectiveDate(tariffRule.getEffectiveDate());
-            }
-            if (tariffRule.getExpiryDate() != null) {
-                existingRule.setExpiryDate(tariffRule.getExpiryDate());
-            }
+            existingRule.setEffectiveYear(tariffRule.getEffectiveYear());
             if (tariffRule.getProduct() != null) {
                 existingRule.setProduct(tariffRule.getProduct());
             }
-            if (tariffRule.getCountries() != null && !tariffRule.getCountries().isEmpty()) {
-                existingRule.setCountries(tariffRule.getCountries());
+            if (tariffRule.getFromCountry() != null) {
+                existingRule.setFromCountry(tariffRule.getFromCountry());
+            }
+            if (tariffRule.getToCountry() != null) {
+                existingRule.setToCountry(tariffRule.getToCountry());
             }
             return tariffRuleRepository.save(existingRule);
         }).orElseThrow(() -> new TariffRuleNotFoundException(id));

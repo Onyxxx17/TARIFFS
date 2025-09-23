@@ -22,7 +22,6 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode
 public class Industry {
 
@@ -44,6 +43,10 @@ public class Industry {
     public Industry(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Industry(){
+
     }
 
 }

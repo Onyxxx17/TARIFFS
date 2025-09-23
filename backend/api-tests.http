@@ -11,23 +11,22 @@ POST http://localhost:8080/api/countries
 Content-Type: application/json
 
 {
-  "name": "Singapore",
-  "isoCode": "SG",
-  "currency": "SGD"
+  "countryCode":"C798",
+  "name":"Tuvalu"
 }
 
 ### Update country
-PUT http://localhost:8080/api/countries/1
-Content-Type: application/json
+# PUT http://localhost:8080/api/countries/1
+# Content-Type: application/json
 
-{
-  "name": "Singapore",
-  "isoCode": "SG",
-  "currency": "SGD"
-}
+# {
+#   "name": "Singapore",
+#   "isoCode": "SG",
+#   "currency": "SGD"
+# }
 
 ### Delete country
-DELETE http://localhost:8080/api/countries/1
+# DELETE http://localhost:8080/api/countries/1
 
 ###############################################
 
@@ -56,7 +55,7 @@ Content-Type: application/json
 }
 
 ### Delete industry
-DELETE http://localhost:8080/api/industries/1
+DELETE http://localhost:8080/api/industries/4
 
 ###############################################
 

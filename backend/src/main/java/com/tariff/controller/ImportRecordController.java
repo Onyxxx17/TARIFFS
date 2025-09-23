@@ -61,7 +61,7 @@ public class ImportRecordController {
             @PathVariable Long userId,
             @PathVariable Long id,
             @RequestBody ImportRecord importRecord) {
-        return importRecordService.updateImportRecord(productId, userId, id, importRecord);
+        return importRecordService.updateImportRecordByProductAndUser(productId, userId, id, importRecord);
     }
     
     @DeleteMapping("/{id}")
@@ -75,7 +75,7 @@ public class ImportRecordController {
             @PathVariable Long productId,
             @PathVariable Long userId,
             @PathVariable Long id) {
-        importRecordService.deleteImportRecord(productId, userId, id);
+        importRecordService.deleteImportRecordByProductAndUser(productId, userId, id);
         return ResponseEntity.ok().build();
     }
 }

@@ -18,14 +18,11 @@ import com.tariff.repository.ProductRepository;
 public class ProductServiceImpl implements ProductService {
     
     private ProductRepository productRepository;
-    private CountryRepository countryRepository;
     private IndustryRepository industryRepository;
     
-    public ProductServiceImpl(ProductRepository productRepository, 
-                             CountryRepository countryRepository,
-                             IndustryRepository industryRepository) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                            IndustryRepository industryRepository) {
         this.productRepository = productRepository;
-        this.countryRepository = countryRepository;
         this.industryRepository = industryRepository;
     }
     
@@ -41,14 +38,7 @@ public class ProductServiceImpl implements ProductService {
     }
     
 
-    public List<Product> getProductsByCountryId(Long countryId) {
-        if (!countryRepository.existsById(countryId)) {
-            throw new CountryNotFoundException(countryId);
-        }
-        return productRepository.findByCountryId(countryId);
-    }
-    
-    
+    @Override
     public List<Product> getProductsByIndustryId(Long industryId) {
         if (!industryRepository.existsById(industryId)) {
             throw new IndustryNotFoundException(industryId);
@@ -56,18 +46,16 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByIndustryId(industryId);
     }
     
-   
-    public Product addProductByCountryAndIndustry(Long countryId, Long industryId, Product product) {
-        return countryRepository.findById(countryId).map(country -> {
-            return industryRepository.findById(industryId).map(industry -> {
-                product.setCountry(country);
-                product.setIndustry(industry);
-                return productRepository.save(product);
-            }).orElseThrow(() -> new IndustryNotFoundException(industryId));
-        }).orElseThrow(() -> new CountryNotFoundException(countryId));
+    @Override
+    public Product addProductByIndustry(Long industryId, Product product) {
+        return industryRepository.findById(industryId).map(industry -> {
+            product.setIndustry(industry);
+            return productRepository.save(product);
+        }).orElseThrow(() -> new IndustryNotFoundException(industryId));
     }
     
    
+    @Override
     public Product addProduct(Product product) {
         return productRepository.save(product);
     }
@@ -76,14 +64,7 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(Long id, Product product) {
         return productRepository.findById(id).map(existingProduct -> {
             existingProduct.setName(product.getName());
-            existingProduct.setHsCode(product.getHsCode());
             existingProduct.setDescription(product.getDescription());
-            if (product.getCountry() != null) {
-                existingProduct.setCountry(product.getCountry());
-            }
-            if (product.getIndustry() != null) {
-                existingProduct.setIndustry(product.getIndustry());
-            }
             return productRepository.save(existingProduct);
         }).orElseThrow(() -> new ProductNotFoundException(id));
     }

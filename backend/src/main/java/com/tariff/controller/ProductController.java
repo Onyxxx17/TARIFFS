@@ -27,11 +27,6 @@ public class ProductController {
         return productService.getProduct(id);
     }
     
-    @GetMapping("/country/{countryId}")
-    public List<Product> getProductsByCountry(@PathVariable Long countryId) {
-        return productService.getProductsByCountryId(countryId);
-    }
-    
     @GetMapping("/industry/{industryId}")
     public List<Product> getProductsByIndustry(@PathVariable Long industryId) {
         return productService.getProductsByIndustryId(industryId);
@@ -42,12 +37,11 @@ public class ProductController {
         return productService.addProduct(product);
     }
     
-    @PostMapping("/country/{countryId}/industry/{industryId}")
-    public Product createProductWithCountryAndIndustry(
-            @PathVariable Long countryId,
+    @PostMapping("/industry/{industryId}")
+    public Product createProductWithIndustry(
             @PathVariable Long industryId,
             @RequestBody Product product) {
-        return productService.addProductByCountryAndIndustry(countryId, industryId, product);
+        return productService.addProductByIndustry(industryId, product);
     }
     
     @PutMapping("/{id}")
