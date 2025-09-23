@@ -1,5 +1,5 @@
 //import Layout from "../layouts/Layout";
-import TariffCalculatorSection from "../TariffCalculationSection";
+import TariffCalculatorSection from "../components/TariffCalculationSection";
 
 export default function HomePage() {
   return (

@@ -1,6 +1,7 @@
 package com.tariff.service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,44 +10,56 @@ import com.tariff.dto.request.TariffCalculationRequest;
 import com.tariff.dto.response.TariffCalculationResponse;
 import com.tariff.entity.Country;
 import com.tariff.entity.TariffRule;
+import com.tariff.exception.TariffRuleNotFoundException;
 import com.tariff.repository.CountryRepository;
 import com.tariff.repository.TariffRuleRepository;
 
 @Service
 public class TariffCalculationService {
-    
+
     @Autowired
     private TariffRuleRepository tariffRuleRepository;
 
     @Autowired
     private CountryRepository countryRepository;
 
-    public TariffCalculationResponse calculateTariff(TariffCalculationRequest request){
+    public TariffCalculationResponse calculateTariff(TariffCalculationRequest request) {
         BigDecimal quantity = new BigDecimal(request.getQuantity());
         BigDecimal importValue = request.getUnitCost().multiply(quantity);
-        
-        countryRepository.findById(request.getToCountryId())
-                        .orElseThrow(() -> new RuntimeException("To country not found"));
 
-        if (request.getFromCountryId() != null) {
-            countryRepository.findById(request.getFromCountryId())
-                            .orElseThrow(() -> new RuntimeException("From country not found"));
+        // countryRepository.findById(request.getToCountry())
+        //         .orElseThrow(() -> new RuntimeException("To country not found"));
+
+        // if (request.getFromCountry() != null) {
+        //     countryRepository.findById(request.getFromCountry())
+        //             .orElseThrow(() -> new RuntimeException("From country not found"));
+        // }
+
+        Optional<Country> fromCountryOpt = countryRepository.findByName(request.getFromCountry());
+        Optional<Country> toCountryOpt = countryRepository.findByName(request.getToCountry());
+
+        if (fromCountryOpt.isEmpty() || toCountryOpt.isEmpty()) {
+            throw new RuntimeException("Country not found");
         }
+        
+        String fromCountryId = fromCountryOpt.get().getCountryCode();
+        String toCountryId = toCountryOpt.get().getCountryCode();
 
         TariffRule rule = tariffRuleRepository.findApplicableTariffRule(
-            request.getFromCountryId(), 
-            request.getToCountryId(),   
-            request.getProductId(),  
-            request.getEffectiveYear()        
+                fromCountryId,
+                toCountryId,
+                request.getProductId(),
+                request.getEffectiveYear()
         );
-        
-        if (rule == null){
-            return new TariffCalculationResponse(BigDecimal.ZERO, BigDecimal.ZERO);
+
+        if (rule == null) {
+            throw new TariffRuleNotFoundException(request.getFromCountry(),request.getToCountry(),request.getEffectiveYear(),request.getProductId());
         }
 
         BigDecimal rate = rule.getRate();
-        BigDecimal calculatedTariff = importValue.add(importValue.multiply(rate));
+        BigDecimal tariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
+        BigDecimal totalCost = importValue.add(tariff);
 
-        return new TariffCalculationResponse(rate, calculatedTariff);
+        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, totalCost);
     }
-}       
+}

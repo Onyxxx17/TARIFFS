@@ -9,4 +9,8 @@ public class TariffRuleNotFoundException extends RuntimeException{
     public TariffRuleNotFoundException(Long id) {
         super("Could not find tariff rule" + id);
     } 
+
+    public TariffRuleNotFoundException(String fromCountry, String toCountry, int year, Long product_id){
+        super("Could not find applicable tariff rate for product code " + product_id + " from " + fromCountry + " to " + toCountry + " in " + year);
+    }
 }

@@ -279,10 +279,10 @@ POST http://localhost:8080/api/tariffs/calculate
 Content-Type: application/json
 
 {
-  "fromCountryId": null,
-  "toCountryId": "C392",
-  "productId": 10121,
+  "fromCountry": "North Korea",
+  "toCountry": "United States of America",
+  "productId": 10129,
   "unitCost": 100,
   "quantity": 50,
-  "effectiveYear": 2021
+  "effectiveYear": 2025
 }
