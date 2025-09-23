@@ -1,33 +1,33 @@
-package com.tariff.config;
+// package com.tariff.config;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+// import java.math.BigDecimal;
+// import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.CommandLineRunner;
+// import org.springframework.stereotype.Component;
 
-import com.tariff.entity.Country;
-import com.tariff.entity.Category;
-import com.tariff.entity.TariffRule;
-import com.tariff.repository.CountryRepository;
-import com.tariff.repository.CategoryRepository;
-import com.tariff.repository.TariffRuleRepository;
+// import com.tariff.entity.Country;
+// import com.tariff.entity.Category;
+// import com.tariff.entity.TariffRule;
+// import com.tariff.repository.CountryRepository;
+// import com.tariff.repository.CategoryRepository;
+// import com.tariff.repository.TariffRuleRepository;
 
-// @Component
-public class TariffRuleLoader implements CommandLineRunner {
+// // @Component
+// public class TariffRuleLoader implements CommandLineRunner {
 
-    @Autowired
-    private TariffRuleRepository tariffRuleRepository;
+//     @Autowired
+//     private TariffRuleRepository tariffRuleRepository;
 
-    @Autowired
-    private CountryRepository countryRepository;
+//     @Autowired
+//     private CountryRepository countryRepository;
 
-    @Autowired
-    private CategoryRepository categoryyRepository;
+//     @Autowired
+//     private CategoryRepository categoryyRepository;
 
-    @Override
-    public void run(String... args) throws Exception {
+//     @Override
+//     public void run(String... args) throws Exception {
         //     LocalDate today = LocalDate.now();
 
         //     Industry electronics = new Industry("Electronics & Technology", "Challenger");
@@ -63,5 +63,5 @@ public class TariffRuleLoader implements CommandLineRunner {
         // tariffRuleRepository.save(rule1);
         // tariffRuleRepository.save(rule2);  
         // tariffRuleRepository.save(rule3);
-    }
-}
+//     }
+// }

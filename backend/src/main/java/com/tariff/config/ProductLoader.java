@@ -1,29 +1,29 @@
-package com.tariff.config;
+// package com.tariff.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.CommandLineRunner;
+// import org.springframework.stereotype.Component;
 
-import com.tariff.entity.Category;
-import com.tariff.entity.Product;
-import com.tariff.repository.CategoryRepository;
-import com.tariff.repository.ProductRepository;
+// import com.tariff.entity.Category;
+// import com.tariff.entity.Product;
+// import com.tariff.repository.CategoryRepository;
+// import com.tariff.repository.ProductRepository;
 
-import java.util.*;
-import java.io.*;
+// import java.util.*;
+// import java.io.*;
 
-@Component
-public class ProductLoader implements CommandLineRunner{
-    @Autowired
-    private ProductRepository productRepository;
+// @Component
+// public class ProductLoader implements CommandLineRunner{
+//     @Autowired
+//     private ProductRepository productRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+//     @Autowired
+//     private CategoryRepository categoryRepository;
 
-    private List<Category> categories = new ArrayList<>();
+//     private List<Category> categories = new ArrayList<>();
 
-    @Override 
-    public void run(String... args) throws Exception {      
+//     @Override 
+//     public void run(String... args) throws Exception {      
         
     //     try{
     //         File file = new File("src/main/java/com/tariff/csvs/categories.csv");
@@ -100,6 +100,6 @@ public class ProductLoader implements CommandLineRunner{
         // } 
         // catch(IOException e) {	
         //     e.printStackTrace();
-        // }
-    }
-}
+//         // }
+//     }
+// }
