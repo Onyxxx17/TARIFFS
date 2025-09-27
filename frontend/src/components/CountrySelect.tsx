@@ -20,11 +20,10 @@ function buildAllCountries(): CountryOption[] {
     .map(([alpha2, name]) => {
       const a3 = countriesLib.alpha2ToAlpha3(alpha2) as string | undefined; 
       if (!a3) return null;                         // skip invalid entries
-      return { name, code: a3.toUpperCase() };      // "RUS"
+      return { name, code: name };                  // Use full country name as code
     })
     .filter(Boolean) as CountryOption[];
 }
-
 
 export default function CountrySelect({
   label,
@@ -70,28 +69,48 @@ export default function CountrySelect({
         <input
           value={q}
           onChange={(e) => {
-            setQ(e.target.value);
+            const newValue = e.target.value;
+            setQ(newValue);
             setOpen(true);
+            
+            // If input is cleared, automatically clear the selection
+            if (newValue.trim() === "") {
+              onPick(null);
+            }
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-200"
+          className="w-full rounded-md border px-3 py-2 pr-8 text-sm focus:outline-none focus:ring focus:ring-blue-200"
         />
+
+        {value && (
+          <button
+            type="button"
+            onClick={() => {
+              onPick(null);
+              setQ("");
+              setOpen(false);
+            }}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 text-lg leading-none"
+          >
+            ×
+          </button>
+        )}
 
         {open && (
           <div className="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-md border bg-white shadow">
             {filtered.map((opt) => (
-              <button
+                              <button
                 key={opt.code}
                 type="button"
                 onClick={() => {
-                  onPick(opt);     // returns { name, code: "SGP" }
+                  onPick(opt);     // returns { name, code: "United States" }
                   setQ(opt.name);  // show name in search bar
                   setOpen(false);
                 }}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50"
               >
-                {opt.name} <span className="text-slate-400">({opt.code})</span>
+                {opt.name}
               </button>
             ))}
             {filtered.length === 0 && (

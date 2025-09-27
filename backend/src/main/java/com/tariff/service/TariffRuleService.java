@@ -29,4 +29,6 @@ public interface TariffRuleService {
     void deleteTariffRule(Long id);
 
     void deleteTariffRule(String fromCountryCode, String toCountryCode, Long productId, Long id);
+
+    List<TariffRule> getTariffRulesByCriteria(String fromCountryName, String toCountryName, Integer effectiveYear, String productName, Long productId);
 }

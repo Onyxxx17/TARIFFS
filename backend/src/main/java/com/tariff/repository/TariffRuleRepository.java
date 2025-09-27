@@ -31,19 +31,19 @@ public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
     List<TariffRule> findByFromCountryCountryCodeAndEffectiveYearBetween(String fromCountryCode, int startYear, int endYear);
     List<TariffRule> findByToCountryCountryCodeAndEffectiveYearBetween(String toCountryCode, int startYear, int endYear);
 
-    @Query(value = """
-        SELECT * FROM tariff_rule
-        WHERE (from_country_id = :fromCountryId OR from_country_id IS NULL)
-          AND to_country_id = :toCountryId
-          AND product_id = :productId
-          AND effective_year = :effectiveYear
-        ORDER BY CASE WHEN from_country_id IS NOT NULL THEN 1 ELSE 2 END
-        LIMIT 1
-        """, nativeQuery = true)
-    TariffRule findApplicableTariffRule(
-        @Param("fromCountryId") String fromCountryId,
-        @Param("toCountryId") String toCountryId,
-        @Param("productId") Long productId,
-        @Param("effectiveYear") Integer effectiveYear
-    );
+    @Query("SELECT tr FROM TariffRule tr " +
+       "LEFT JOIN tr.fromCountry fc " +
+       "LEFT JOIN tr.toCountry tc " +
+       "LEFT JOIN tr.product p " +
+       "WHERE (:fromCountryName IS NULL OR :fromCountryName = '' OR fc.name = :fromCountryName) " +
+       "AND (:toCountryName IS NULL OR :toCountryName = '' OR tc.name = :toCountryName) " +
+       "AND (:effectiveYear IS NULL OR tr.effectiveYear = :effectiveYear) " +
+       "AND (:productName IS NULL OR :productName = '' OR p.name = :productName) " +
+       "AND (:productId IS NULL OR p.id = :productId)")
+        List<TariffRule> findByMultipleCriteria(@Param("fromCountryName") String fromCountryName,
+                                            @Param("toCountryName") String toCountryName,
+                                            @Param("effectiveYear") Integer effectiveYear,
+                                            @Param("productName") String productName,
+                                            @Param("productId") Long productId);
+   
 }

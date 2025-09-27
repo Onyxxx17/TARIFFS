@@ -214,4 +214,9 @@ public class TariffRuleServiceImpl implements TariffRuleService {
         }
         tariffRuleRepository.deleteById(id);
     }
+
+    @Override
+    public List<TariffRule> getTariffRulesByCriteria(String fromCountryName, String toCountryName, Integer effectiveYear, String productName, Long productId) {
+        return tariffRuleRepository.findByMultipleCriteria(fromCountryName, toCountryName, effectiveYear, productName, productId);
+    }
 }

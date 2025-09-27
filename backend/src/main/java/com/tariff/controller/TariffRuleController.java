@@ -129,4 +129,14 @@ public class TariffRuleController {
         tariffRuleService.deleteTariffRule(fromCountryCode, toCountryCode, productId, id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/search")
+    public List<TariffRule> getTariffRulesByCriteria(
+            @RequestParam(required = false) String fromCountryName,
+            @RequestParam(required = false) String toCountryName,
+            @RequestParam(required = false) Integer effectiveYear,
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) Long productId) {
+        return tariffRuleService.getTariffRulesByCriteria(fromCountryName, toCountryName, effectiveYear, productName, productId);
+    }
 }
