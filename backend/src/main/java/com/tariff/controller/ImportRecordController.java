@@ -2,11 +2,15 @@ package com.tariff.controller;
 
 import com.tariff.entity.ImportRecord;
 import com.tariff.service.ImportRecordService;
+
+import io.swagger.v3.oas.annotations.Hidden;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Hidden
 @RestController
 @RequestMapping("/api/import-records")
 public class ImportRecordController {

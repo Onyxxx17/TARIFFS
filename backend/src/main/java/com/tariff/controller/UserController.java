@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 
-@Hidden
+
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,8 +28,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-    // --- Get all users ---
+    
     // @GetMapping
     // public List<User> getAllUsers() {
     //     return userService.listUser();
@@ -49,24 +48,27 @@ public class UserController {
     //                .orElse(ResponseEntity.notFound().build());
     // }
 
-    // --- Create user ---
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.addUser(user);
-    }
+//     // --- Create user ---
+//     @Hidden
+//     @PostMapping
+//     public User createUser(@RequestBody User user) {
+//         return userService.addUser(user);
+//     }
 
-    // --- Update user ---
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
-    }
+//     // --- Update user ---
+//     @Hidden
+//     @PutMapping("/{id}")
+//     public User updateUser(@PathVariable Long id, @RequestBody User user) {
+//         return userService.updateUser(id, user);
+//     }
 
     // --- Delete user ---
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
-    }
+//     @Hidden
+//     @DeleteMapping("/{id}")
+//     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+//         userService.deleteUser(id);
+//         return ResponseEntity.ok().build();
+//     }
 
     // --- Signup ---
     @PostMapping("/signup")
