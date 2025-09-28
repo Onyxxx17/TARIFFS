@@ -274,3 +274,16 @@ DELETE http://localhost:8080/api/import-records/1
 
 ### Delete import record with product and user
 DELETE http://localhost:8080/api/import-records/product/1/user/1/1
+
+### Calculation Test
+POST http://localhost:8080/api/tariffs/calculate
+Content-Type: application/json
+
+{
+  "fromCountry": "North Korea",
+  "toCountry": "United States of America",
+  "productId": 10129,
+  "unitCost": 100,
+  "quantity": 50,
+  "effectiveYear": 2025
+}

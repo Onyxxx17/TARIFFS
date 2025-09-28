@@ -65,7 +65,6 @@ public class TariffRule {
     @Column(name = "effective_year", columnDefinition = "INTEGER")
     private int effectiveYear;
     
-
     // Constructor with all fields
     public TariffRule(BigDecimal rate, BigDecimal additionalFee,
                      int effectiveYear) {
