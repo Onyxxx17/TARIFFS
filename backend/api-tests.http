@@ -125,7 +125,8 @@ Content-Type: application/json
 
 {
   "username": "john_doe",
-  "password": "password123",
+  "email": "john@example.com",
+  "password": "$Password12345",
   "role": "USER"
 }
 

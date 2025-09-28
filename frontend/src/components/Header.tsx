@@ -28,17 +28,20 @@ export default function Header() {
           TARIFF
         </a>
 
-        <nav className="hidden md:flex gap-30 text-slate-600">
-          <a className="hover:text-slate-900" href="#">
+         <nav className="hidden md:flex items-center gap-8 text-slate-600">
+          <a className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" href="/">
             Home
           </a>
-          <a className="hover:text-slate-900" href="#">
+          <a className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" href="/dashboard">
+            Dashboard
+          </a>
+          <a className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" href="/features">
             Features
           </a>
-          <a className="hover:text-slate-900" href="#">
+          <a className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" href="/blog">
             Blog
           </a>
-          <a className="hover:text-slate-900" href="#">
+          <a className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" href="/contact">
             Contact
           </a>
         </nav>
@@ -56,6 +59,14 @@ export default function Header() {
           >
             Sign up
           </Link>
+          {/* <div className="flex items-center gap-3">
+          <button
+            onClick={handleLogout}
+            className="px-5 py-2.5 rounded-lg bg-gradient-to-b from-red-600 to-red-700 text-white text-sm font-semibold shadow-[0_8px_18px_rgba(239,68,68,.35)] hover:from-red-700 hover:to-red-800 transition-colors"
+          >
+            Logout
+          </button>
+        </div> */}
         </div>
       </div>
     </header>

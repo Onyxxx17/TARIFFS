@@ -13,34 +13,44 @@ import com.tariff.repository.UserRepository;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-    
-    private UserRepository userRepository;
-    
+
+    private final UserRepository userRepository;
+
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    
+
     @Override
     public List<User> listUser() {
         return userRepository.findAll();
     }
-    
+
     @Override
     public User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
-    
-   
+
+    @Override
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-    
+
+    @Override
+    public Optional<User> findByEmail(String email) {   // <-- added
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {  // <-- added
+        return userRepository.findByUsername(username);
+    }
+
     @Override
     public User addUser(User user) {
         return userRepository.save(user);
     }
-    
+
     @Override
     public User updateUser(Long id, User user) {
         return userRepository.findById(id).map(existingUser -> {
@@ -50,7 +60,7 @@ public class UserServiceImpl implements UserService {
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new UserNotFoundException(id));
     }
-    
+
     @Override
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {

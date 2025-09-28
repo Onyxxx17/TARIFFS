@@ -36,7 +36,7 @@ public class User {
     private String email;
     
     @Column(nullable = false)
-    @JsonIgnore  // Don't expose password in JSON responses
+    //@JsonIgnore  // Don't expose password in JSON responses
     private String password;
     
     private String role;
