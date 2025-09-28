@@ -11,7 +11,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <Header />
-      <main className="pt-[32px] min-h-screen">
+      <main className="pt-[72px] min-h-screen">
         {children ?? <Outlet />} {/* If children provided, show them; otherwise render routed page */}
       </main>
       <Footer />

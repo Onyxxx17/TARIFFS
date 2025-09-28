@@ -51,7 +51,7 @@ export default function Footer({
           <LinkColumn
             title="About Us"
             links={[
-              { label: "Homepage", href: "#" },
+              { label: "Homepage", href: "/" },
               { label: "Solution", href: "#" },
               { label: "About", href: "#" },
               { label: "Contact", href: "#" },
@@ -60,8 +60,8 @@ export default function Footer({
           <LinkColumn
             title="Features"
             links={[
-              { label: "Blog", href: "#" },
-              { label: "Blog Details", href: "#" },
+              { label: "Blog", href: "/blog" },
+              { label: "Blog Details", href: "/blog" },
               { label: "Review", href: "#" },
               { label: "FAQ", href: "#" },
             ]}
