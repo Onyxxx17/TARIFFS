@@ -2,8 +2,11 @@ package com.tariff.controller;
 
 import com.tariff.entity.User;
 import com.tariff.service.UserService;
-import com.tariff.DTO.SignupRequest;
-import com.tariff.DTO.LoginRequest;
+
+import io.swagger.v3.oas.annotations.Hidden;
+
+import com.tariff.dto.SignupRequest;
+import com.tariff.dto.LoginRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 
+@Hidden
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:5173")

@@ -1,4 +1,4 @@
-package com.tariff.DTO;
+package com.tariff.dto;
 
 public record SignupRequest(
     String username,    

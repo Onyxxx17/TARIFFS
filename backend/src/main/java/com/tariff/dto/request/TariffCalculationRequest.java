@@ -2,13 +2,26 @@ package com.tariff.dto.request;
 
 import java.math.BigDecimal;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class TariffCalculationRequest {
 
+    @Schema(description = "Exporter country ID (nullable for MFN tariffs)")
     private String fromCountry;
+
+    @Schema(description = "Importer country ID")
     private String toCountry;
+
+    @Schema(description = "Product ID")
     private Long productId;
+
+    @Schema(description = "Unit cost of the product")
     private BigDecimal unitCost;
+
+    @Schema(description = "Quantity of product")
     private Integer quantity;
+
+    @Schema(description = "Year for which tariff is applied")
     private Integer effectiveYear;
 
     public String getFromCountry() {
