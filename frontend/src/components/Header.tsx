@@ -50,6 +50,7 @@ export default function Header() {
           TARIFF
         </Link>
 
+
         <nav className="hidden md:flex items-center gap-8 text-slate-600">
           <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/">
             Home
@@ -62,6 +63,7 @@ export default function Header() {
           </Link>
           <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/blog">
             Blog
+
           </Link>
           <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/contact">
             Contact
