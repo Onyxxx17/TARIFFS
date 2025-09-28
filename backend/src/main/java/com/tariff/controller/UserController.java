@@ -1,6 +1,7 @@
 package com.tariff.controller;
 
 import com.tariff.entity.User;
+import com.tariff.exception.UserAlreadyExistsException;
 import com.tariff.service.UserService;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -29,24 +30,24 @@ public class UserController {
     }
 
     // --- Get all users ---
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.listUser();
-    }
+    // @GetMapping
+    // public List<User> getAllUsers() {
+    //     return userService.listUser();
+    // }
 
     // --- Get user by ID ---
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUser(id);
-    }
+    // @GetMapping("/{id}")
+    // public User getUserById(@PathVariable Long id) {
+    //     return userService.getUser(id);
+    // }
 
     // --- Get user by username ---
-    @GetMapping("/username/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        Optional<User> user = userService.getUserByUsername(username);
-        return user.map(ResponseEntity::ok)
-                   .orElse(ResponseEntity.notFound().build());
-    }
+    // @GetMapping("/username/{username}")
+    // public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+    //     Optional<User> user = userService.getUserByUsername(username);
+    //     return user.map(ResponseEntity::ok)
+    //                .orElse(ResponseEntity.notFound().build());
+    // }
 
     // --- Create user ---
     @PostMapping
@@ -70,6 +71,12 @@ public class UserController {
     // --- Signup ---
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
+
+        Optional<User> existing = userService.findByEmail(request.email());
+        if (existing.isPresent()) {
+            throw new UserAlreadyExistsException(request.email());
+        }
+
         // Map DTO to entity in correct order
         User user = new User(
             request.username(),   // username first
