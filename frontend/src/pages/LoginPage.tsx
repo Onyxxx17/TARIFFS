@@ -32,7 +32,7 @@ export default function LoginPage() {
       const data = await response.json();
       localStorage.setItem("token", data.token);
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     } finally {

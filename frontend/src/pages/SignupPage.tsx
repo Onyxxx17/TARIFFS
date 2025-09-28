@@ -38,7 +38,7 @@ export default function SignupPage() {
         }
       }
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
