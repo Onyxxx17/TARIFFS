@@ -24,18 +24,17 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/users", {
+      const response = await fetch("http://localhost:8080/api/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password, role }),
       });
 
+      const body = await response.json().catch(() => null);
+
       if (!response.ok) {
-        if (response.status === 409) {
-          throw new Error("Email or username already exists");
-        } else {
-          throw new Error("Signup failed. Please try again.");
-        }
+        setError(body?.message || body?.error || "Signup failed");
+        return;
       }
 
       navigate("/");

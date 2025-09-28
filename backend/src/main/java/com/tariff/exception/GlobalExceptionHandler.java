@@ -70,7 +70,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserAlreadyExistsException(
+            UserAlreadyExistsException ex, WebRequest request) {
 
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.CONFLICT.value());
+        errorResponse.put("error", "Conflict");
+        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("path", request.getDescription(false).replace("uri=", ""));
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
     @ExceptionHandler(TariffRuleNotFoundException.class)
 public ResponseEntity<Map<String, Object>> handleTariffRuleNotFoundException(
         TariffRuleNotFoundException ex, WebRequest request) {
