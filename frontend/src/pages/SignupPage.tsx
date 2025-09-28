@@ -46,16 +46,16 @@ export default function SignupPage() {
     }
   }
 
-  const inputStyle = {
-    display: "block",
-    marginBottom: "1rem",
-    width: "100%",
-    padding: "0.75rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "1rem",
-    boxSizing: "border-box",
-  };
+  const inputStyle: React.CSSProperties = {
+  display: "block",
+  marginBottom: "16px",
+  width: "100%",
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  fontSize: "16px",
+  boxSizing: "border-box", 
+};
 
   return (
     <div
