@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -38,7 +38,15 @@ export default function SignupPage() {
         }
       }
 
-      navigate("/dashboard");
+      // Navigate to login page with user details
+      navigate("/login", {
+        state: {
+          username,
+          email,
+          password,
+          message: "Account created successfully! You can now log in."
+        }
+      });
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -133,6 +141,33 @@ export default function SignupPage() {
           {error}
         </p>
       )}
+      
+      <div style={{ 
+        textAlign: "center", 
+        marginTop: "2rem", 
+        paddingTop: "1.5rem", 
+        borderTop: "1px solid #ddd" 
+      }}>
+        <p style={{ 
+          margin: "0", 
+          color: "#666", 
+          fontSize: "0.9rem" 
+        }}>
+          Already have an account?{" "}
+          <Link 
+            to="/login" 
+            style={{ 
+              color: "#007bff", 
+              textDecoration: "none", 
+              fontWeight: "600" 
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+            onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+          >
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

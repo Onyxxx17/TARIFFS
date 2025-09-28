@@ -1,29 +1,69 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Pre-fill form if coming from signup
+  useEffect(() => {
+    if (location.state) {
+      const { username, email, password: userPassword, message } = location.state;
+      if (username) setUsernameOrEmail(username);
+      if (userPassword) setPassword(userPassword);
+      if (message) setSuccessMessage(message);
+      
+      // Clear the state to prevent issues on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccessMessage("");
 
     try {
-      const response = await fetch("http://localhost:8080/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      // Determine if input is email or username
+      const isEmail = usernameOrEmail.includes("@");
+      
+      let response;
+      
+      if (isEmail) {
+        // Try login with email
+        response = await fetch("http://localhost:8080/api/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: usernameOrEmail, password }),
+        });
+      } else {
+        // Try login with username - send as both email and identifier
+        response = await fetch("http://localhost:8080/api/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier: usernameOrEmail, password }),
+        });
+        
+        // If backend doesn't support identifier field, try with email field
+        if (!response.ok && response.status === 400) {
+          response = await fetch("http://localhost:8080/api/users/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: usernameOrEmail, password }),
+          });
+        }
+      }
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("Invalid email or password");
+          throw new Error("Invalid username/email or password");
         } else {
           throw new Error("Login failed. Please try again.");
         }
@@ -32,7 +72,7 @@ export default function LoginPage() {
       const data = await response.json();
       localStorage.setItem("token", data.token);
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -53,12 +93,27 @@ export default function LoginPage() {
       }}
     >
       <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>Login</h2>
+      
+      {successMessage && (
+        <div style={{
+          backgroundColor: "#d4edda",
+          color: "#155724",
+          padding: "0.75rem",
+          borderRadius: "4px",
+          marginBottom: "1rem",
+          textAlign: "center",
+          border: "1px solid #c3e6cb"
+        }}>
+          {successMessage}
+        </div>
+      )}
+
       <form onSubmit={handleLogin}>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username or Email"
+          value={usernameOrEmail}
+          onChange={(e) => setUsernameOrEmail(e.target.value)}
           required
           style={{
             display: "block",
@@ -118,6 +173,33 @@ export default function LoginPage() {
           {error}
         </p>
       )}
+      
+      <div style={{ 
+        textAlign: "center", 
+        marginTop: "2rem", 
+        paddingTop: "1.5rem", 
+        borderTop: "1px solid #ddd" 
+      }}>
+        <p style={{ 
+          margin: "0", 
+          color: "#666", 
+          fontSize: "0.9rem" 
+        }}>
+          Don't have an account?{" "}
+          <Link 
+            to="/signup" 
+            style={{ 
+              color: "#007bff", 
+              textDecoration: "none", 
+              fontWeight: "600" 
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+            onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+          >
+            Sign up here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
