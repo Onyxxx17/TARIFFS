@@ -15,9 +15,12 @@ export default function LoginPage() {
   useEffect(() => {
     if (location.state) {
       const { username, email, password: userPassword, message } = location.state;
+      console.log(username)
       if (username) setUsernameOrEmail(username);
+      if (email) setUsernameOrEmail(email);
       if (userPassword) setPassword(userPassword);
       if (message) setSuccessMessage(message);
+      // console.log(location.state)
       
       // Clear the state to prevent issues on refresh
       window.history.replaceState({}, document.title);
@@ -33,6 +36,8 @@ export default function LoginPage() {
     try {
       // Determine if input is email or username
       const isEmail = usernameOrEmail.includes("@");
+      console.log(usernameOrEmail)
+     
       
       let response;
       
@@ -48,7 +53,7 @@ export default function LoginPage() {
         response = await fetch("http://localhost:8080/api/users/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identifier: usernameOrEmail, password }),
+          body: JSON.stringify({ email: usernameOrEmail, password }),
         });
         
         // If backend doesn't support identifier field, try with email field

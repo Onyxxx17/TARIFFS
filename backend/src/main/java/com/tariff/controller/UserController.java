@@ -79,19 +79,54 @@ public class UserController {
     }
 
     // --- Login ---
+    // --- Login ---
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<User> userOpt = userService.findByEmail(request.email());
-
-        if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.password())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body(Map.of("error", "Invalid credentials"));
+        Optional<User> userOpt = Optional.empty();
+        
+        // Check if email is provided and not empty
+        if (request.email() != null && !request.email().trim().isEmpty()) {
+            // Login with email
+            userOpt = userService.findByEmail(request.email());
+            
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                    .body(Map.of("error", "Invalid username/email or password"));
+            }
+        } 
+        // Check if username is provided and not empty
+        else if (request.username() != null && !request.username().trim().isEmpty()) {
+            // Login with username
+            userOpt = userService.findByUsername(request.username());
+            
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                    .body(Map.of("error", "Invalid username/email or password"));
+            }
+        } 
+        // Neither email nor username provided
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(Map.of("error", "Email or username is required"));
         }
 
-        // later, replace "dummy-jwt-token" with a real JWT
+        // Check password
+        User user = userOpt.get();
+        if (!user.getPassword().equals(request.password())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(Map.of("error", "Invalid username/email or password"));
+        }
+
+        // Login successful
         return ResponseEntity.ok(Map.of(
             "token", "dummy-jwt-token",
-            "message", "Login successful"
+            "message", "Login successful",
+            "user", Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "role", user.getRole()
+            )
         ));
     }
 }

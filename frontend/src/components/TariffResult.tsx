@@ -56,9 +56,9 @@ export default function TariffResult({
           <p>Year: {year}</p>
           <h2>Description: {description}</h2>
           <p>HS Code: {hsCode}</p>
-          <p>Product Value: {productValue}</p>
-          <p>Tariff Rate: {tariffRate}</p>
-          <p>Total Price: {totalPrice}</p>
+          <p>Product Value: ${productValue}/unit</p>
+          <p>Tariff Rate: {tariffRate}%</p>
+          <p>Total Price: ${totalPrice}</p>
           </p>
 
         </div>

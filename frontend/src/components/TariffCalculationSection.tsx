@@ -72,6 +72,26 @@ export default function TariffCalculatorSection() {
     setShowResult(false);
   };
 
+  // Handle exclusive product description input
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    setDesc(value);
+    // If user starts typing description, clear HS code
+    if (value.trim().length > 0 && hs.trim().length > 0) {
+      setHs("");
+    }
+  };
+
+  // Handle exclusive HS code input
+  const handleHsCodeChange = (e) => {
+    const value = e.target.value;
+    setHs(value);
+    // If user starts typing HS code, clear description
+    if (value.trim().length > 0 && desc.trim().length > 0) {
+      setDesc("");
+    }
+  };
+
   // show sheet
   const submit = () => {
     const errors = {};
@@ -93,12 +113,14 @@ export default function TariffCalculatorSection() {
       errors.productValue = "Product value is required";
     }
     
-    // Validate that either description or HS code is provided
+    // Validate that exactly one of description or HS code is provided
     const hasDescription = desc.trim().length > 0;
     const hasHsCode = hs.trim().length > 0;
     
     if (!hasDescription && !hasHsCode) {
       errors.productInfo = "Either product description or HS code is required";
+    } else if (hasDescription && hasHsCode) {
+      errors.productInfo = "Please provide either product description or HS code, not both";
     }
     
     // If there are validation errors, don't submit
@@ -321,12 +343,18 @@ export default function TariffCalculatorSection() {
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">
                   Product Description
+                  {hs.trim().length > 0 && (
+                    <span className="text-slate-400 ml-1">(disabled - HS code provided)</span>
+                  )}
                 </label>
                 <input
                   value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
+                  onChange={handleDescriptionChange}
+                  disabled={hs.trim().length > 0}
                   placeholder="e.g., grains (Maize, Wheat, Rice)"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  className={`w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 ${
+                    hs.trim().length > 0 ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''
+                  }`}
                 />
               </div>
 
@@ -341,12 +369,18 @@ export default function TariffCalculatorSection() {
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">
                   HS Code
+                  {desc.trim().length > 0 && (
+                    <span className="text-slate-400 ml-1">(disabled - description provided)</span>
+                  )}
                 </label>
                 <input
                   value={hs}
-                  onChange={(e) => setHs(e.target.value)}
+                  onChange={handleHsCodeChange}
+                  disabled={desc.trim().length > 0}
                   placeholder="e.g., 010378"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  className={`w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 ${
+                    desc.trim().length > 0 ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''
+                  }`}
                 />
               </div>
 
@@ -424,7 +458,7 @@ export default function TariffCalculatorSection() {
             description={desc || ""}
             hsCode={hs || ""}
             productValue = {productValue}
-            tariffRate = {currentTariffRate / 100}
+            tariffRate = {currentTariffRate}
             totalPrice = {quantity * productValue * (currentTariffRate / 100 + 1)}
             onReset={() => setShowResult(false)}
             onEdit={() => window.scrollTo({ top: 0, behavior: "smooth" })}
