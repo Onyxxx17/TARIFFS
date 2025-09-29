@@ -104,11 +104,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Stop existing service
-            sudo systemctl stop tariff || true
+            # Reload daemon
+            sudo systemctl daemon-reload
             
             # Start service (systemd file unchanged)
-            sudo systemctl start tariff
+            sudo systemctl start tariff.service
             sudo systemctl enable tariff
             
             # Wait for startup and check
