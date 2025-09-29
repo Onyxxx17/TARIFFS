@@ -35,7 +35,13 @@ export default function TariffResult({
           <strong>Tariff Rate:</strong> {tariffResult.tariffRate}%
         </p>
         <p>
+          <strong>Total Cost Before Tariff:</strong> ${tariffResult.totalCost - tariffResult.calculatedTariff}
+        </p>
+        <p>
           <strong>Calculated Tariff:</strong> ${tariffResult.calculatedTariff}
+        </p>
+        <p>
+          <strong>Total Cost After Tariff:</strong> ${tariffResult.totalCost}
         </p>
         {onReset && (
           <button onClick={onReset} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">

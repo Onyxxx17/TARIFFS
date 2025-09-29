@@ -283,7 +283,7 @@ Content-Type: application/json
   "fromCountry": "North Korea",
   "toCountry": "United States of America",
   "productId": 10129,
-  "unitCost": 100,
-  "quantity": 50,
+  "unitCost": 25,
+  "quantity": 1000,
   "effectiveYear": 2025
 }
