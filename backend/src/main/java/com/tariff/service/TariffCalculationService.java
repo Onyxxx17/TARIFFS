@@ -58,8 +58,10 @@ public class TariffCalculationService {
 
         BigDecimal rate = rule.getRate();
         BigDecimal tariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
+        
         BigDecimal totalCost = importValue.add(tariff);
+        BigDecimal calculatedTariff = totalCost.subtract(importValue);
 
-        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, totalCost);
+        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, calculatedTariff,totalCost);
     }
 }
