@@ -2,7 +2,7 @@ import { useState } from "react";
 import GeoChart from "./GeoCharts";
 import CountrySelect, { type CountryOption } from "./CountrySelect";
 import TariffResult from "./TariffResult";
-
+import { BASE_URL } from "../config";
 type Picked = { name: string; code?: string } | null;
 
 export default function TariffCalculatorSection() {
@@ -100,8 +100,8 @@ export default function TariffCalculatorSection() {
   };
 
   try {
-    const response = await fetch(
-      "http://localhost:8080/api/tariffs/calculate",
+    const response = await fetch(BASE_URL + 
+      "/api/tariffs/calculate",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
