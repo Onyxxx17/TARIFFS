@@ -71,7 +71,16 @@ export default function HomePage() {
             </p>
             <div className="mt-8">
               <a
-                href="/app"
+                onClick={(e) => {
+                  e.preventDefault(); 
+                  const target = document.getElementById("tariff-calculation");
+                  if (target) {
+                    window.scrollTo({
+                      top: target.offsetTop - 70, 
+                      behavior: "smooth", 
+                    });
+                  }
+                }}
                 className="px-7 py-3 rounded-full bg-white text-[#1b4f9c] font-medium shadow-lg hover:bg-white/95 transition"
               >
                 Get Started
@@ -115,9 +124,8 @@ export default function HomePage() {
             </ResponsiveContainer>
           </div>
 
-          
-        {/* Bar chart card */}
-        <div className="bg-white/10 backdrop-blur-md p-5 rounded-xl border border-white/20 shadow-lg w-[240px] -rotate-4 right-70 absolute top-1/3">
+          {/* Bar chart card */}
+          <div className="bg-white/10 backdrop-blur-md p-5 rounded-xl border border-white/20 shadow-lg w-[240px] -rotate-4 right-70 absolute top-1/3">
             <h3 className="text-white text-sm font-medium mb-3">
               U.S. Customs Receipts ($B)
             </h3>
@@ -138,9 +146,8 @@ export default function HomePage() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        
-      </div>
-    </section>
+        </div>
+      </section>
 
       {/* the map and form  */}
       <TariffCalculatorSection />
