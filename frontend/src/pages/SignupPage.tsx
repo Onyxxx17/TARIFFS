@@ -263,10 +263,10 @@ export default function SignupPage() {
           <p className="mt-6 text-center text-sm text-slate-600">
             Already have an account?{" "}
             <Link
-              to="/signup"
+              to="/login"
               className="font-semibold text-[#1E40AF] hover:underline"
             >
-              Sign up
+              Log in
             </Link>
           </p>
         </div>
