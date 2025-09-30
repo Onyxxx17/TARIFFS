@@ -37,7 +37,7 @@ function computeCalloutPosition(
 
 /** English from Natural Earth */
 const getName = (p: any): string =>
-  p?.NAME_EN ?? p?.ADMIN ?? p?.NAME ?? p?.name ?? "Unknown";
+   p?.NAME_EN ?? p?.ADMIN ?? p?.NAME ?? p?.name ?? "Unknown";
 
 /** Return ISO alpha-3 (SGP, USA, CHN) */
 const getAlpha3 = (p: any): string | undefined => {
@@ -77,6 +77,7 @@ export default function GeoChart({
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [label, setLabel] = useState<Callout | null>(null);
 
+  
   // load from /public - custom.geo.json
   useEffect(() => {
     let active = true;
@@ -137,6 +138,7 @@ export default function GeoChart({
         setLabel({ sx, sy, lx, ly, side, text });
 
         // notify parent with unique identifier 
+        
         onPick?.({ name, code: code ?? undefined });
       })
       .selectAll("title")
