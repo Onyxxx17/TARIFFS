@@ -1,3 +1,4 @@
+//Signup Page
 import React, { useState } from "react";
 import { useNavigate,Link } from "react-router-dom";
 import { BASE_URL } from "../config";
@@ -16,7 +17,7 @@ export default function SignupPage() {
   // Password constraints
   function validatePassword(pw: string): string | null {
     if (pw.length < 8) return "Password must be at least 8 characters.";
-    if (!/[A-Z]/.test(pw)) return "Password must contain at least one uppercase letter.";
+    if (!/[A-Z]/.test(pw)) return "Password must contain at least one uppercase letter..";
     if (!/[a-z]/.test(pw)) return "Password must contain at least one lowercase letter.";
     if (!/[0-9]/.test(pw)) return "Password must contain at least one number.";
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(pw)) return "Password must contain at least one special character.";
