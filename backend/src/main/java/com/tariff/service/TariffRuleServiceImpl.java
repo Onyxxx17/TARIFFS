@@ -2,6 +2,8 @@ package com.tariff.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +32,8 @@ public class TariffRuleServiceImpl implements TariffRuleService {
     }
     
     @Override
-    public List<TariffRule> listTariffRule() {
-        return tariffRuleRepository.findAll();
+    public Page<TariffRule> listTariffRule(Pageable pageable) {
+        return tariffRuleRepository.findAll(pageable);
     }
     
     @Override
@@ -41,35 +43,35 @@ public class TariffRuleServiceImpl implements TariffRuleService {
     }
     
     @Override
-    public List<TariffRule> getTariffRulesByCountryCode(String countryCode) {
+    public Page<TariffRule> getTariffRulesByCountryCode(String countryCode, Pageable pageable) {
         if (!countryRepository.existsById(countryCode)) {
             throw new CountryNotFoundException(countryCode);
         }
-        return tariffRuleRepository.findByFromCountryCountryCodeOrToCountryCountryCode(countryCode, countryCode);
+        return tariffRuleRepository.findByFromCountryCountryCodeOrToCountryCountryCode(countryCode, countryCode, pageable);
     }
     
     @Override
-    public List<TariffRule> getTariffRulesByFromCountryCode(String fromCountryCode) {
+    public Page<TariffRule> getTariffRulesByFromCountryCode(String fromCountryCode, Pageable pageable) {
         if (!countryRepository.existsById(fromCountryCode)) {
             throw new CountryNotFoundException(fromCountryCode);
         }
-        return tariffRuleRepository.findByFromCountryCountryCode(fromCountryCode);
+        return tariffRuleRepository.findByFromCountryCountryCode(fromCountryCode, pageable);
     }
     
     @Override
-    public List<TariffRule> getTariffRulesByToCountryCode(String toCountryCode) {
+    public Page<TariffRule> getTariffRulesByToCountryCode(String toCountryCode, Pageable pageable) {
         if (!countryRepository.existsById(toCountryCode)) {
             throw new CountryNotFoundException(toCountryCode);
         }
-        return tariffRuleRepository.findByToCountryCountryCode(toCountryCode);
+        return tariffRuleRepository.findByToCountryCountryCode(toCountryCode, pageable);
     }
    
     @Override
-    public List<TariffRule> getTariffRulesByProductId(Long productId) {
+    public Page<TariffRule> getTariffRulesByProductId(Long productId, Pageable pageable) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
         }
-        return tariffRuleRepository.findByProductId(productId);
+        return tariffRuleRepository.findByProductId(productId, pageable);
     }
     
     
