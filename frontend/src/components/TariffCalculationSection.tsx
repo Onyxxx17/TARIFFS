@@ -133,7 +133,7 @@ export default function TariffCalculatorSection() {
     : null;
 
   return (
-    <section className="py-10 bg-white">
+    <section id = "tariff-calculation" className="py-10 bg-white">
       <div className="max-w-[1200px] mx-auto px-4">
         {/* Map section header  */}
         <div className="text-center mb-8">
@@ -359,8 +359,6 @@ export default function TariffCalculatorSection() {
           <TariffResult
             tariffResult={tariffResult}
             error = {error}
-            onReset={() => setShowResult(false)}
-            onEdit={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           />
         )}
       </div>
