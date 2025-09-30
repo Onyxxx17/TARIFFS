@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { BASE_URL } from "../config";
 
 export default function SignupPage() {
@@ -262,12 +262,12 @@ export default function SignupPage() {
           {/* Footer */}
           <p className="mt-6 text-center text-sm text-slate-600">
             Already have an account?{" "}
-            <a
-              href="/login"
+            <Link
+              to="/signup"
               className="font-semibold text-[#1E40AF] hover:underline"
             >
-              Sign in
-            </a>
+              Sign up
+            </Link>
           </p>
         </div>
       </div>
