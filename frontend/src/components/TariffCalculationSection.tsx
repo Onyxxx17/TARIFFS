@@ -1,9 +1,21 @@
 import { useState } from "react";
 import GeoChart from "./GeoCharts";
 import CountrySelect, { type CountryOption } from "./CountrySelect";
+import ProductSelect from "./ProductSelect";
 import TariffResult from "./TariffResult";
 import { BASE_URL } from "../config";
+
 type Picked = { name: string; code?: string } | null;
+
+//Set type according to api response
+interface Product {
+  id: number;
+  name: string;
+  category: {
+    id: number;
+    name: string;
+  };
+}
 
 export default function TariffCalculatorSection() {
   // click logic:  To,  From, alternate
@@ -15,8 +27,7 @@ export default function TariffCalculatorSection() {
   const [showResult, setShowResult] = useState(false);
 
   // form fields
-  const [desc, setDesc] = useState("");
-  const [hs, setHs] = useState("");
+  const [product, setProduct] = useState<Product | null>(null);
   const [value, setValue] = useState("");
   const [quantity, setQuantity] = useState("");
 
@@ -53,77 +64,63 @@ export default function TariffCalculatorSection() {
     setTo(null);
     setFrom(null);
     setPhase("to");
-    setDesc("");
-    setHs("");
+    setProduct(null);
     setValue("");
+    setQuantity("");
+    setYear("");
     setShowResult(false);
   };
 
   // show sheet
   const submit = async () => {
-  setError(""); // clear previous error
+    setError(""); // clear previous error
 
-  // Validation
-  if (!from?.name || !to?.name || !hs || !value || !quantity || !year) {
-    setError("All fields except product description are required.");
-    setShowResult(true);
-    setTariffResult(null);
-    return;
-  }
-
-  if(to.name === from.name) {
-    setError("Countries cannot be the same.");
-    setShowResult(true);
-    setTariffResult(null);
-    return;
-  }
-
-  let formattedHs = hs.trim();
-  if (formattedHs.length === 5) {
-    formattedHs = "0" + formattedHs;
-  }
-  if (formattedHs.length !== 6 || !/^\d{6}$/.test(formattedHs)) {
-    setError("HS Code must be exactly 6 digits.");
-    setShowResult(true);
-    setTariffResult(null);
-    return;
-  }
-
-  const payload = {
-    fromCountry: from.name,
-    toCountry: to.name,
-    productId: Number(formattedHs),
-    unitCost: value ? Number(value) : undefined,
-    quantity: quantity ? Number(quantity) : undefined,
-    effectiveYear: year ? Number(year) : undefined,
-    description: desc || undefined,
-  };
-
-  try {
-    const response = await fetch(BASE_URL + 
-      "/api/tariffs/calculate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    const result = await response.json();
-    if (!response.ok) {
-      setError(result.message || "Tariff calculation failed");
+    // Validation
+    if (!from?.name || !to?.name || !product || !value || !quantity || !year) {
+      setError("All fields are required.");
       setShowResult(true);
       setTariffResult(null);
       return;
     }
-    setShowResult(true);
-    setTariffResult(result);
-  } catch (error) {
-    setError("Network error");
-    setShowResult(true);
-    setTariffResult(null);
-  }
-};
+
+    if (to.name === from.name) {
+      setError("Countries cannot be the same.");
+      setShowResult(true);
+      setTariffResult(null);
+      return;
+    }
+
+    const payload = {
+      fromCountry: from.name,
+      toCountry: to.name,
+      productId: product.id,
+      unitCost: Number(value),
+      quantity: Number(quantity),
+      effectiveYear: Number(year),
+    };
+
+    try {
+      const response = await fetch(BASE_URL + "/api/tariffs/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result.message || "Tariff calculation failed");
+        setShowResult(true);
+        setTariffResult(null);
+        return;
+      }
+      setShowResult(true);
+      setTariffResult(result);
+    } catch (error) {
+      setError("Unable to calculate tariff");
+      setShowResult(true);
+      setTariffResult(null);
+    }
+  };
 
   const toValue: CountryOption | null = to
     ? { name: to.name, code: to.code ?? "" }
@@ -133,7 +130,7 @@ export default function TariffCalculatorSection() {
     : null;
 
   return (
-    <section id = "tariff-calculation" className="py-10 bg-white">
+    <section id="tariff-calculation" className="py-10 bg-white">
       <div className="max-w-[1200px] mx-auto px-4">
         {/* Map section header  */}
         <div className="text-center mb-8">
@@ -167,7 +164,7 @@ export default function TariffCalculatorSection() {
           onPick={onCountryPickFromMap}
         />
 
-        {/* “Paper” card */}
+        {/* "Paper" card */}
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm w-200 mx-auto">
           {/* Header */}
           <div className="px-6 pt-6">
@@ -219,7 +216,7 @@ export default function TariffCalculatorSection() {
 
               <div>
                 <label
-                  htmlFor="quantity"
+                  htmlFor="year"
                   className="w-full text-sm font-medium text-gray-700"
                   style={{ fontSize: "12px", marginRight: "10px" }}
                 >
@@ -241,10 +238,6 @@ export default function TariffCalculatorSection() {
                   ))}
                 </select>
               </div>
-
-              {year && (
-                <p className="text-sm text-gray-600">You selected: {year}</p>
-              )}
             </div>
 
             <div className="mt-3 flex items-center gap-3">
@@ -261,7 +254,7 @@ export default function TariffCalculatorSection() {
                 onClick={clearCountries}
                 className="inline-flex items-center px-2 py-1 rounded-md border border-slate-300 text-sm hover:bg-slate-50"
               >
-                Clear
+                Clear All
               </button>
             </div>
           </div>
@@ -279,52 +272,28 @@ export default function TariffCalculatorSection() {
           {/* Details */}
           <div className="px-6 pb-6">
             <div className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Product Description
-                </label>
-                <input
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                  placeholder="e.g., grains (Maize, Wheat, Rice)"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
-
-              {/* OR divider */}
-              <div className="relative text-center my-3 mt-6">
-                <div className="border-t border-slate-200" />
-                <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-2 text-[11px] text-slate-400">
-                  OR
-                </span>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  HS Code
-                </label>
-                <input
-                  value={hs}
-                  onChange={(e) => setHs(e.target.value)}
-                  placeholder="e.g., 010378"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
+              {/* Product Select */}
+              <ProductSelect
+                label="Product"
+                value={product}
+                onPick={setProduct}
+                placeholder="Search by HS code or product name..."
+              />
 
               {/* Product value */}
-              <div className="mt-4 max-w-6xl mx-auto">
+              <div className="mt-4">
                 <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Product Value{" "}
+                  Unit Price{" "}
                   <span className="text-slate-400">(in dollars)</span>
                 </label>
 
                 <input
                   type="number"
                   min={0}
-                  step={1}
+                  step={0.01}
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  placeholder="0"
+                  placeholder="0.00"
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />
               </div>
@@ -340,10 +309,11 @@ export default function TariffCalculatorSection() {
               </button>
               <button
                 onClick={() => {
-                  setDesc("");
-                  setHs("");
+                  setProduct(null);
                   setValue("");
-                  setShowResult(false); //  hide sheet when details reset
+                  setQuantity("");
+                  setYear("");
+                  setShowResult(false);
                 }}
                 className="inline-flex justify-center items-center rounded-lg border border-slate-300 text-slate-700 text-sm px-4 py-2.5 hover:bg-slate-50"
               >
@@ -355,12 +325,7 @@ export default function TariffCalculatorSection() {
         {/* /card */}
 
         {/* Result sheet  */}
-        {showResult && (
-          <TariffResult
-            tariffResult={tariffResult}
-            error = {error}
-          />
-        )}
+        {showResult && <TariffResult tariffResult={tariffResult} error={error} />}
       </div>
     </section>
   );
