@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TariffCalculationRequest {
 
+
     @Schema(description = "Exporter country ID (nullable for MFN tariffs)", example = "North Korea")
+
     private String fromCountry;
 
     @Schema(description = "Importer country ID", example = "United States of America")
