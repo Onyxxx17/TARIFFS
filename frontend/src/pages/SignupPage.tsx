@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {BASE_URL} from "../config";
+import { BASE_URL } from "../config";
+
 export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -12,9 +13,25 @@ export default function SignupPage() {
   const role = "USER"; // default role
   const navigate = useNavigate();
 
+  // Password constraints
+  function validatePassword(pw: string): string | null {
+    if (pw.length < 8) return "Password must be at least 8 characters.";
+    if (!/[A-Z]/.test(pw)) return "Password must contain at least one uppercase letter.";
+    if (!/[a-z]/.test(pw)) return "Password must contain at least one lowercase letter.";
+    if (!/[0-9]/.test(pw)) return "Password must contain at least one number.";
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pw)) return "Password must contain at least one special character.";
+    return null;
+  }
+
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    const pwError = validatePassword(password);
+    if (pwError) {
+      setError(pwError);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -188,6 +205,9 @@ export default function SignupPage() {
                     transition
                   "
               />
+              <p className="mt-1 text-xs text-slate-500">
+                Password must be at least 8 characters, include uppercase, lowercase, number, and special character.
+              </p>
             </div>
 
             <div>
