@@ -6,22 +6,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TariffCalculationRequest {
 
-    @Schema(description = "Exporter country ID (nullable for MFN tariffs)",example="People's Republic of China")
+
+    @Schema(description = "Exporter country ID (nullable for MFN tariffs)", example = "North Korea")
+
     private String fromCountry;
 
-    @Schema(description = "Importer country ID")
+    @Schema(description = "Importer country ID", example = "United States of America")
     private String toCountry;
 
-    @Schema(description = "Product ID")
+    @Schema(description = "Product ID", example = "10129")
     private Long productId;
 
-    @Schema(description = "Unit cost of the product")
+    @Schema(description = "Unit cost of the product", example = "25.0")
     private BigDecimal unitCost;
 
-    @Schema(description = "Quantity of product")
+    @Schema(description = "Quantity of product", example = "1000")
     private Integer quantity;
 
-    @Schema(description = "Year for which tariff is applied")
+    @Schema(description = "Year for which tariff is applied", example = "2025")
     private Integer effectiveYear;
 
     public String getFromCountry() {

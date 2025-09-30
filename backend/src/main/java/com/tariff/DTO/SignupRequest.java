@@ -1,8 +1,13 @@
 package com.tariff.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public record SignupRequest(
-    String username,    
+    @Schema(description = "Username of the new user", example = "demoUser")
+    String username,
+    @Schema(description = "Email of the new user", example = "demo@mail.com")
     String email,
+    @Schema(description = "Password of the new user", example = "demo123")
     String password,
-    String role
+    @Schema(description = "Role of the new user", example = "USER")String role
 ) {}

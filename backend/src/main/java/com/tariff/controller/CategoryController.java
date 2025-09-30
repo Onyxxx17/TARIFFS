@@ -2,6 +2,9 @@ package com.tariff.controller;
 
 import com.tariff.entity.Category;
 import com.tariff.service.CategoryService;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +26,9 @@ public class CategoryController {
     }
     
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Long id) {
+    public Category getCategoryById(
+        @Parameter(description = "ID of the Category", example = "1")
+        @PathVariable Long id) {
         return categoryService.getCategory(id);
     }
     

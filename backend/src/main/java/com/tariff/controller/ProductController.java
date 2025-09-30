@@ -2,6 +2,9 @@ package com.tariff.controller;
 
 import com.tariff.entity.Product;
 import com.tariff.service.ProductService;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +26,16 @@ public class ProductController {
     }
     
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
+    public Product getProductById(
+        @Parameter(description = "ID of Product", example = "10129")
+        @PathVariable Long id) {
         return productService.getProduct(id);
     }
     
     @GetMapping("/category/{categoryId}")
-    public List<Product> getProductsByCategory(@PathVariable Long categoryId) {
+    public List<Product> getProductsByCategory(
+        @Parameter(description = "ID of Category", example = "1")
+        @PathVariable Long categoryId) {
         return productService.getProductsByCategoryId(categoryId);
     }
     

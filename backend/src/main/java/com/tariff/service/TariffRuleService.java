@@ -2,21 +2,23 @@ package com.tariff.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.tariff.entity.TariffRule;
 
 public interface TariffRuleService {
 
-    List<TariffRule> listTariffRule();
+    Page<TariffRule> listTariffRule(Pageable pageable);
 
     TariffRule getTariffRule(Long id);
 
-    List<TariffRule> getTariffRulesByFromCountryCode(String fromCountryCode);
+    Page<TariffRule> getTariffRulesByFromCountryCode(String fromCountryCode, Pageable pageable);
     
-    List<TariffRule> getTariffRulesByToCountryCode(String toCountryCode);
+    Page<TariffRule> getTariffRulesByToCountryCode(String toCountryCode, Pageable pageable);
     
-    List<TariffRule> getTariffRulesByCountryCode(String countryCode); // Returns rules where country is either from or to
+    Page<TariffRule> getTariffRulesByCountryCode(String countryCode, Pageable pageable); // Returns rules where country is either from or to
 
-    List<TariffRule> getTariffRulesByProductId(Long productId);
+    Page<TariffRule> getTariffRulesByProductId(Long productId, Pageable pageable);
 
     TariffRule addTariffRule(TariffRule tariffRule);
 

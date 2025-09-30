@@ -2,6 +2,13 @@ package com.tariff.controller;
 
 import com.tariff.entity.TariffRule;
 import com.tariff.service.TariffRuleService;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,36 +25,52 @@ public class TariffRuleController {
     }
     
     @GetMapping
-    public List<TariffRule> getAllTariffRules() {
-        return tariffRuleService.listTariffRule();
+    public Page<TariffRule> getAllTariffRules(@ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return tariffRuleService.listTariffRule(pageable);
     }
     
     @GetMapping("/{id}")
-    public TariffRule getTariffRuleById(@PathVariable Long id) {
+    public TariffRule getTariffRuleById(
+        @Parameter(description = "ID of tariff rule", example = "2")
+        @PathVariable Long id,
+        @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
         return tariffRuleService.getTariffRule(id);
     }
     
     // Backward compatibility - returns rules where country is either from or to
     @GetMapping("/country/{countryCode}")
-    public List<TariffRule> getTariffRulesByCountry(@PathVariable String countryCode) {
-        return tariffRuleService.getTariffRulesByCountryCode(countryCode);
+    public Page<TariffRule> getTariffRulesByCountry(
+        @Parameter(description = "Country Code", example = "C840")
+        @PathVariable String countryCode,
+        @ParameterObject @PageableDefault(size = 10) Pageable pageable
+        ) {
+        return tariffRuleService.getTariffRulesByCountryCode(countryCode, pageable);
     }
     
     // New endpoint for from country
     @GetMapping("/from-country/{fromCountryCode}")
-    public List<TariffRule> getTariffRulesByFromCountry(@PathVariable String fromCountryCode) {
-        return tariffRuleService.getTariffRulesByFromCountryCode(fromCountryCode);
+    public Page<TariffRule> getTariffRulesByFromCountry(
+        @Parameter(description = "Country Code", example = "C840")
+        @PathVariable String fromCountryCode,
+        @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return tariffRuleService.getTariffRulesByFromCountryCode(fromCountryCode, pageable);
     }
     
     // New endpoint for to country
     @GetMapping("/to-country/{toCountryCode}")
-    public List<TariffRule> getTariffRulesByToCountry(@PathVariable String toCountryCode) {
-        return tariffRuleService.getTariffRulesByToCountryCode(toCountryCode);
+    public Page<TariffRule> getTariffRulesByToCountry(
+        @Parameter(description = "Country Code", example = "C840")
+        @PathVariable String toCountryCode,
+        @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return tariffRuleService.getTariffRulesByToCountryCode(toCountryCode, pageable);
     }
     
     @GetMapping("/product/{productId}")
-    public List<TariffRule> getTariffRulesByProduct(@PathVariable Long productId) {
-        return tariffRuleService.getTariffRulesByProductId(productId);
+    public Page<TariffRule> getTariffRulesByProduct(
+        @Parameter(description = "Product ID", example = "10129")
+        @PathVariable Long productId,
+        @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return tariffRuleService.getTariffRulesByProductId(productId, pageable);
     }
     
     @PostMapping

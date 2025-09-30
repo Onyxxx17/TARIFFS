@@ -2,6 +2,9 @@ package com.tariff.controller;
 
 import com.tariff.entity.Country;
 import com.tariff.service.CountryService;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +26,11 @@ public class CountryController {
     }
     
     @GetMapping("/{countryCode}")
-    public Country getCountryByCode(@PathVariable String countryCode) {
+    public Country getCountryByCode(
+        @Parameter(description = "Country code", example = "C056")
+        @PathVariable String countryCode
+        ) {
+        
         return countryService.getCountry(countryCode);
     }
     

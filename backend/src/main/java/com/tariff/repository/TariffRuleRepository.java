@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,20 +18,20 @@ public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
     // For many-to-one relationship with fromCountry and toCountry
 
     long count();
-    List<TariffRule> findByFromCountryCountryCode(String fromCountryCode);
-    List<TariffRule> findByToCountryCountryCode(String toCountryCode);
-    List<TariffRule> findByFromCountryCountryCodeOrToCountryCountryCode(String fromCountryCode, String toCountryCode);
-    List<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCode(String fromCountryCode, String toCountryCode);
+    Page<TariffRule> findByFromCountryCountryCode(String fromCountryCode, Pageable pageable);
+    Page<TariffRule> findByToCountryCountryCode(String toCountryCode, Pageable pageable);
+    Page<TariffRule> findByFromCountryCountryCodeOrToCountryCountryCode(String fromCountryCode, String toCountryCode, Pageable pageable);
+    Page<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCode(String fromCountryCode, String toCountryCode, Pageable pageable);
     
-    List<TariffRule> findByProductId(Long productId);
-    List<TariffRule> findByFromCountryCountryCodeAndProductId(String fromCountryCode, Long productId);
-    List<TariffRule> findByToCountryCountryCodeAndProductId(String toCountryCode, Long productId);
-    List<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCodeAndProductId(String fromCountryCode, String toCountryCode, Long productId);
+    Page<TariffRule> findByProductId(Long productId, Pageable pageable);
+    Page<TariffRule> findByFromCountryCountryCodeAndProductId(String fromCountryCode, Long productId, Pageable pageable);
+    Page<TariffRule> findByToCountryCountryCodeAndProductId(String toCountryCode, Long productId, Pageable pageable);
+    Page<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCodeAndProductId(String fromCountryCode, String toCountryCode, Long productId, Pageable pageable);
     
     Optional<TariffRule> findByIdAndProductId(Long id, Long productId);
-    List<TariffRule> findByEffectiveYearBetween(int startYear, int endYear);
-    List<TariffRule> findByFromCountryCountryCodeAndEffectiveYearBetween(String fromCountryCode, int startYear, int endYear);
-    List<TariffRule> findByToCountryCountryCodeAndEffectiveYearBetween(String toCountryCode, int startYear, int endYear);
+    Page<TariffRule> findByEffectiveYearBetween(int startYear, int endYear, Pageable pageable);
+    Page<TariffRule> findByFromCountryCountryCodeAndEffectiveYearBetween(String fromCountryCode, int startYear, int endYear, Pageable pageable);
+    Page<TariffRule> findByToCountryCountryCodeAndEffectiveYearBetween(String toCountryCode, int startYear, int endYear, Pageable pageable);
 
     @Query(value = """
         SELECT * FROM tariff_rule
