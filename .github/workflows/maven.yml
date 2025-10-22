@@ -27,9 +27,14 @@ jobs:
 
       - name: Run tests
         env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+         DB_URL: ${{ secrets.DB_URL }}
+         DB_USERNAME: ${{ secrets.DB_USERNAME }}
+         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+         JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+         JWT_EXPIRATION: 86400
+         JWT_REFRESH_EXPIRATION: 604800000
+              
         run: |
           cd backend
           chmod +x mvnw
