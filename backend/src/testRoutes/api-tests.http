@@ -6,9 +6,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "leeleelrlr",
-  "email": "helloworld@gmail.com",
-  "password": "helloWorld123@"
+  "username": "",
+  "email": "",
+  "password": ""
 }
 
 ### 2. User Login
@@ -17,8 +17,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
- "email": "helloworld@gmail.com",
-  "password": "helloWorld123@"
+ "email": "",
+  "password": ""
 }
 
 ### 3. Create Admin User (requires ROLE_ADMIN authentication)
@@ -49,7 +49,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "refreshToken": "a4a69c7d-3be7-449a-bfa7-c3942943911f"
+  "refreshToken": ""
 }
 
 ### 6. Logout (requires JWT authentication only)

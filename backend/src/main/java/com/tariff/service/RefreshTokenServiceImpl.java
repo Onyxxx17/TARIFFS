@@ -18,7 +18,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    @Value("${app.jwtRefreshExpirationMs:86400000}")
+    @Value("${jwt.refresh-expiration}")
     private Long refreshTokenDurationMs;
 
     public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository) {

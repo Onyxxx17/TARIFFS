@@ -30,7 +30,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "refreshToken": "707df013-e0a1-4473-a522-358ce839f27c"
+  "refreshToken": ""
 }
 
 ### 4. Logout (requires JWT token)
@@ -38,7 +38,7 @@ Accept: application/json
 POST http://localhost:8080/api/auth/logout
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJ0ZXN0QGV4YW1wbGVlZS5jb20iLCJleHAiOjE3NjExMzQ5MDQsImlhdCI6MTc2MTEzNDg4NCwic2NvcGUiOiJST0xFX1VTRVIifQ.NH8csQtJzb4c9nvtz5tqQ_Y0tPaRgyMMmJVRkfw6tEMww1SLKJfSrJzbItDup5h0gFILVgTPg08N4QYJ7XlcFQ
+Authorization: Bearer 
 
 {}
 
@@ -47,7 +47,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iL
 POST http://localhost:8080/api/tariffs/calculate
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJ0ZXN0QGV4YW1wbGVlZS5jb20iLCJleHAiOjE3NjExMzQ5MDQsImlhdCI6MTc2MTEzNDg4NCwic2NvcGUiOiJST0xFX1VTRVIifQ.NH8csQtJzb4c9nvtz5tqQ_Y0tPaRgyMMmJVRkfw6tEMww1SLKJfSrJzbItDup5h0gFILVgTPg08N4QYJ7XlcFQ
+Authorization: Bearer 
 
 {
 "fromCountry": "North Korea",

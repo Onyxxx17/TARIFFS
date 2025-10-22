@@ -50,12 +50,12 @@ public class JwtExpirationFilter extends OncePerRequestFilter {
                 if (parts.length == 3) {
                     String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
                     Map<String, Object> claims = objectMapper.readValue(payload, Map.class);
-                    
+
                     // Get expiration timestamp
                     if (claims.containsKey("exp")) {
                         long exp = ((Number) claims.get("exp")).longValue();
                         Instant expiration = Instant.ofEpochSecond(exp);
-                        
+
                         // Check if token is expired
                         if (expiration.isBefore(Instant.now())) {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

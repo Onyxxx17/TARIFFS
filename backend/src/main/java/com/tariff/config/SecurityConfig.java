@@ -45,38 +45,61 @@ public class SecurityConfig {
         // Create JWT filters
         JwtBlacklistFilter blacklistFilter = new JwtBlacklistFilter(jwtBlacklistService);
         JwtExpirationFilter expirationFilter = new JwtExpirationFilter(jwtBlacklistService);
-        
+
         http
                 // Add expiration filter first, then blacklist filter
                 .addFilterBefore(expirationFilter, org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter.class)
                 .addFilterAfter(blacklistFilter, JwtExpirationFilter.class)
                 .authorizeHttpRequests((authz) -> authz
+                // --- Error and Public endpoints ---
                 .requestMatchers("/error").permitAll() // the default error page
-                .requestMatchers("/api/auth/login").permitAll() // login endpoint
-                .requestMatchers("/api/auth/signup").permitAll() // signup endpoint  
-                .requestMatchers("/api/auth/refresh").permitAll() // refresh token endpoint
-                .requestMatchers("/api/auth/create-admin").hasRole("ADMIN") // only admins can create admins
-                .requestMatchers("/api/auth/logout").authenticated() // logout requires authentication
-                .requestMatchers("/api/auth/logout-all").authenticated() // logout-all requires authentication
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll() // Swagger UI
                 .requestMatchers("/h2-console/**").permitAll() // H2 Console
 
+                // --- Authentication endpoints ---
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/signup").permitAll()
+                .requestMatchers("/api/auth/refresh").permitAll()
+                .requestMatchers("/api/auth/create-admin").hasRole("ADMIN")
+                .requestMatchers("/api/auth/logout").authenticated()
+                .requestMatchers("/api/auth/logout-all").authenticated()
+                // --- Hello Controller endpoints (ALLOW ALL) ---
+                .requestMatchers("/api/hello/**").permitAll()
+                .requestMatchers("/api/status").permitAll()
+                // --- Import Records endpoints (USER authentication required) ---
+                .requestMatchers(HttpMethod.GET, "/api/import-records/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/import-records/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/import-records/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/import-records/**").authenticated()
+                // --- Tariff Rules endpoints (GET for users, others for admin) ---
+                .requestMatchers(HttpMethod.GET, "/api/tariff-rules/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/tariff-rules/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/tariff-rules/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/tariff-rules/**").hasRole("ADMIN")
+                // --- Product endpoints ---
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/countries/**").permitAll()
+                // --- Country endpoints ---
                 .requestMatchers(HttpMethod.GET, "/api/countries/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/countries/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/countries/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/countries/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                // --- User management ---
+                .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                // --- Industries endpoints ---
                 .requestMatchers(HttpMethod.GET, "/api/industries/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/industries/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/industries/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/industries/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/tariff/*").authenticated()
-                .anyRequest().authenticated() // all other requests require authentication
+                // --- Tariff calculation endpoint ---
+                .requestMatchers("/api/tariffs/calculate").authenticated()
+                // --- Default rule - require authentication for anything else ---
+                .anyRequest().authenticated()
                 )
                 // Configure for stateless JWT authentication
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

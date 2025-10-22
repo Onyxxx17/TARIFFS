@@ -15,7 +15,6 @@ import com.tariff.dto.RefreshTokenResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -160,67 +159,51 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Logout successful"));
     }
 
-    // --- Logout from all devices ---
-    @PostMapping("/logout-all")
-    public ResponseEntity<?> logoutAll(Authentication authentication) {
-        String authenticatedEmail = authentication.getName(); // JWT subject is the email
+    // // --- Create Admin User (Only accessible by existing admins) ---
+    // @PostMapping("/create-admin")
+    // @PreAuthorize("hasRole('ADMIN')")
+    // public ResponseEntity<?> createAdmin(@RequestBody SignupRequest request) {
 
-        Optional<User> userOpt = userService.findByEmail(authenticatedEmail);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "User not found"));
-        }
+    //     Optional<User> existingEmail = userService.findByEmail(request.email());
+    //     if (existingEmail.isPresent()) {
+    //         throw new UserAlreadyExistsException(request.email());
+    //     }
 
-        refreshTokenService.deleteByUser(userOpt.get());
+    //     Optional<User> existingUsername = userService.findByUsername(request.username());
+    //     if (existingUsername.isPresent()) {
+    //         throw new UserAlreadyExistsException(request.username());
+    //     }
 
-        return ResponseEntity.ok(Map.of("message", "Logged out from all devices"));
-    }
+    //     // Password constraints (same as signup)
+    //     String pw = request.password();
+    //     if (pw.length() < 8) {
+    //         return ResponseEntity.badRequest().body("Password must be at least 8 characters.");
+    //     }
+    //     if (!pw.matches(".*[A-Z].*")) {
+    //         return ResponseEntity.badRequest().body("Password must contain at least one uppercase letter.");
+    //     }
+    //     if (!pw.matches(".*[a-z].*")) {
+    //         return ResponseEntity.badRequest().body("Password must contain at least one lowercase letter.");
+    //     }
+    //     if (!pw.matches(".*\\d.*")) {
+    //         return ResponseEntity.badRequest().body("Password must contain at least one number.");
+    //     }
+    //     if (!pw.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+    //         return ResponseEntity.badRequest().body("Password must contain at least one special character.");
+    //     }
 
-    // --- Create Admin User (Only accessible by existing admins) ---
-    @PostMapping("/create-admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createAdmin(@RequestBody SignupRequest request) {
+    //     // Hash the password before saving
+    //     String hashedPassword = BCrypt.withDefaults().hashToString(12, pw.toCharArray());
 
-        Optional<User> existingEmail = userService.findByEmail(request.email());
-        if (existingEmail.isPresent()) {
-            throw new UserAlreadyExistsException(request.email());
-        }
+    //     // Create admin user
+    //     User adminUser = new User(
+    //             request.username(),
+    //             request.email(),
+    //             hashedPassword,
+    //             "ROLE_ADMIN"
+    //     );
 
-        Optional<User> existingUsername = userService.findByUsername(request.username());
-        if (existingUsername.isPresent()) {
-            throw new UserAlreadyExistsException(request.username());
-        }
-
-        // Password constraints (same as signup)
-        String pw = request.password();
-        if (pw.length() < 8) {
-            return ResponseEntity.badRequest().body("Password must be at least 8 characters.");
-        }
-        if (!pw.matches(".*[A-Z].*")) {
-            return ResponseEntity.badRequest().body("Password must contain at least one uppercase letter.");
-        }
-        if (!pw.matches(".*[a-z].*")) {
-            return ResponseEntity.badRequest().body("Password must contain at least one lowercase letter.");
-        }
-        if (!pw.matches(".*\\d.*")) {
-            return ResponseEntity.badRequest().body("Password must contain at least one number.");
-        }
-        if (!pw.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            return ResponseEntity.badRequest().body("Password must contain at least one special character.");
-        }
-
-        // Hash the password before saving
-        String hashedPassword = BCrypt.withDefaults().hashToString(12, pw.toCharArray());
-
-        // Create admin user
-        User adminUser = new User(
-                request.username(),
-                request.email(),
-                hashedPassword,
-                "ROLE_ADMIN"
-        );
-
-        userService.addUser(adminUser);
-        return ResponseEntity.ok(new SignupResponse(request.username() + " (ADMIN)"));
-    }
+    //     userService.addUser(adminUser);
+    //     return ResponseEntity.ok(new SignupResponse(request.username() + " (ADMIN)"));
+    // }
 }
