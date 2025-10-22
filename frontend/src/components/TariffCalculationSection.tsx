@@ -3,7 +3,6 @@ import GeoChart from "./GeoCharts";
 import CountrySelect, { type CountryOption } from "./CountrySelect";
 import ProductSelect from "./ProductSelect";
 import TariffResult from "./TariffResult";
-import { BASE_URL } from "../config";
 import { fetchWithAuth } from "../utils/api";
 type Picked = { name: string; code?: string } | null;
 
