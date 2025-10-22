@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Entity(name="users")
+@Entity(name = "users")
 @Getter
 @Setter
 @ToString
@@ -26,19 +26,19 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(unique = true, nullable = false)
     private String username;
-    
+
     @Column(unique = true, nullable = false)
     private String email;
-    
+
     @Column(nullable = false)
-    //@JsonIgnore  // Don't expose password in JSON responses
     private String password;
-    
+
     private String role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -48,7 +48,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<RefreshToken> refreshTokens;
-    
+
     // Constructor for registration
     public User(String username, String email, String password, String role) {
         this.username = username;

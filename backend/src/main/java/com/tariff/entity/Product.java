@@ -42,20 +42,7 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<TariffRule> tariffRules;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<ImportRecord> importRecords;
-
-     public Product(Long id, String name, Category category) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        // this.description = description;
-    }
+    // Constructor provided by Lombok's @AllArgsConstructor
 
     // public Product() {
     // }
@@ -115,8 +102,4 @@ public class Product {
     // public void setImportRecords(List<ImportRecord> importRecords) {
     //     this.importRecords = importRecords;
     // }
-
-   
-    
-
 }

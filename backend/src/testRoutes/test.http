@@ -1,0 +1,87 @@
+### Tariff API Test File
+### This file contains ready-to-use API requests for testing the Tariffs application
+
+### 1. User Signup
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "testuser1",
+  "email": "test@exampleee.com",
+  "password": "Password123!@"
+}
+
+### 2. User Login
+# After signup is successful, use this to get JWT token and refresh token
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test@exampleee.com",
+  "password": "Password123!@"
+}
+
+### 3. Refresh Token
+# Copy the refreshToken from the login response above
+POST http://localhost:8080/api/auth/refresh
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": ""
+}
+
+### 4. Logout (requires JWT token)
+# Copy the JWT token from the login response
+POST http://localhost:8080/api/auth/logout
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{}
+
+### 5. Calculate Tariff
+# This request requires valid product ID and country names
+POST http://localhost:8080/api/tariffs/calculate
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+"fromCountry": "North Korea",
+  "toCountry": "United States of America",
+  "productId": 10129,
+  "unitCost": 25,
+  "quantity": 1000,
+  "effectiveYear": 2025
+}
+
+### 6. Calculate Tariff (without authentication)
+# Testing if the endpoint allows unauthenticated requests
+POST http://localhost:8080/api/tariffs/calculate
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fromCountry": "China",
+  "toCountry": "United States",
+  "productId": 1,
+  "unitCost": 25.0,
+  "quantity": 1000,
+  "effectiveYear": 2025
+}
+
+### 7. Get Available Products
+# Useful for finding valid productId values for tariff calculation
+GET http://localhost:8080/api/products
+Accept: application/json
+
+### 8. Get Available Countries
+# Useful for finding valid country names for tariff calculation
+GET http://localhost:8080/api/countries
+Accept: application/json
+
+###
+GET http://localhost:8080/api/products

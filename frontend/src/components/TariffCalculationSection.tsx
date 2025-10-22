@@ -4,7 +4,7 @@ import CountrySelect, { type CountryOption } from "./CountrySelect";
 import ProductSelect from "./ProductSelect";
 import TariffResult from "./TariffResult";
 import { BASE_URL } from "../config";
-
+import { fetchWithAuth } from "../utils/api";
 type Picked = { name: string; code?: string } | null;
 
 //Set type according to api response
@@ -100,21 +100,27 @@ export default function TariffCalculatorSection() {
     };
 
     try {
-      const response = await fetch(BASE_URL + "/api/tariffs/calculate", {
+      const response = await fetchWithAuth("/api/tariffs/calculate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
-      const result = await response.json();
-      if (!response.ok) {
-        setError(result.message || "Tariff calculation failed");
+       console.log(response);
+     
+      if (!response.ok && response.status == 401) {
+        setError("Tariff calculation failed. Please Login First.");
         setShowResult(true);
         setTariffResult(null);
         return;
       }
+      const result = await response.json();
       setShowResult(true);
       setTariffResult(result);
+
+      if(!response.ok){
+        setError(result.message || result.error || "Tariff calculation failed");
+        setShowResult(true);
+        setTariffResult(null);
+      }
     } catch (error) {
       setError("Unable to calculate tariff");
       setShowResult(true);
@@ -325,7 +331,9 @@ export default function TariffCalculatorSection() {
         {/* /card */}
 
         {/* Result sheet  */}
-        {showResult && <TariffResult tariffResult={tariffResult} error={error} />}
+        {showResult && (
+          <TariffResult tariffResult={tariffResult} error={error} />
+        )}
       </div>
     </section>
   );

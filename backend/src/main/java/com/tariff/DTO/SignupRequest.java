@@ -9,5 +9,6 @@ public record SignupRequest(
     String email,
     @Schema(description = "Password of the new user", example = "demo123")
     String password,
-    @Schema(description = "Role of the new user", example = "USER")String role
+    @Schema(description = "Role", example = "user")
+    String role
 ) {}
