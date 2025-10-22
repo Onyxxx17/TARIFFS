@@ -10,6 +10,7 @@ import com.tariff.dto.request.TariffCalculationRequest;
 import com.tariff.dto.response.TariffCalculationResponse;
 import com.tariff.entity.Country;
 import com.tariff.entity.TariffRule;
+import com.tariff.exception.CountryNotFoundException;
 import com.tariff.exception.TariffRuleNotFoundException;
 import com.tariff.repository.CountryRepository;
 import com.tariff.repository.TariffRuleRepository;
@@ -38,8 +39,12 @@ public class TariffCalculationService {
         Optional<Country> fromCountryOpt = countryRepository.findByName(request.getFromCountry());
         Optional<Country> toCountryOpt = countryRepository.findByName(request.getToCountry());
 
-        if (fromCountryOpt.isEmpty() || toCountryOpt.isEmpty()) {
-            throw new RuntimeException("Country not found");
+        if (fromCountryOpt.isEmpty()) {
+            throw new CountryNotFoundException(request.getFromCountry());
+        }
+
+        if(toCountryOpt.isEmpty()){
+            throw new CountryNotFoundException(request.getToCountry());
         }
         
         String fromCountryId = fromCountryOpt.get().getCountryCode();

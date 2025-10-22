@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import { fetchWithAuth } from "../utils/api";
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
@@ -22,11 +22,22 @@ export default function Header() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Try to call logout API using fetchWithAuth
+    try {
+      await fetchWithAuth("/api/auth/logout", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+
+    // Clear local storage
     localStorage.removeItem("token");
-    // any other cleanup (role, user) if stored
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("role");
     setIsLoggedIn(false);
+
     // notify other tabs/components
     window.dispatchEvent(new Event("storage"));
     navigate("/");
@@ -50,22 +61,35 @@ export default function Header() {
           TARIFF
         </Link>
 
-
         <nav className="hidden md:flex items-center gap-8 text-slate-600">
-          <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/">
+          <Link
+            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
+            to="/"
+          >
             Home
           </Link>
-          <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/dashboard">
+          <Link
+            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
+            to="/dashboard"
+          >
             Dashboard
           </Link>
-          <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/features">
+          <Link
+            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
+            to="/features"
+          >
             Features
           </Link>
-          <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/blog">
+          <Link
+            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
+            to="/blog"
+          >
             Blog
-
           </Link>
-          <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/contact">
+          <Link
+            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
+            to="/contact"
+          >
             Contact
           </Link>
         </nav>

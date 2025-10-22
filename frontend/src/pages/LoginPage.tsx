@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { BASE_URL } from "../config";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,11 +14,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(BASE_URL + "/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      // For login, you can still use regular fetch since the user isn't authenticated yet
+      const response = await fetch(
+        import.meta.env.VITE_BASE_APP_URL + "/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await response.json().catch(() => ({}));
 
@@ -28,10 +31,11 @@ export default function LoginPage() {
         return;
       }
 
-      // Expect backend to return { token: "...", role?: "...", ... }
       if (data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("refreshToken", data.refreshToken);
         if (data.role) localStorage.setItem("role", data.role);
+
         // notify other tabs/components
         window.dispatchEvent(new Event("storage"));
         navigate("/");

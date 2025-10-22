@@ -56,7 +56,7 @@ Accept: application/json
 POST http://localhost:8080/api/auth/logout
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJoZWxsb3dvcmxkQGdtYWlsLmNvbSIsImV4cCI6MTc2MTEzMjA5MiwiaWF0IjoxNzYxMTMyMDcyLCJzY29wZSI6IlJPTEVfVVNFUiJ9.McPBD8RmjHWIbR_ADm8eX_uiYKETZhul6hU16cxQg3GOU-46SbjHhZ0YguE2eAsMdZLfbdESd2mbhC8O4mvwUA
+Authorization: Bearer YOUR_JWT_TOKEN
 ### 7. Logout from all devices (requires JWT authentication)
 POST http://localhost:8080/api/auth/logout-all
 Content-Type: application/json
@@ -347,7 +347,7 @@ DELETE http://localhost:8080/api/import-records/product/1/user/1/1
 ### Calculation Test
 POST http://localhost:8080/api/tariffs/calculate
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJoZWxsb3dvcmxkQGdtYWlsLmNvbSIsImV4cCI6MTc2MTEzMjA5MiwiaWF0IjoxNzYxMTMyMDcyLCJzY29wZSI6IlJPTEVfVVNFUiJ9.McPBD8RmjHWIbR_ADm8eX_uiYKETZhul6hU16cxQg3GOU-46SbjHhZ0YguE2eAsMdZLfbdESd2mbhC8O4mvwUA
+Authorization: Bearer YOUR_JWT_TOKEN
 
 {
   "fromCountry": "North Korea",
@@ -396,7 +396,7 @@ Authorization: Bearer JWT_TOKEN_HERE
 
 ### Get Users (Protected) - replace JWT_TOKEN with actual token
 GET http://localhost:8080/api/users
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJoZWxsb3dvcmxkQGdtYWlsLmNvbSIsImV4cCI6MTc2MTEzMjA2OCwiaWF0IjoxNzYxMTMyMDQ4LCJzY29wZSI6IlJPTEVfVVNFUiJ9.JkuljWQSezcP0I6u8jXybPI-UmjEfXHVkxHTv_i3xkOD0JNxXbW_O1sLKkutGNifyn4KQVvSlulzgnLSV6M9pA
+Authorization: Bearer YOUR_JWT_TOKEN
 
 ### Create User (Protected) - replace JWT_TOKEN with actual token
 POST http://localhost:8080/api/users
