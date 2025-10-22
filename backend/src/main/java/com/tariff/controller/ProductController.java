@@ -44,13 +44,6 @@ public class ProductController {
         return productService.addProduct(product);
     }
     
-    @PostMapping("/category/{categoryId}")
-    public Product createProductWithCategory(
-            @PathVariable Long categoryId,
-            @RequestBody Product product) {
-        return productService.addProductByCategory(categoryId, product);
-    }
-    
     @PutMapping("/{id}")
     public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
         return productService.updateProduct(id, product);

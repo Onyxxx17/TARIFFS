@@ -1,3 +1,4 @@
+package com.tariff.loaders;
 // package com.tariff.config;
 
 // import org.springframework.beans.factory.annotation.Autowired;

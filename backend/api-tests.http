@@ -1,3 +1,72 @@
+### Authentication API Tests
+
+### 1. User Signup (Always creates ROLE_USER)
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "leeleelrlr",
+  "email": "helloworld@gmail.com",
+  "password": "helloWorld123@"
+}
+
+### 2. User Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+ "email": "helloworld@gmail.com",
+  "password": "helloWorld123@"
+}
+
+### 3. Create Admin User (requires ROLE_ADMIN authentication)
+POST http://localhost:8080/api/auth/create-admin
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer REPLACE_WITH_ADMIN_JWT_TOKEN
+
+{
+  "username": "admin",
+  "email": "admin@example.com",
+  "password": "AdminPass123!"
+}
+
+### 4. Admin Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPass123!"
+}
+
+### 5. Refresh Token (replace with actual refresh token from login)
+POST http://localhost:8080/api/auth/refresh
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": "a4a69c7d-3be7-449a-bfa7-c3942943911f"
+}
+
+### 6. Logout (requires JWT authentication only)
+POST http://localhost:8080/api/auth/logout
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJoZWxsb3dvcmxkQGdtYWlsLmNvbSIsImV4cCI6MTc2MTEzMjA5MiwiaWF0IjoxNzYxMTMyMDcyLCJzY29wZSI6IlJPTEVfVVNFUiJ9.McPBD8RmjHWIbR_ADm8eX_uiYKETZhul6hU16cxQg3GOU-46SbjHhZ0YguE2eAsMdZLfbdESd2mbhC8O4mvwUA
+### 7. Logout from all devices (requires JWT authentication)
+POST http://localhost:8080/api/auth/logout-all
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer REPLACE_WITH_ACTUAL_JWT_TOKEN
+
+{}
+
+###############################################
+
 ### Country API Requests
 
 ### Get all countries
@@ -278,6 +347,7 @@ DELETE http://localhost:8080/api/import-records/product/1/user/1/1
 ### Calculation Test
 POST http://localhost:8080/api/tariffs/calculate
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJoZWxsb3dvcmxkQGdtYWlsLmNvbSIsImV4cCI6MTc2MTEzMjA5MiwiaWF0IjoxNzYxMTMyMDcyLCJzY29wZSI6IlJPTEVfVVNFUiJ9.McPBD8RmjHWIbR_ADm8eX_uiYKETZhul6hU16cxQg3GOU-46SbjHhZ0YguE2eAsMdZLfbdESd2mbhC8O4mvwUA
 
 {
   "fromCountry": "North Korea",
@@ -286,4 +356,56 @@ Content-Type: application/json
   "unitCost": 25,
   "quantity": 1000,
   "effectiveYear": 2025
+}
+
+###############################################
+
+### Protected Endpoints Tests (Require Authentication)
+
+### Test Protected Product Creation (ADMIN only) - replace JWT_TOKEN with actual token
+POST http://localhost:8080/api/products
+Content-Type: application/json
+Authorization: Bearer JWT_TOKEN_HERE
+
+{
+  "name": "Test Product",
+  "categoryId": 1,
+  "hsCode": "123456"
+}
+
+### Test Protected Product Update (ADMIN only) - replace JWT_TOKEN with actual token
+PUT http://localhost:8080/api/products/1
+Content-Type: application/json
+Authorization: Bearer JWT_TOKEN_HERE
+
+{
+  "name": "Updated Product",
+  "categoryId": 1,
+  "hsCode": "654321"
+}
+
+### Test Protected Country Creation (ADMIN only) - replace JWT_TOKEN with actual token
+POST http://localhost:8080/api/countries
+Content-Type: application/json
+Authorization: Bearer JWT_TOKEN_HERE
+
+{
+  "countryCode": "C999",
+  "name": "Test Country"
+}
+
+### Get Users (Protected) - replace JWT_TOKEN with actual token
+GET http://localhost:8080/api/users
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJoZWxsb3dvcmxkQGdtYWlsLmNvbSIsImV4cCI6MTc2MTEzMjA2OCwiaWF0IjoxNzYxMTMyMDQ4LCJzY29wZSI6IlJPTEVfVVNFUiJ9.JkuljWQSezcP0I6u8jXybPI-UmjEfXHVkxHTv_i3xkOD0JNxXbW_O1sLKkutGNifyn4KQVvSlulzgnLSV6M9pA
+
+### Create User (Protected) - replace JWT_TOKEN with actual token
+POST http://localhost:8080/api/users
+Content-Type: application/json
+Authorization: Bearer JWT_TOKEN_HERE
+
+{
+  "username": "newuser",
+  "email": "newuser@example.com",
+  "password": "Password123!",
+  "role": "USER"
 }
