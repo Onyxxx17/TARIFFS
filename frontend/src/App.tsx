@@ -7,6 +7,8 @@ import SignupPage from "./pages/SignupPage";
 import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
 
+import AnalyticsDashboard from "./pages/AgricultureTariffChart";
+
 function NotFound() {
   return <div className="mx-auto max-w-3xl p-6">Page not found.</div>;
 }
@@ -19,6 +21,7 @@ export default function App() {
           <Route index element={<HomePage />} />       {/* Home */}
           <Route path="login" element={<LoginPage />} /> {/* Login */}
           <Route path="signup" element={<SignupPage />} /> {/* Signup */}
+          <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
 
           {/* Blog list + detail */}
           <Route path="/blog" element={<BlogList />} />

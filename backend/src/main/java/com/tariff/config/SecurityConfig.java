@@ -98,6 +98,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/industries/**").hasRole("ADMIN")
                 // --- Tariff calculation endpoint ---
                 .requestMatchers("/api/tariffs/calculate").authenticated()
+                .requestMatchers("/api/tariffs/calculate/**").authenticated()
                 // --- Default rule - require authentication for anything else ---
                 .anyRequest().authenticated()
                 )

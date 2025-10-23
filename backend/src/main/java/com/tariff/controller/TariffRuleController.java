@@ -1,5 +1,7 @@
 package com.tariff.controller;
 
+import com.tariff.dto.response.TariffComparisonDTO;
+import com.tariff.dto.response.TariffRateOverTimeDTO;
 import com.tariff.entity.TariffRule;
 import com.tariff.service.TariffRuleService;
 
@@ -154,5 +156,25 @@ public class TariffRuleController {
             @PathVariable Long id) {
         tariffRuleService.deleteTariffRule(fromCountryCode, toCountryCode, productId, id);
         return ResponseEntity.ok().build();
+    }
+    
+    // New endpoint for getting tariff rates over time
+    @GetMapping("/rates-over-time")
+    public ResponseEntity<List<TariffRateOverTimeDTO>> getTariffRatesOverTime(
+            @RequestParam String fromCountryCode,
+            @RequestParam String toCountryCode,
+            @RequestParam Long productId) {
+        List<TariffRateOverTimeDTO> rates = tariffRuleService.getTariffRatesOverTime(fromCountryCode, toCountryCode, productId);
+        return ResponseEntity.ok(rates);
+    }
+    
+    // New endpoint for comparing tariff rates between two countries
+    @GetMapping("/compare-tariffs")
+    public ResponseEntity<TariffComparisonDTO> compareTariffRates(
+            @RequestParam String country1Code,
+            @RequestParam String country2Code,
+            @RequestParam Long productId) {
+        TariffComparisonDTO comparison = tariffRuleService.compareTariffRates(country1Code, country2Code, productId);
+        return ResponseEntity.ok(comparison);
     }
 }

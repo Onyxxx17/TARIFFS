@@ -409,3 +409,21 @@ Authorization: Bearer JWT_TOKEN_HERE
   "password": "Password123!",
   "role": "USER"
 }
+=======
+### Tariff Rates Over Time
+
+### India's tariff rates on imports FROM China for Product 10120 (1996-2025)
+GET http://localhost:8080/api/tariff-rules/rates-over-time?fromCountryCode=C156&toCountryCode=C356&productId=10120
+
+### USA's tariff rates on imports FROM China for Product 10111
+GET http://localhost:8080/api/tariff-rules/rates-over-time?fromCountryCode=C156&toCountryCode=C840&productId=10111
+
+### China's tariff rates on imports FROM India for Product 10120
+GET http://localhost:8080/api/tariff-rules/rates-over-time?fromCountryCode=C356&toCountryCode=C156&productId=10120
+
+###############################################
+
+### Tariff Comparison (Shows BOTH directions)
+
+### Compare India vs China for Product 10120 - shows BOTH countries' rates
+GET http://localhost:8080/api/tariff-rules/compare-tariffs?country1Code=C356&country2Code=C156&productId=10120

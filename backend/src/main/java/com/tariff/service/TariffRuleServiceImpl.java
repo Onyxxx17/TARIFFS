@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tariff.dto.response.TariffComparisonDTO;
+import com.tariff.dto.response.TariffRateOverTimeDTO;
+import com.tariff.entity.Country;
 import com.tariff.entity.TariffRule;
 import com.tariff.exception.CountryNotFoundException;
 import com.tariff.exception.ProductNotFoundException;
@@ -215,5 +218,66 @@ public class TariffRuleServiceImpl implements TariffRuleService {
             throw new TariffRuleNotFoundException(id);
         }
         tariffRuleRepository.deleteById(id);
+    }
+    
+    @Override
+    public List<TariffRateOverTimeDTO> getTariffRatesOverTime(String fromCountryCode, String toCountryCode, Long productId) {
+        // Validate inputs
+        if (!countryRepository.existsById(fromCountryCode)) {
+            throw new CountryNotFoundException(fromCountryCode);
+        }
+        if (!countryRepository.existsById(toCountryCode)) {
+            throw new CountryNotFoundException(toCountryCode);
+        }
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException(productId);
+        }
+        
+        // Get rates from database
+        List<TariffRateOverTimeDTO> dbRates = tariffRuleRepository.findTariffRatesOverTime(fromCountryCode, toCountryCode, productId);
+        
+        // Create a map for quick lookup
+        java.util.Map<Integer, java.math.BigDecimal> rateMap = new java.util.HashMap<>();
+        for (TariffRateOverTimeDTO dto : dbRates) {
+            rateMap.put(dto.getYear(), dto.getRate());
+        }
+        
+        // Fill in all years from 1996 to 2025
+        List<TariffRateOverTimeDTO> completeRates = new java.util.ArrayList<>();
+        for (int year = 1996; year <= 2025; year++) {
+            // Use existing rate or 0 if no data (no agreement = 0% tariff)
+            java.math.BigDecimal rate = rateMap.getOrDefault(year, java.math.BigDecimal.ZERO);
+            completeRates.add(new TariffRateOverTimeDTO(year, rate));
+        }
+        
+        return completeRates;
+    }
+    
+    @Override
+    public TariffComparisonDTO compareTariffRates(String country1Code, String country2Code, Long productId) {
+        // Validate inputs
+        Country country1 = countryRepository.findById(country1Code)
+            .orElseThrow(() -> new CountryNotFoundException(country1Code));
+        Country country2 = countryRepository.findById(country2Code)
+            .orElseThrow(() -> new CountryNotFoundException(country2Code));
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException(productId);
+        }
+        
+        // Get rates for Country1 importing from Country2
+        List<TariffRateOverTimeDTO> country1Rates = tariffRuleRepository.findTariffRatesOverTime(country2Code, country1Code, productId);
+        
+        // Get rates for Country2 importing from Country1
+        List<TariffRateOverTimeDTO> country2Rates = tariffRuleRepository.findTariffRatesOverTime(country1Code, country2Code, productId);
+        
+        return new TariffComparisonDTO(
+            country1Code,
+            country1.getName(),
+            country2Code,
+            country2.getName(),
+            productId,
+            country1Rates,
+            country2Rates
+        );
     }
 }

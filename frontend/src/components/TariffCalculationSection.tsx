@@ -276,7 +276,7 @@ export default function TariffCalculatorSection() {
 
           {/* Details */}
           <div className="px-6 pb-6">
-            <div className="mt-4 space-y-4">
+            <div className="mt-6 space-y-4">
               {/* Product Select */}
               <ProductSelect
                 label="Product"
