@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 interface TariffLog {
@@ -11,6 +11,7 @@ interface TariffLog {
   year: number;
   tariffRate: number;
   calculatedTariff: number;
+  additionalFee?: number; // Optional for backward compatibility
   totalCost: number;
 }
 
@@ -22,7 +23,19 @@ export default function TariffLoggingDisplay() {
 
   useEffect(() => {
     const storedLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
-    setLogs(storedLogs);
+    
+    // Migrate old logs to include additionalFee property
+    const migratedLogs = storedLogs.map((log: unknown) => ({
+      ...log,
+      additionalFee: log.additionalFee ?? 0 // Add additionalFee if it doesn't exist
+    }));
+    
+    // Update localStorage with migrated data if needed
+    if (JSON.stringify(storedLogs) !== JSON.stringify(migratedLogs)) {
+      localStorage.setItem('tariffLogs', JSON.stringify(migratedLogs));
+    }
+    
+    setLogs(migratedLogs);
   }, []);
 
   const handleDeleteClick = (index: number) => {
@@ -183,8 +196,9 @@ export default function TariffLoggingDisplay() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div>Rate: {log.tariffRate}%</div>
-                          <div>Tariff: ${log.calculatedTariff.toLocaleString()}</div>
-                          <div>Total: ${log.totalCost.toLocaleString()}</div>
+                          <div>Tariff: ${log.calculatedTariff?.toLocaleString() || '0'}</div>
+                          <div>Additional Fee: ${(log.additionalFee || 0).toLocaleString()}</div>
+                          <div>Total: ${log.totalCost?.toLocaleString() || '0'}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button

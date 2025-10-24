@@ -8,19 +8,23 @@ public class TariffCalculationResponse {
     @Schema(description = "Tariff rate applied (%)")
     private final BigDecimal tariffRate;
 
-    @Schema(description = "Tariff rate applied (%)")
+    @Schema(description = "Total calculated tariff amount")
     private final BigDecimal calculatedTariff;
+    
+    @Schema(description = "Additional fees applied")
+    private final BigDecimal additionalFee;
     
     private final String fromCountry;
     private final String toCountry;
 
     private final BigDecimal totalCost;
 
-    public TariffCalculationResponse(String fromCountry,String toCountry,BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal totalCost){
+    public TariffCalculationResponse(String fromCountry, String toCountry, BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal additionalFee, BigDecimal totalCost){
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
         this.tariffRate = tariffRate;
         this.calculatedTariff = calculatedTariff;
+        this.additionalFee = additionalFee;
         this.totalCost = totalCost;
     }
 
@@ -38,6 +42,10 @@ public class TariffCalculationResponse {
 
     public String getToCountry() {
         return toCountry;
+    }
+
+    public BigDecimal getAdditionalFee() {
+        return additionalFee;
     }
 
     public BigDecimal getTotalCost() {

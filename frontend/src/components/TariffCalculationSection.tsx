@@ -130,6 +130,7 @@ export default function TariffCalculatorSection() {
           year: Number(year),
           tariffRate: result.tariffRate,
           calculatedTariff: result.calculatedTariff,
+          additionalFee: result.additionalFee || 0,
           totalCost: result.totalCost
         };
 

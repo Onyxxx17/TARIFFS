@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import ProductSelect from "../components/ProductSelect";
-import { BASE_URL } from "../config";
+
 import { fetchWithAuth } from "../utils/api";
 interface Country {
   countryCode: string;
@@ -72,7 +72,6 @@ const AgricultureTariffChart = () => {
       try {
         const response = await fetchWithAuth(`/api/countries`, {
           method: "GET",
-
         });
         if (response.ok) {
           const data = await response.json();
@@ -123,9 +122,9 @@ const AgricultureTariffChart = () => {
     const firstRate = tariffData[0].rate;
     const lastRate = tariffData[tariffData.length - 1].rate;
     const change = lastRate - firstRate;
-    const percentChange = ((change / firstRate) * 100);
+    const percentChange = (change / firstRate) * 100;
 
-    const rates = tariffData.map(d => d.rate);
+    const rates = tariffData.map((d) => d.rate);
     const maxRate = Math.max(...rates);
     const minRate = Math.min(...rates);
     const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
@@ -147,7 +146,7 @@ const AgricultureTariffChart = () => {
       maxRate,
       minRate,
       avgRate,
-      trendDirection
+      trendDirection,
     };
   };
 
@@ -236,15 +235,20 @@ const AgricultureTariffChart = () => {
                   <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
                     Change
                   </p>
-                  <p className={`text-xl font-bold ${
-                    summaryStats.trendDirection === 'increase' ? 'text-red-600' :
-                    summaryStats.trendDirection === 'decrease' ? 'text-green-600' :
-                    'text-slate-700'
-                  }`}>
-                    {summaryStats.change >= 0 ? '+' : ''}{summaryStats.change.toFixed(2)}%
+                  <p
+                    className={`text-xl font-bold ${
+                      summaryStats.trendDirection === "increase"
+                        ? "text-red-600"
+                        : summaryStats.trendDirection === "decrease"
+                        ? "text-green-600"
+                        : "text-slate-700"
+                    }`}
+                  >
+                    {summaryStats.change >= 0 ? "+" : ""}
+                    {summaryStats.change.toFixed(2)}%
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
                     Current
@@ -268,7 +272,8 @@ const AgricultureTariffChart = () => {
                     Range
                   </p>
                   <p className="text-xl font-bold text-slate-900">
-                    {summaryStats.minRate.toFixed(2)}% – {summaryStats.maxRate.toFixed(2)}%
+                    {summaryStats.minRate.toFixed(2)}% –{" "}
+                    {summaryStats.maxRate.toFixed(2)}%
                   </p>
                 </div>
               </div>
@@ -280,8 +285,8 @@ const AgricultureTariffChart = () => {
               Tariff Rates Over Time (1996–2025)
             </h3>
             <p className="text-sm text-slate-600 mt-1">
-              {toCountryCode} tariff rates on imports from{" "}
-              {fromCountryCode} • Product: {product?.name}
+              {toCountryCode} tariff rates on imports from {fromCountryCode} •
+              Product: {product?.name}
             </p>
           </div>
 
@@ -289,9 +294,7 @@ const AgricultureTariffChart = () => {
             <LineChart
               margin={{ top: 20, right: 20, left: 0, bottom: 10 }}
               data={
-                tariffData.length > 0
-                  ? tariffData
-                  : [{ year: 1996, rate: 0 }]
+                tariffData.length > 0 ? tariffData : [{ year: 1996, rate: 0 }]
               }
             >
               <CartesianGrid stroke="#f1f3f4" vertical={false} />
@@ -336,16 +339,37 @@ const AgricultureTariffChart = () => {
                 Executive Summary
               </h4>
               <p className="text-sm text-slate-700 leading-relaxed">
-                Over the {tariffData.length}-year period from {tariffData[0].year} to {tariffData[tariffData.length - 1].year}, 
-                the tariff rate applied by {toCountryCode} on imports from {fromCountryCode} 
-                {summaryStats.trendDirection === 'increase' && 
-                  ` increased by ${Math.abs(summaryStats.change).toFixed(2)} percentage points, representing a ${summaryStats.percentChange.toFixed(1)}% rise from the baseline rate of ${summaryStats.firstRate.toFixed(2)}%.`}
-                {summaryStats.trendDirection === 'decrease' && 
-                  ` decreased by ${Math.abs(summaryStats.change).toFixed(2)} percentage points, representing a ${Math.abs(summaryStats.percentChange).toFixed(1)}% reduction from the baseline rate of ${summaryStats.firstRate.toFixed(2)}%.`}
-                {summaryStats.trendDirection === 'stable' && 
-                  ` remained relatively stable, fluctuating within a narrow band around the average rate of ${summaryStats.avgRate.toFixed(2)}%.`}
-                {' '}The rate peaked at {summaryStats.maxRate.toFixed(2)}% and reached its lowest point at {summaryStats.minRate.toFixed(2)}%, 
-                resulting in a total variation of {(summaryStats.maxRate - summaryStats.minRate).toFixed(2)} percentage points throughout the analyzed period.
+                Over the {tariffData.length}-year period from{" "}
+                {tariffData[0].year} to {tariffData[tariffData.length - 1].year}
+                , the tariff rate applied by {toCountryCode} on imports from{" "}
+                {fromCountryCode}
+                {summaryStats.trendDirection === "increase" &&
+                  ` increased by ${Math.abs(summaryStats.change).toFixed(
+                    2
+                  )} percentage points, representing a ${summaryStats.percentChange.toFixed(
+                    1
+                  )}% rise from the baseline rate of ${summaryStats.firstRate.toFixed(
+                    2
+                  )}%.`}
+                {summaryStats.trendDirection === "decrease" &&
+                  ` decreased by ${Math.abs(summaryStats.change).toFixed(
+                    2
+                  )} percentage points, representing a ${Math.abs(
+                    summaryStats.percentChange
+                  ).toFixed(
+                    1
+                  )}% reduction from the baseline rate of ${summaryStats.firstRate.toFixed(
+                    2
+                  )}%.`}
+                {summaryStats.trendDirection === "stable" &&
+                  ` remained relatively stable, fluctuating within a narrow band around the average rate of ${summaryStats.avgRate.toFixed(
+                    2
+                  )}%.`}{" "}
+                The rate peaked at {summaryStats.maxRate.toFixed(2)}% and
+                reached its lowest point at {summaryStats.minRate.toFixed(2)}%,
+                resulting in a total variation of{" "}
+                {(summaryStats.maxRate - summaryStats.minRate).toFixed(2)}{" "}
+                percentage points throughout the analyzed period.
               </p>
             </div>
           )}
