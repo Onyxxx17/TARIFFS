@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import TariffLoggingDisplay from "./pages/TariffLogging";
 import SignupPage from "./pages/SignupPage";
 
 import BlogList from "./pages/BlogList";
@@ -21,6 +22,8 @@ export default function App() {
           <Route index element={<HomePage />} />       {/* Home */}
           <Route path="login" element={<LoginPage />} /> {/* Login */}
           <Route path="signup" element={<SignupPage />} /> {/* Signup */}
+          <Route path="logging" element={<TariffLoggingDisplay />} />
+         
           <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
 
           {/* Blog list + detail */}

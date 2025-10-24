@@ -78,6 +78,13 @@ export default function Header() {
             Dashboard
           </Link>
 
+          <Link
+            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
+            to="/logging"
+          >
+            Tariff Logging
+          </Link>
+
           {/* Features dropdown (only one for now) */}
           <div
             className="relative"

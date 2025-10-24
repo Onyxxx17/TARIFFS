@@ -103,8 +103,7 @@ export default function TariffCalculatorSection() {
         method: "POST",
         body: JSON.stringify(payload),
       });
-       console.log(response);
-     
+      
       if (!response.ok && response.status == 401) {
         setError("Tariff calculation failed. Please Login First.");
         setShowResult(true);
@@ -119,6 +118,24 @@ export default function TariffCalculatorSection() {
         setError(result.message || result.error || "Tariff calculation failed");
         setShowResult(true);
         setTariffResult(null);
+      } else {
+        // Store successful calculation in localStorage
+        const logEntry = {
+          timestamp: new Date().toISOString(),
+          fromCountry: from.name,
+          toCountry: to.name,
+          product: product?.name,
+          quantity: Number(quantity),
+          unitCost: Number(value),
+          year: Number(year),
+          tariffRate: result.tariffRate,
+          calculatedTariff: result.calculatedTariff,
+          totalCost: result.totalCost
+        };
+
+        const existingLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
+        existingLogs.unshift(logEntry); // Add new entry at the beginning
+        localStorage.setItem('tariffLogs', JSON.stringify(existingLogs));
       }
     } catch (error) {
       setError("Unable to calculate tariff");
