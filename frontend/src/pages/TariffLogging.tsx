@@ -25,10 +25,10 @@ export default function TariffLoggingDisplay() {
     const storedLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
     
     // Migrate old logs to include additionalFee property
-    const migratedLogs = storedLogs.map((log: unknown) => ({
+    const migratedLogs = storedLogs.map((log: any) => ({
       ...log,
       additionalFee: log.additionalFee ?? 0 // Add additionalFee if it doesn't exist
-    }));
+    })) as TariffLog[];
     
     // Update localStorage with migrated data if needed
     if (JSON.stringify(storedLogs) !== JSON.stringify(migratedLogs)) {
