@@ -78,10 +78,14 @@ public class TariffCalculationService {
         }
 
         BigDecimal rate = rule.getRate();
-        BigDecimal tariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
+        BigDecimal additionalFee = rule.getAdditionalFee() != null ? rule.getAdditionalFee() : BigDecimal.ZERO;
         
-        BigDecimal totalCost = importValue.add(tariff);
-        BigDecimal calculatedTariff = totalCost.subtract(importValue);
+        // Calculate percentage-based tariff
+        BigDecimal percentageTariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
+        
+        // Total tariff includes both percentage-based tariff and additional fees
+        BigDecimal totalTariff = percentageTariff.add(additionalFee);
+        BigDecimal totalCost = importValue.add(totalTariff);
 
         return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, calculatedTariff,totalCost, calculationType);
     }

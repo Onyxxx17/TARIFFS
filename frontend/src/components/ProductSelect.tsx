@@ -95,7 +95,7 @@ export default function ProductSelect({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
+      <label className="block text-sm font-medium text-slate-700 mb-2">
         {label}
       </label>
 

@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.tariff.dto.response.TariffComparisonDTO;
+import com.tariff.dto.response.TariffRateOverTimeDTO;
 import com.tariff.entity.TariffRule;
 
 public interface TariffRuleService {
@@ -31,4 +34,8 @@ public interface TariffRuleService {
     void deleteTariffRule(Long id);
 
     void deleteTariffRule(String fromCountryCode, String toCountryCode, Long productId, Long id);
+    
+    List<TariffRateOverTimeDTO> getTariffRatesOverTime(String fromCountryCode, String toCountryCode, Long productId);
+    
+    TariffComparisonDTO compareTariffRates(String country1Code, String country2Code, Long productId);
 }

@@ -103,8 +103,7 @@ export default function TariffCalculatorSection() {
         method: "POST",
         body: JSON.stringify(payload),
       });
-       console.log(response);
-     
+      
       if (!response.ok && response.status == 401) {
         setError("Tariff calculation failed. Please Login First.");
         setShowResult(true);
@@ -119,6 +118,25 @@ export default function TariffCalculatorSection() {
         setError(result.message || result.error || "Tariff calculation failed");
         setShowResult(true);
         setTariffResult(null);
+      } else {
+        // Store successful calculation in localStorage
+        const logEntry = {
+          timestamp: new Date().toISOString(),
+          fromCountry: from.name,
+          toCountry: to.name,
+          product: product?.name,
+          quantity: Number(quantity),
+          unitCost: Number(value),
+          year: Number(year),
+          tariffRate: result.tariffRate,
+          calculatedTariff: result.calculatedTariff,
+          additionalFee: result.additionalFee || 0,
+          totalCost: result.totalCost
+        };
+
+        const existingLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
+        existingLogs.unshift(logEntry); // Add new entry at the beginning
+        localStorage.setItem('tariffLogs', JSON.stringify(existingLogs));
       }
     } catch (error) {
       setError("Unable to calculate tariff");
@@ -276,7 +294,7 @@ export default function TariffCalculatorSection() {
 
           {/* Details */}
           <div className="px-6 pb-6">
-            <div className="mt-4 space-y-4">
+            <div className="mt-6 space-y-4">
               {/* Product Select */}
               <ProductSelect
                 label="Product"

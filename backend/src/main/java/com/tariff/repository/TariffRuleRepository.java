@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.tariff.dto.response.TariffRateOverTimeDTO;
 import com.tariff.entity.Country;
 import com.tariff.entity.TariffRule;
 
@@ -47,5 +48,24 @@ public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
         @Param("toCountryId") String toCountryId,
         @Param("productId") Long productId,
         @Param("effectiveYear") Integer effectiveYear
+    );
+    
+    // Priority: 1. Specific bilateral rate (from_country matches), 2. General rate (from_country IS NULL)
+    @Query("SELECT new com.tariff.dto.response.TariffRateOverTimeDTO(t.effectiveYear, t.rate) " +
+           "FROM TariffRule t " +
+           "WHERE t.toCountry.countryCode = :toCountryCode " +
+           "AND t.product.id = :productId " +
+           "AND (t.fromCountry.countryCode = :fromCountryCode " +
+           "     OR (t.fromCountry IS NULL AND NOT EXISTS (" +
+           "         SELECT 1 FROM TariffRule t2 " +
+           "         WHERE t2.toCountry.countryCode = :toCountryCode " +
+           "         AND t2.product.id = :productId " +
+           "         AND t2.fromCountry.countryCode = :fromCountryCode " +
+           "         AND t2.effectiveYear = t.effectiveYear))) " +
+           "ORDER BY t.effectiveYear ASC")
+    List<TariffRateOverTimeDTO> findTariffRatesOverTime(
+        @Param("fromCountryCode") String fromCountryCode,
+        @Param("toCountryCode") String toCountryCode,
+        @Param("productId") Long productId
     );
 }
