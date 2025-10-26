@@ -1,10 +1,19 @@
+interface TariffResultData {
+  fromCountry?: string;
+  toCountry?: string;
+  tariffRate?: number;
+  calculatedTariff?: number;
+  additionalFee?: number;
+  totalCost?: number;
+}
+
 export default function TariffResult({
   tariffResult,
   onReset,
   onEdit,
   error,
 }: {
-  tariffResult: any;
+  tariffResult: TariffResultData | null;
   onReset?: () => void;
   onEdit?: () => void;
   error?: string;
@@ -39,23 +48,33 @@ export default function TariffResult({
 
       {/* Top row */}
       <div className="px-6 pt-6">
-        <div className="rounded-xl bg-blue-50/70 border border-blue-200 p-4 flex items-center justify-between">
-          <div className="text-slate-700">
-            <div className="text-xs uppercase tracking-wide text-blue-900/80">
-              Tariff Rate
+        <div className="rounded-xl bg-blue-50/70 border border-blue-200 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="text-slate-700">
+              <div className="text-xs uppercase tracking-wide text-blue-900/80">
+                Tariff Rate
+              </div>
+              <div className="mt-1 text-2xl font-semibold text-blue-900">
+                {typeof tariffResult.tariffRate === "number"
+                  ? `${tariffResult.tariffRate}%`
+                  : "—"}
+              </div>
             </div>
-            <div className="mt-1 text-3xl font-semibold text-blue-900">
-              {typeof tariffResult.tariffRate === "number"
-                ? `${tariffResult.tariffRate}%`
-                : "—"}
+            <div className="text-slate-700">
+              <div className="text-xs uppercase tracking-wide text-blue-900/80">
+                Additional Fee
+              </div>
+              <div className="mt-1 text-2xl font-semibold text-blue-900">
+                {usd(tariffResult.additionalFee ?? 0)}
+              </div>
             </div>
-          </div>
-          <div className="text-right text-slate-700">
-            <div className="text-xs uppercase tracking-wide text-blue-900/80">
-              Calculated Tariff
-            </div>
-            <div className="mt-1 text-2xl font-semibold text-blue-900">
-              {usd(tariffResult.calculatedTariff ?? 0)}
+            <div className="text-right text-slate-700">
+              <div className="text-xs uppercase tracking-wide text-blue-900/80">
+                Total Tariff
+              </div>
+              <div className="mt-1 text-2xl font-semibold text-blue-900">
+                {usd(tariffResult.calculatedTariff ?? 0)}
+              </div>
             </div>
           </div>
         </div>
@@ -80,6 +99,27 @@ export default function TariffResult({
             </p>
           </div>
 
+          {/* Tariff Breakdown */}
+          <div className="rounded-lg border border-slate-200 p-4 sm:col-span-2">
+            <p className="text-xs uppercase tracking-wide text-slate-500 mb-3">
+              Tariff Breakdown
+            </p>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-600">Percentage-based tariff ({tariffResult.tariffRate}%):</span>
+                <span className="font-medium">{usd(((tariffResult.calculatedTariff ?? 0) - (tariffResult.additionalFee ?? 0)))}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Additional fees:</span>
+                <span className="font-medium">{usd(tariffResult.additionalFee ?? 0)}</span>
+              </div>
+              <div className="border-t border-slate-200 pt-2 flex justify-between font-semibold">
+                <span>Total tariff:</span>
+                <span>{usd(tariffResult.calculatedTariff ?? 0)}</span>
+              </div>
+            </div>
+          </div>
+
           {/* labels */}
           <div className="rounded-lg border border-slate-200 p-4 sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-slate-500">
@@ -89,7 +129,6 @@ export default function TariffResult({
               {usd(beforeTariff)}
             </p>
           </div>
-
 
           <div className="rounded-lg border border-slate-200 p-4 sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-slate-500">

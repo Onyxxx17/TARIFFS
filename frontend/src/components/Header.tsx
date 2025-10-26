@@ -1,11 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "../utils/api";
+import { ChevronDown } from "lucide-react"; 
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
     !!localStorage.getItem("token")
   );
+  const [openFeatures, setOpenFeatures] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,16 +77,43 @@ export default function Header() {
           >
             Dashboard
           </Link>
+
           <Link
             className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
-            to="/features"
+            to="/logging"
           >
-            Features
+            Tariff Logging
           </Link>
-          <Link
-            className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors"
-            to="/blog"
+
+          {/* Features dropdown (only one for now) */}
+          <div
+            className="relative"
+            onMouseEnter={() => setOpenFeatures(true)}
+            onMouseLeave={() => setOpenFeatures(false)}
           >
+            <button className="flex items-center gap-1 hover:text-slate-900 py-2 px-3 rounded-md transition-colors">
+              Features
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${
+                  openFeatures ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {openFeatures && (
+              <div className="absolute top-10 left-0 w-60 bg-white border shadow-lg rounded-lg z-50">
+                <Link
+                  to="/dashboard/analytics"
+                  className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
+                >
+                  Analytics Dashboard
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <Link className="hover:text-slate-900 py-2 px-3 rounded-md transition-colors" to="/blog">
             Blog
           </Link>
           <Link
