@@ -20,7 +20,7 @@ public class TariffCalculationResponse {
     private final BigDecimal totalCost;
     private final String calculationType;
 
-    public TariffCalculationResponse(String fromCountry,String toCountry,BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal totalCost, String calculationType){
+    public TariffCalculationResponse(String fromCountry,String toCountry,BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal totalCost, BigDecimal additionalFee,String calculationType){
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
         this.tariffRate = tariffRate;

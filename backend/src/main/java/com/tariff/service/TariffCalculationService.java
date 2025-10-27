@@ -25,24 +25,8 @@ public class TariffCalculationService {
     private CountryRepository countryRepository;
 
     public TariffCalculationResponse calculateTariff(TariffCalculationRequest request) {
-        BigDecimal importValue;
-        String calculationType = request.getCalculationType();
-
-        if ("QUANTITY".equalsIgnoreCase(calculationType)) {
-            if (request.getQuantity() == null) {
-                throw new IllegalArgumentException("Quantity is required when calculationType is QUANTITY");
-            }
-            importValue = request.getUnitCost().multiply(BigDecimal.valueOf(request.getQuantity()));
-
-        } else if ("WEIGHT".equalsIgnoreCase(calculationType)) {
-            if (request.getWeight() == null) {
-                throw new IllegalArgumentException("Weight is required when calculationType is WEIGHT");
-            }
-            importValue = request.getUnitCost().multiply(request.getWeight());
-
-        } else {
-            throw new IllegalArgumentException("Invalid calculationType. Use 'QUANTITY' or 'WEIGHT'.");
-        }
+        BigDecimal quantity = new BigDecimal(request.getQuantity());
+        BigDecimal importValue = request.getUnitCost().multiply(quantity);
 
         // countryRepository.findById(request.getToCountry())
         //         .orElseThrow(() -> new RuntimeException("To country not found"));
@@ -87,6 +71,6 @@ public class TariffCalculationService {
         BigDecimal totalTariff = percentageTariff.add(additionalFee);
         BigDecimal totalCost = importValue.add(totalTariff);
 
-        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, calculatedTariff,totalCost, calculationType);
+        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, totalTariff, totalCost,additionalFee,request.getCalculationType());
     }
 }

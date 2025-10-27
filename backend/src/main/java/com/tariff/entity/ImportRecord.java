@@ -22,12 +22,18 @@ import lombok.ToString;
 @EqualsAndHashCode
 
 public class ImportRecord {
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    
     private int value;
     private int year;
-    // private double calculatedTariffAmount;
+    private double tariffRate;
+    private double calculatedTariff;
+    private double additionalFee;
+    private double totalCost;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -45,11 +51,14 @@ public class ImportRecord {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public ImportRecord(int value, int year) {
+    public ImportRecord(int value, int year, double tariffRate, double calculatedTariff, double additionalFee, double totalCost, Product product) {
         this.value = value;
         this.year = year;
+        this.tariffRate = tariffRate;
+        this.calculatedTariff = calculatedTariff;
+        this.additionalFee = additionalFee;
+        this.totalCost = totalCost;
+        this.product = product;
     }
 
-
-   
 }
