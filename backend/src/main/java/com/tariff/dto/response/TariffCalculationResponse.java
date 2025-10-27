@@ -1,6 +1,7 @@
 package com.tariff.dto.response;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -11,21 +12,25 @@ public class TariffCalculationResponse {
     @Schema(description = "Total calculated tariff amount")
     private final BigDecimal calculatedTariff;
     
-    @Schema(description = "Additional fees applied")
-    private final BigDecimal additionalFee;
+    @Schema(description = "Total amount from additional fees applied")
+    private final BigDecimal totalAdditionalFees;
     
     private final String fromCountry;
     private final String toCountry;
 
     private final BigDecimal totalCost;
 
-    public TariffCalculationResponse(String fromCountry, String toCountry, BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal additionalFee, BigDecimal totalCost){
+    @Schema(description = "List of additional fee rates applied (%)")
+    private final List<BigDecimal> additionalFees;
+
+    public TariffCalculationResponse(String fromCountry, String toCountry, BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal totalAdditionalFees, BigDecimal totalCost, List<BigDecimal> additionalFees){
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
         this.tariffRate = tariffRate;
         this.calculatedTariff = calculatedTariff;
-        this.additionalFee = additionalFee;
+        this.totalAdditionalFees = totalAdditionalFees;
         this.totalCost = totalCost;
+        this.additionalFees = additionalFees;
     }
 
     public BigDecimal getTariffRate() {
@@ -44,12 +49,15 @@ public class TariffCalculationResponse {
         return toCountry;
     }
 
-    public BigDecimal getAdditionalFee() {
-        return additionalFee;
+    public BigDecimal getTotalAdditionalFees() {
+        return totalAdditionalFees;
     }
 
     public BigDecimal getTotalCost() {
         return totalCost;
     }
 
+    public List<BigDecimal> getAdditionalFees() {
+        return additionalFees;
+    }
 }

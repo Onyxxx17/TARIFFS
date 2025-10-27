@@ -135,8 +135,8 @@ public class TariffRuleServiceImpl implements TariffRuleService {
                     if (tariffRule.getRate() != null) {
                         existingRule.setRate(tariffRule.getRate());
                     }
-                    if (tariffRule.getAdditionalFee() != null) {
-                        existingRule.setAdditionalFee(tariffRule.getAdditionalFee());
+                    if (tariffRule.getAdditionalFees() != null) {
+                        existingRule.setAdditionalFees(tariffRule.getAdditionalFees());
                     }
                     existingRule.setEffectiveYear(tariffRule.getEffectiveYear());
                     
@@ -195,8 +195,8 @@ public class TariffRuleServiceImpl implements TariffRuleService {
             if (tariffRule.getRate() != null) {
                 existingRule.setRate(tariffRule.getRate());
             }
-            if (tariffRule.getAdditionalFee() != null) {
-                existingRule.setAdditionalFee(tariffRule.getAdditionalFee());
+            if (tariffRule.getAdditionalFees() != null) {
+                existingRule.setAdditionalFees(tariffRule.getAdditionalFees());
             }
             existingRule.setEffectiveYear(tariffRule.getEffectiveYear());
             if (tariffRule.getProduct() != null) {

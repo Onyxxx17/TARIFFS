@@ -6,6 +6,7 @@ package com.tariff.loaders;
 // import java.io.IOException;
 // import java.math.BigDecimal;
 // import java.time.LocalDate;
+// import java.util.ArrayList;
 // import java.util.Optional;
 
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,7 @@ package com.tariff.loaders;
 //             tariffRule.setProduct(product);        // Set Product entity
 //             tariffRule.setRate(rate);              // Use correct setter
 //             tariffRule.setEffectiveYear(year);     // Use correct setter
+//             tariffRule.setAdditionalFees(new ArrayList<>()); // Set empty list for now
 
 //                 tariffRuleRepository.save(tariffRule);
 //                 return true;

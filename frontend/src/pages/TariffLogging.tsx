@@ -11,7 +11,8 @@ interface TariffLog {
   year: number;
   tariffRate: number;
   calculatedTariff: number;
-  additionalFee?: number; // Optional for backward compatibility
+  totalAdditionalFees?: number;
+  additionalFees?: number[];
   totalCost: number;
 }
 
@@ -24,11 +25,22 @@ export default function TariffLoggingDisplay() {
   useEffect(() => {
     const storedLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
     
-    // Migrate old logs to include additionalFee property
-    const migratedLogs = storedLogs.map((log: any) => ({
-      ...log,
-      additionalFee: log.additionalFee ?? 0 // Add additionalFee if it doesn't exist
-    })) as TariffLog[];
+    // Migrate old logs to include new fee properties
+    const migratedLogs = storedLogs.map((log: any) => {
+      if (log.additionalFee !== undefined && log.totalAdditionalFees === undefined) {
+        return {
+          ...log,
+          totalAdditionalFees: log.additionalFee,
+          additionalFees: [], // Old logs don't have individual fee rates
+          additionalFee: undefined, // Remove old property
+        };
+      }
+      return {
+        ...log,
+        totalAdditionalFees: log.totalAdditionalFees ?? 0,
+        additionalFees: log.additionalFees ?? [],
+      };
+    }) as TariffLog[];
     
     // Update localStorage with migrated data if needed
     if (JSON.stringify(storedLogs) !== JSON.stringify(migratedLogs)) {
@@ -191,14 +203,15 @@ export default function TariffLoggingDisplay() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div>Quantity: {log.quantity}</div>
-                          <div>Unit Cost: ${log.unitCost}</div>
+                          <div>Unit Cost: ${log.unitCost.toLocaleString()}</div>
+                          <div>Original Total: ${(log.unitCost * log.quantity).toLocaleString()}</div>
                           <div>Year: {log.year}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div>Rate: {log.tariffRate}%</div>
                           <div>Tariff: ${log.calculatedTariff?.toLocaleString() || '0'}</div>
-                          <div>Additional Fee: ${(log.additionalFee || 0).toLocaleString()}</div>
-                          <div>Total: ${log.totalCost?.toLocaleString() || '0'}</div>
+                          <div>Total Add. Fees: ${(log.totalAdditionalFees || 0).toLocaleString()}</div>
+                          <div>Final Total: ${log.totalCost?.toLocaleString() || '0'}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button

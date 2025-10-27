@@ -1,6 +1,8 @@
 package com.tariff.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,15 +64,23 @@ public class TariffCalculationService {
         }
 
         BigDecimal rate = rule.getRate();
-        BigDecimal additionalFee = rule.getAdditionalFee() != null ? rule.getAdditionalFee() : BigDecimal.ZERO;
+        List<BigDecimal> additionalFees = rule.getAdditionalFees() != null ? rule.getAdditionalFees() : new java.util.ArrayList<>();
         
-        // Calculate percentage-based tariff
-        BigDecimal percentageTariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
+        BigDecimal hundred = new BigDecimal("100");
         
-        // Total tariff includes both percentage-based tariff and additional fees
-        BigDecimal totalTariff = percentageTariff.add(additionalFee);
-        BigDecimal totalCost = importValue.add(totalTariff);
+        // Start with import value
+        BigDecimal costAfterTariff = importValue.multiply(BigDecimal.ONE.add(rate.divide(hundred, 10, RoundingMode.HALF_UP)));
 
-        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, totalTariff, additionalFee, totalCost);
+        BigDecimal currentTotal = costAfterTariff;
+        for (BigDecimal feeRate : additionalFees) {
+            currentTotal = currentTotal.multiply(BigDecimal.ONE.add(feeRate.divide(hundred, 10, RoundingMode.HALF_UP)));
+        }
+
+        BigDecimal totalCost = currentTotal;
+        BigDecimal totalTariff = totalCost.subtract(importValue);
+        BigDecimal totalAdditionalFeesAmount = totalCost.subtract(costAfterTariff);
+
+
+        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, totalTariff, totalAdditionalFeesAmount, totalCost, additionalFees);
     }
 }
