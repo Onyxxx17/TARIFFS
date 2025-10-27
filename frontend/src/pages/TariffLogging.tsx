@@ -208,10 +208,49 @@ export default function TariffLoggingDisplay() {
                           <div>Year: {log.year}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div>Rate: {log.tariffRate}%</div>
-                          <div>Tariff: ${log.calculatedTariff?.toLocaleString() || '0'}</div>
-                          <div>Total Add. Fees: ${(log.totalAdditionalFees || 0).toLocaleString()}</div>
-                          <div>Final Total: ${log.totalCost?.toLocaleString() || '0'}</div>
+                          <div className="space-y-1">
+                            {/* Base Tariff */}
+                            <div className="flex justify-between items-center">
+                              <span>Base Tariff ({log.tariffRate}%):</span>
+                              <span className="font-medium">${((log.calculatedTariff || 0) - (log.totalAdditionalFees || 0)).toLocaleString()}</span>
+                            </div>
+                            
+                            {/* Individual Additional Fees */}
+                            {(log.additionalFees || []).length > 0 && (
+                              <div className="border-t pt-1 mt-1">
+                                <div className="text-xs text-gray-600 mb-1">Additional Fees:</div>
+                                {(log.additionalFees || []).map((fee, idx) => {
+                                  const originalTotal = log.unitCost * log.quantity;
+                                  const feeAmount = originalTotal * (fee / 100);
+                                  const feeName = fee === 27.5 ? 'Carbon Tax' : 
+                                                 fee === 16.4 ? 'Sanitary & Technical' : 
+                                                 `Additional Fee ${idx + 1}`;
+                                  return (
+                                    <div key={idx} className="flex justify-between items-center text-xs">
+                                      <span className="text-gray-600">• {feeName} ({fee}%):</span>
+                                      <span className="font-medium">${feeAmount.toLocaleString()}</span>
+                                    </div>
+                                  );
+                                })}
+                                <div className="flex justify-between items-center text-xs border-t pt-1 mt-1">
+                                  <span className="text-gray-600">Total Additional Fees:</span>
+                                  <span className="font-medium">${(log.totalAdditionalFees || 0).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Total Tariffs */}
+                            <div className="border-t pt-1 mt-1 flex justify-between items-center font-semibold">
+                              <span>Total Tariffs:</span>
+                              <span>${(log.calculatedTariff || 0).toLocaleString()}</span>
+                            </div>
+                            
+                            {/* Final Total */}
+                            <div className="border-t pt-1 mt-1 flex justify-between items-center font-bold text-green-700">
+                              <span>Final Total Cost:</span>
+                              <span>${log.totalCost?.toLocaleString() || '0'}</span>
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
