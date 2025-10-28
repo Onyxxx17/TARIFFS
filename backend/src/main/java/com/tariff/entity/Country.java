@@ -44,4 +44,9 @@ public class Country {
     @JsonIgnore
     private List<ImportRecord> importRecords;
 
+    // Explicit getter for countryCode (Lombok may not generate for reserved words)
+    public String getCountryCode() {
+        return this.countryCode;
+    }
+
 }

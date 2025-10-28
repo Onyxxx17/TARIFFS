@@ -119,24 +119,59 @@ export default function TariffCalculatorSection() {
         setShowResult(true);
         setTariffResult(null);
       } else {
-        // Store successful calculation in localStorage
-        const logEntry = {
-          timestamp: new Date().toISOString(),
-          fromCountry: from.name,
-          toCountry: to.name,
-          product: product?.name,
-          quantity: Number(quantity),
-          unitCost: Number(value),
-          year: Number(year),
-          tariffRate: result.tariffRate,
-          calculatedTariff: result.calculatedTariff,
-          additionalFee: result.additionalFee || 0,
-          totalCost: result.totalCost
-        };
+        // Save calculation to backend
+        try {
+          // Always fetch country codes from backend by country names
+          let fromCountryCode = "";
+          let toCountryCode = "";
 
-        const existingLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
-        existingLogs.unshift(logEntry); // Add new entry at the beginning
-        localStorage.setItem('tariffLogs', JSON.stringify(existingLogs));
+          // Fetch fromCountry code
+          const fromCodeRes = await fetchWithAuth(
+            `/api/countries/search/by-name?name=${encodeURIComponent(from.name)}`
+          );
+          if (fromCodeRes.ok) {
+            const data = await fromCodeRes.json();
+            fromCountryCode = data.countryCode;
+          } else {
+            console.error("Failed to fetch fromCountry code");
+            return;
+          }
+
+          // Fetch toCountry code
+          const toCodeRes = await fetchWithAuth(
+            `/api/countries/search/by-name?name=${encodeURIComponent(to.name)}`
+          );
+          if (toCodeRes.ok) {
+            const data = await toCodeRes.json();
+            toCountryCode = data.countryCode;
+          } else {
+            console.error("Failed to fetch toCountry code");
+            return;
+          }
+
+          const savePayload = {
+            fromCountryId: fromCountryCode,
+            toCountryId: toCountryCode,
+            productId: product.id,
+            value: Number(value),
+            year: Number(year),
+            tariffRate: result.tariffRate,
+            calculatedTariff: result.calculatedTariff,
+            additionalFee: result.additionalFee || 0,
+            totalCost: result.totalCost
+          };
+
+          const saveResponse = await fetchWithAuth("/api/import-records/save-calculation", {
+            method: "POST",
+            body: JSON.stringify(savePayload),
+          });
+
+          if (!saveResponse.ok) {
+            console.error("Failed to save calculation to backend");
+          }
+        } catch (error) {
+          console.error("Error saving calculation to backend:", error);
+        }
       }
     } catch (error) {
       setError("Unable to calculate tariff");

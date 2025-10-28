@@ -25,17 +25,25 @@ public class TariffCalculationService {
     private CountryRepository countryRepository;
 
     public TariffCalculationResponse calculateTariff(TariffCalculationRequest request) {
-        BigDecimal quantity = new BigDecimal(request.getQuantity());
-        BigDecimal importValue = request.getUnitCost().multiply(quantity);
+        // Calculate total value based on calculation type
+        BigDecimal totalValue;
+        if ("WEIGHT".equals(request.getCalculationType())) {
+            // For weight-based calculation: unitCost * weight
+            totalValue = request.getUnitCost().multiply(request.getWeight());
+        } else {
+            // For quantity-based calculation: unitCost * quantity  
+            BigDecimal quantity = new BigDecimal(request.getQuantity());
+            totalValue = request.getUnitCost().multiply(quantity);
+        }
+
+        BigDecimal importValue = totalValue;
 
         // countryRepository.findById(request.getToCountry())
         //         .orElseThrow(() -> new RuntimeException("To country not found"));
-
         // if (request.getFromCountry() != null) {
         //     countryRepository.findById(request.getFromCountry())
         //             .orElseThrow(() -> new RuntimeException("From country not found"));
         // }
-
         Optional<Country> fromCountryOpt = countryRepository.findByName(request.getFromCountry());
         Optional<Country> toCountryOpt = countryRepository.findByName(request.getToCountry());
 
@@ -43,10 +51,10 @@ public class TariffCalculationService {
             throw new CountryNotFoundException(request.getFromCountry());
         }
 
-        if(toCountryOpt.isEmpty()){
+        if (toCountryOpt.isEmpty()) {
             throw new CountryNotFoundException(request.getToCountry());
         }
-        
+
         String fromCountryId = fromCountryOpt.get().getCountryCode();
         String toCountryId = toCountryOpt.get().getCountryCode();
 
@@ -58,19 +66,19 @@ public class TariffCalculationService {
         );
 
         if (rule == null) {
-            throw new TariffRuleNotFoundException(request.getFromCountry(),request.getToCountry(),request.getEffectiveYear(),request.getProductId());
+            throw new TariffRuleNotFoundException(request.getFromCountry(), request.getToCountry(), request.getEffectiveYear(), request.getProductId());
         }
 
         BigDecimal rate = rule.getRate();
         BigDecimal additionalFee = rule.getAdditionalFee() != null ? rule.getAdditionalFee() : BigDecimal.ZERO;
-        
+
         // Calculate percentage-based tariff
         BigDecimal percentageTariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
-        
+
         // Total tariff includes both percentage-based tariff and additional fees
         BigDecimal totalTariff = percentageTariff.add(additionalFee);
         BigDecimal totalCost = importValue.add(totalTariff);
 
-        return new TariffCalculationResponse(request.getFromCountry(),request.getToCountry(),rate, totalTariff, additionalFee, totalCost);
+        return new TariffCalculationResponse(request.getFromCountry(), request.getToCountry(), rate, totalTariff, totalCost, additionalFee, request.getCalculationType());
     }
 }

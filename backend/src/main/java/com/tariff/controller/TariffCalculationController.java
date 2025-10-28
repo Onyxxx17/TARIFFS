@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/tariffs")
 public class TariffCalculationController {

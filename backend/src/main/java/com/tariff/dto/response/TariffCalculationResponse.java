@@ -18,14 +18,16 @@ public class TariffCalculationResponse {
     private final String toCountry;
 
     private final BigDecimal totalCost;
+    private final String calculationType;
 
-    public TariffCalculationResponse(String fromCountry, String toCountry, BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal additionalFee, BigDecimal totalCost){
+    public TariffCalculationResponse(String fromCountry,String toCountry,BigDecimal tariffRate, BigDecimal calculatedTariff, BigDecimal totalCost, BigDecimal additionalFee,String calculationType){
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
         this.tariffRate = tariffRate;
         this.calculatedTariff = calculatedTariff;
         this.additionalFee = additionalFee;
         this.totalCost = totalCost;
+        this.calculationType = calculationType;
     }
 
     public BigDecimal getTariffRate() {
@@ -52,4 +54,7 @@ public class TariffCalculationResponse {
         return totalCost;
     }
 
+    public String getcalculationType() {
+        return calculationType;
+    }
 }
