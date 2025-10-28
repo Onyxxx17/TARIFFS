@@ -1,6 +1,6 @@
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   // Add auth header if token exists
-  const BASE_URL = import.meta.env.VITE_BASE_APP_URL;
+  const BASE_URL = import.meta.env.VITE_BASE_APP_URL || "http://localhost:8080";
   const token = localStorage.getItem("token");
   const headers = new Headers(options.headers as HeadersInit);
   headers.set("Content-Type", "application/json");
