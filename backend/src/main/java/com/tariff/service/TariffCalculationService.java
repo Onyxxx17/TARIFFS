@@ -110,14 +110,14 @@ public class TariffCalculationService {
         System.out.println("  Final total cost: $" + totalCost);
 
         return new TariffCalculationResponse(
-            request.getFromCountry(),
-            request.getToCountry(),
-            rate,
-            totalTariff,
-            totalAdditionalFeesAmount,
-            totalCost,
-            additionalFees,
-            request.getCalculationType()
+                request.getFromCountry(),
+                request.getToCountry(),
+                rate,
+                totalTariff,
+                totalCost,
+                totalAdditionalFeesAmount,
+                request.getCalculationType(),
+                additionalFees
         );
     }
 }

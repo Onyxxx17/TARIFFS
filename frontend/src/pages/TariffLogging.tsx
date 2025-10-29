@@ -190,59 +190,61 @@ export default function TariffLoggingDisplay() {
 
         {/* Table */}
         <div className="mt-8 shadow border border-gray-200 sm:rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200 text-sm">
-            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-              <tr>
-                <th className="px-6 py-3 text-left font-medium">From → To</th>
-                <th className="px-6 py-3 text-left font-medium">Product</th>
-                <th className="px-6 py-3 text-left font-medium">Value ($)</th>
-                <th className="px-6 py-3 text-left font-medium">Year</th>
-                <th className="px-6 py-3 text-left font-medium">Rate (%)</th>
-                <th className="px-6 py-3 text-left font-medium">Base Tariff ($)</th>
-                <th className="px-6 py-3 text-left font-medium">Additional Fees (%)</th>
-                <th className="px-6 py-3 text-left font-medium">Total Cost ($)</th>
-                <th className="px-6 py-3 text-right font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {logs.map((log, idx) => (
-                <tr key={log.id} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {log.fromCountry?.name || "N/A"} → {log.toCountry?.name || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {log.product?.name || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    ${log.value?.toLocaleString() || "0"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {log.year}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {log.tariffRate?.toFixed(2) || "0"}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    ${log.calculatedTariff?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {log.totalAdditionalFees?.toFixed(2) || "0"}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap font-semibold text-green-700">
-                    ${log.totalCost?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button
-                      onClick={() => handleDeleteClick(log.id)}
-                      className="text-red-600 hover:text-red-900 font-medium"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+                <tr>
+                  <th className="px-6 py-3 text-left font-medium">From → To</th>
+                  <th className="px-6 py-3 text-left font-medium">Product</th>
+                  <th className="px-6 py-3 text-left font-medium">Value ($)</th>
+                  <th className="px-6 py-3 text-left font-medium">Year</th>
+                  <th className="px-6 py-3 text-left font-medium">Rate (%)</th>
+                  <th className="px-6 py-3 text-left font-medium">Base Tariff ($)</th>
+                  <th className="px-6 py-3 text-left font-medium">Additional Fees (%)</th>
+                  <th className="px-6 py-3 text-left font-medium">Total Cost ($)</th>
+                  <th className="px-6 py-3 text-right font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {logs.map((log, idx) => (
+                  <tr key={log.id} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      {log.fromCountry?.name || "N/A"} → {log.toCountry?.name || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      {log.product?.name || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      ${log.value?.toLocaleString() || "0"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      {log.year}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      {log.tariffRate?.toFixed(2) || "0"}%
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      ${log.calculatedTariff?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                      {log.totalAdditionalFees?.toFixed(2) || "0"}%
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap font-semibold text-green-700">
+                      ${log.totalCost?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <button
+                        onClick={() => handleDeleteClick(log.id)}
+                        className="text-red-600 hover:text-red-900 font-medium"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination Controls */}
