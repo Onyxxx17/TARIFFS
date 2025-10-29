@@ -4,8 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tariff.dto.request.TariffCalculationRequest;
+import com.tariff.dto.request.TariffPredictionRequest;
 import com.tariff.dto.response.TariffCalculationResponse;
+import com.tariff.dto.response.TariffPredictionResponse;
 import com.tariff.service.TariffCalculationService;
+import com.tariff.service.TariffPredictionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -23,10 +26,20 @@ public class TariffCalculationController {
     @Autowired
     private TariffCalculationService tariffCalculationService;
 
+    @Autowired
+    private TariffPredictionService tariffPredictionService;
+
     @Operation(summary = "Calculate tariff", 
                description = "Calculates tariff amount based on countries, product, unit cost, quantity, and year")
     @PostMapping("/calculate")
     public TariffCalculationResponse calculate(@RequestBody TariffCalculationRequest request) {
         return tariffCalculationService.calculateTariff(request);   
+    }
+
+    @Operation(summary = "Predict future tariff rate",
+        description = "Estimates a future tariff rate based on historical data")
+    @PostMapping("/predict")
+    public TariffPredictionResponse predict(@RequestBody TariffPredictionRequest request) {
+        return tariffPredictionService.predictFutureTariffRate(request);
     }
 }
