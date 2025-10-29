@@ -7,24 +7,30 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TariffCalculationRequest {
 
 
-    @Schema(description = "Exporter country ID (nullable for MFN tariffs)", example = "North Korea")
-
+    @Schema(description = "Exporter country name (nullable for MFN tariffs)", example = "North Korea")
     private String fromCountry;
 
-    @Schema(description = "Importer country ID", example = "United States of America")
+    @Schema(description = "Importer country name", example = "United States of America")
     private String toCountry;
 
     @Schema(description = "Product ID", example = "10129")
     private Long productId;
 
-    @Schema(description = "Unit cost of the product", example = "25.0")
+    @Schema(description = "Unit cost per quantity or per kilogram", example = "25.0")
     private BigDecimal unitCost;
 
-    @Schema(description = "Quantity of product", example = "1000")
+    @Schema(description = "Quantity of the product (required if 'calculationType' is QUANTITY)", example = "1000")
     private Integer quantity;
+
+    @Schema(description = "Weight of the product in kilograms (required if 'calculationType' is WEIGHT)", example = "500.0")
+    private BigDecimal weight;
+
+    @Schema(description = "Specify whether the tariff should be calculated by QUANTITY or WEIGHT", example = "QUANTITY", allowableValues = {"QUANTITY", "WEIGHT"})
+    private String calculationType;
 
     @Schema(description = "Year for which tariff is applied", example = "2025")
     private Integer effectiveYear;
+
 
     public String getFromCountry() {
         return fromCountry;
@@ -44,6 +50,14 @@ public class TariffCalculationRequest {
 
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public BigDecimal getWeight() { 
+        return weight; 
+    }
+
+    public String getCalculationType() { 
+        return calculationType; 
     }
 
     public Integer getEffectiveYear() {
@@ -68,6 +82,14 @@ public class TariffCalculationRequest {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+    
+    public void setCalculationType(String calculationType) {
+        this.calculationType = calculationType;
     }
 
     public void setEffectiveYear(Integer effectiveYear) {

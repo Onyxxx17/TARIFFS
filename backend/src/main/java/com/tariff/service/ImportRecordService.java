@@ -2,6 +2,10 @@ package com.tariff.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+
 import com.tariff.entity.ImportRecord;
 
 public interface ImportRecordService {
@@ -37,4 +41,13 @@ public interface ImportRecordService {
     void deleteImportRecordByProductAndUser(Long productId, Long userId, Long id);
 
     void deleteImportRecordByCountries(String fromCountryCode, String toCountryCode, Long id);
+
+    // Calculation history methods
+    Long getUserIdFromAuthentication(Authentication authentication);
+
+    Page<ImportRecord> getUserCalculationHistory(Long userId, Pageable pageable);
+
+    Page<ImportRecord> getAllCalculationHistory(Pageable pageable);
+
+    void deleteCalculationHistory(Long id, Long userId);
 }

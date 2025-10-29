@@ -1,89 +1,138 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { fetchWithAuth } from "../utils/api";
 
-interface TariffLog {
-  timestamp: string;
-  fromCountry: string;
-  toCountry: string;
-  product: string;
-  quantity: number;
-  unitCost: number;
+interface CalculationRecord {
+  id: number;
+  fromCountry?: { countryCode: string; name: string };
+  toCountry?: { countryCode: string; name: string };
+  product?: { id: number; name: string };
+  value: number;
   year: number;
   tariffRate: number;
   calculatedTariff: number;
-  totalAdditionalFees?: number;
-  additionalFees?: number[];
+  totalAdditionalFees?: number;      // combined value
+  additionalFees?: number[];         // array of individual fees
   totalCost: number;
+  timestamp?: string;
+}
+
+interface PaginatedResponse {
+  content: CalculationRecord[];
+  totalPages: number;
+  totalElements: number;
+  currentPage: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }
 
 export default function TariffLoggingDisplay() {
-  const [logs, setLogs] = useState<TariffLog[]>([]);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [logs, setLogs] = useState<CalculationRecord[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
   const [showConfirmSingleDelete, setShowConfirmSingleDelete] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
-    const storedLogs = JSON.parse(localStorage.getItem('tariffLogs') || '[]');
-    
-    // Migrate old logs to include new fee properties
-    const migratedLogs = storedLogs.map((log: any) => {
-      if (log.additionalFee !== undefined && log.totalAdditionalFees === undefined) {
-        return {
-          ...log,
-          totalAdditionalFees: log.additionalFee,
-          additionalFees: [], // Old logs don't have individual fee rates
-          additionalFee: undefined, // Remove old property
-        };
-      }
-      return {
-        ...log,
-        totalAdditionalFees: log.totalAdditionalFees ?? 0,
-        additionalFees: log.additionalFees ?? [],
-      };
-    }) as TariffLog[];
-    
-    // Update localStorage with migrated data if needed
-    if (JSON.stringify(storedLogs) !== JSON.stringify(migratedLogs)) {
-      localStorage.setItem('tariffLogs', JSON.stringify(migratedLogs));
-    }
-    
-    setLogs(migratedLogs);
-  }, []);
+    fetchCalculationHistory();
+  }, [page]);
 
-  const handleDeleteClick = (index: number) => {
-    setDeleteIndex(index);
+  const fetchCalculationHistory = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetchWithAuth(`/api/import-records/history?page=${page}`);
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          setError("Email not verified. Please verify your email first.");
+        } else {
+          setError("Failed to load calculation history");
+        }
+        setLoading(false);
+        return;
+      }
+
+      const data: PaginatedResponse = await response.json();
+      setLogs(data.content || []);
+      setTotalPages(data.totalPages || 1);
+      setTotalElements(data.totalElements || 0);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError("Error loading calculation history");
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setDeleteId(id);
     setShowConfirmSingleDelete(true);
   };
 
-  const deleteEntry = () => {
-    if (deleteIndex === null) return;
-    const newLogs = logs.filter((_, idx) => idx !== deleteIndex);
-    setLogs(newLogs);
-    localStorage.setItem('tariffLogs', JSON.stringify(newLogs));
-    setShowConfirmSingleDelete(false);
-    setDeleteIndex(null);
+  const deleteEntry = async () => {
+    if (deleteId === null) return;
+    setDeleteError("");
+
+    try {
+      const response = await fetchWithAuth(`/api/import-records/history/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        setDeleteError("Failed to delete calculation");
+        return;
+      }
+
+      setLogs(logs.filter((log) => log.id !== deleteId));
+      setShowConfirmSingleDelete(false);
+      setDeleteId(null);
+
+      if (logs.length === 1 && page > 0) {
+        setPage(page - 1);
+      }
+    } catch (err) {
+      setDeleteError("Error deleting calculation");
+    }
   };
 
-  const deleteAllEntries = () => {
-    setLogs([]);
-    localStorage.removeItem('tariffLogs');
-    setShowConfirmDelete(false);
+  const handlePreviousPage = () => {
+    if (page > 0) setPage(page - 1);
   };
+
+  const handleNextPage = () => {
+    if (page < totalPages - 1) setPage(page + 1);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (logs.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900">Tariff Calculation History</h2>
-            <p className="mt-4 text-lg text-gray-500">No calculations have been logged yet.</p>
-            <Link
-              to="/"
-              className="mt-6 inline-block bg-blue-600 px-4 py-2 rounded-md text-white hover:bg-blue-700"
-            >
-              Calculate a Tariff
-            </Link>
-          </div>
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl font-extrabold text-gray-900">Tariff Calculation History</h2>
+          {error ? (
+            <p className="mt-4 text-lg text-red-600">{error}</p>
+          ) : (
+            <p className="mt-4 text-lg text-gray-500">No calculations found.</p>
+          )}
+          <Link
+            to="/"
+            className="mt-6 inline-block bg-blue-600 px-4 py-2 rounded-md text-white hover:bg-blue-700"
+          >
+            Calculate a Tariff
+          </Link>
         </div>
       </div>
     );
@@ -94,66 +143,43 @@ export default function TariffLoggingDisplay() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-extrabold text-gray-900">Tariff Calculation History</h2>
-          <p className="mt-4 text-lg text-gray-500">View your previous tariff calculations</p>
-          
-          {/* Clear All Button */}
-          {logs.length > 0 && (
-            <button
-              onClick={() => setShowConfirmDelete(true)}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50"
-            >
-              Clear History
-            </button>
-          )}
+          <p className="mt-2 text-sm text-gray-400">
+            Showing {logs.length} of {totalElements} calculations
+          </p>
         </div>
 
-        {/* Confirmation Modal */}
-        {showConfirmDelete && (
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+        {deleteError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            {deleteError}
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showConfirmSingleDelete && deleteId !== null && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg max-w-sm mx-4">
               <h3 className="text-lg font-medium text-gray-900">Confirm Delete</h3>
               <p className="mt-2 text-sm text-gray-500">
-                Are you sure you want to clear all tariff calculation history? This action cannot be undone.
-              </p>
-              <div className="mt-4 flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowConfirmDelete(false)}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={deleteAllEntries}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
-                >
-                  Delete All
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Single Entry Delete Confirmation Modal */}
-        {showConfirmSingleDelete && deleteIndex !== null && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-sm mx-4">
-              <h3 className="text-lg font-medium text-gray-900">Confirm Delete Entry</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Are you sure you want to delete this tariff calculation? This action cannot be undone.
+                Are you sure you want to delete this tariff record? This cannot be undone.
               </p>
               <div className="mt-4 flex justify-end space-x-3">
                 <button
                   onClick={() => {
                     setShowConfirmSingleDelete(false);
-                    setDeleteIndex(null);
+                    setDeleteId(null);
                   }}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteEntry}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
                 >
                   Delete
                 </button>
@@ -162,110 +188,94 @@ export default function TariffLoggingDisplay() {
           </div>
         )}
 
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-              <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        From → To
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Product
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Details
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Results
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {logs.map((log, idx) => (
-                      <tr key={idx}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(log.timestamp).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {log.fromCountry} → {log.toCountry}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {log.product}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <div>Quantity: {log.quantity}</div>
-                          <div>Unit Cost: ${log.unitCost.toLocaleString()}</div>
-                          <div>Original Total: ${(log.unitCost * log.quantity).toLocaleString()}</div>
-                          <div>Year: {log.year}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="space-y-1">
-                            {/* Base Tariff */}
-                            <div className="flex justify-between items-center">
-                              <span>Base Tariff ({log.tariffRate}%):</span>
-                              <span className="font-medium">${((log.calculatedTariff || 0) - (log.totalAdditionalFees || 0)).toLocaleString()}</span>
-                            </div>
-                            
-                            {/* Individual Additional Fees */}
-                            {(log.additionalFees || []).length > 0 && (
-                              <div className="border-t pt-1 mt-1">
-                                <div className="text-xs text-gray-600 mb-1">Additional Fees:</div>
-                                {(log.additionalFees || []).map((fee, idx) => {
-                                  const originalTotal = log.unitCost * log.quantity;
-                                  const feeAmount = originalTotal * (fee / 100);
-                                  const feeName = fee === 27.5 ? 'Carbon Tax' : 
-                                                 fee === 16.4 ? 'Sanitary & Technical' : 
-                                                 `Additional Fee ${idx + 1}`;
-                                  return (
-                                    <div key={idx} className="flex justify-between items-center text-xs">
-                                      <span className="text-gray-600">• {feeName} ({fee}%):</span>
-                                      <span className="font-medium">${feeAmount.toLocaleString()}</span>
-                                    </div>
-                                  );
-                                })}
-                                <div className="flex justify-between items-center text-xs border-t pt-1 mt-1">
-                                  <span className="text-gray-600">Total Additional Fees:</span>
-                                  <span className="font-medium">${(log.totalAdditionalFees || 0).toLocaleString()}</span>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Total Tariffs */}
-                            <div className="border-t pt-1 mt-1 flex justify-between items-center font-semibold">
-                              <span>Total Tariffs:</span>
-                              <span>${(log.calculatedTariff || 0).toLocaleString()}</span>
-                            </div>
-                            
-                            {/* Final Total */}
-                            <div className="border-t pt-1 mt-1 flex justify-between items-center font-bold text-green-700">
-                              <span>Final Total Cost:</span>
-                              <span>${log.totalCost?.toLocaleString() || '0'}</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button
-                            onClick={() => handleDeleteClick(idx)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        {/* Table */}
+        <div className="mt-8 shadow border border-gray-200 sm:rounded-lg overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 text-sm">
+            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+              <tr>
+                <th className="px-6 py-3 text-left font-medium">From → To</th>
+                <th className="px-6 py-3 text-left font-medium">Product</th>
+                <th className="px-6 py-3 text-left font-medium">Value ($)</th>
+                <th className="px-6 py-3 text-left font-medium">Year</th>
+                <th className="px-6 py-3 text-left font-medium">Rate (%)</th>
+                <th className="px-6 py-3 text-left font-medium">Base Tariff ($)</th>
+                <th className="px-6 py-3 text-left font-medium">Additional Fees (%)</th>
+                <th className="px-6 py-3 text-left font-medium">Total Cost ($)</th>
+                <th className="px-6 py-3 text-right font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {logs.map((log, idx) => (
+                <tr key={log.id} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    {log.fromCountry?.name || "N/A"} → {log.toCountry?.name || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    {log.product?.name || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    ${log.value?.toLocaleString() || "0"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    {log.year}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    {log.tariffRate?.toFixed(2) || "0"}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    ${log.calculatedTariff?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    {log.totalAdditionalFees?.toFixed(2) || "0"}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap font-semibold text-green-700">
+                    ${log.totalCost?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <button
+                      onClick={() => handleDeleteClick(log.id)}
+                      className="text-red-600 hover:text-red-900 font-medium"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+          <div className="text-sm text-gray-600">
+            Page <span className="font-semibold">{page + 1}</span> of{" "}
+            <span className="font-semibold">{totalPages}</span>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={handlePreviousPage}
+              disabled={page === 0}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                page === 0
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Previous
+            </button>
+
+            <button
+              onClick={handleNextPage}
+              disabled={page >= totalPages - 1}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                page >= totalPages - 1
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

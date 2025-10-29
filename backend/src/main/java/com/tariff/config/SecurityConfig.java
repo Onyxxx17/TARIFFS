@@ -69,7 +69,7 @@ public class SecurityConfig {
                 // --- Import Records endpoints (USER authentication required) ---
                 .requestMatchers(HttpMethod.GET, "/api/import-records/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/import-records/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/import-records/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/import-records/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/import-records/**").authenticated()
                 // --- Tariff Rules endpoints (GET for users, others for admin) ---
                 .requestMatchers(HttpMethod.GET, "/api/tariff-rules/**").permitAll()
