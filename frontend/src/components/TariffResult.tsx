@@ -3,8 +3,9 @@ interface TariffResultData {
   toCountry?: string;
   tariffRate?: number;
   calculatedTariff?: number;
-  additionalFee?: number;
+  totalAdditionalFees?: number;
   totalCost?: number;
+  additionalFees?: number[];
 }
 
 export default function TariffResult({
@@ -65,7 +66,7 @@ export default function TariffResult({
                 Additional Fee
               </div>
               <div className="mt-1 text-2xl font-semibold text-blue-900">
-                {usd(tariffResult.additionalFee ?? 0)}
+                {usd(tariffResult.totalAdditionalFees ?? 0)}
               </div>
             </div>
             <div className="text-right text-slate-700">
@@ -107,12 +108,17 @@ export default function TariffResult({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-slate-600">Percentage-based tariff ({tariffResult.tariffRate}%):</span>
-                <span className="font-medium">{usd(((tariffResult.calculatedTariff ?? 0) - (tariffResult.additionalFee ?? 0)))}</span>
+                <span className="font-medium">{usd(((tariffResult.calculatedTariff ?? 0) - (tariffResult.totalAdditionalFees ?? 0)))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Additional fees:</span>
-                <span className="font-medium">{usd(tariffResult.additionalFee ?? 0)}</span>
+                <span className="text-slate-600">Total additional fees:</span>
+                <span className="font-medium">{usd(tariffResult.totalAdditionalFees ?? 0)}</span>
               </div>
+              {(tariffResult.additionalFees ?? []).map((fee, index) => (
+                <div key={index} className="flex justify-between pl-4">
+                  <span className="text-slate-500">└ Additional Fee {index + 1} ({fee}%):</span>
+                </div>
+              ))}
               <div className="border-t border-slate-200 pt-2 flex justify-between font-semibold">
                 <span>Total tariff:</span>
                 <span>{usd(tariffResult.calculatedTariff ?? 0)}</span>

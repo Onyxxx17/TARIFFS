@@ -7,7 +7,7 @@ public class TariffRuleNotFoundException extends RuntimeException{
     private static final long serialVersionUID = 1L;
 
     public TariffRuleNotFoundException(Long id) {
-        super("Could not find tariff rule" + id);
+        super("Could not find tariff rule " + id);
     } 
 
     public TariffRuleNotFoundException(String fromCountry, String toCountry, int year, Long product_id){

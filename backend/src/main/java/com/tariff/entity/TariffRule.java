@@ -2,12 +2,15 @@ package com.tariff.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -59,18 +62,20 @@ public class TariffRule {
     @Column(name = "rate", precision = 10, scale = 4)
     private BigDecimal rate; // Percentage
     
-    @Column(name = "additional_fee", precision = 15, scale = 2)
-    private BigDecimal additionalFee; // Fixed amount, optional
+    @ElementCollection
+    @CollectionTable(name = "tariff_rule_additional_fees", joinColumns = @JoinColumn(name = "tariff_rule_id"))
+    @Column(name = "additional_fee_rate", precision = 10, scale = 4)
+    private List<BigDecimal> additionalFees = new ArrayList<>(); // Percentage rates
     
     @Column(name = "effective_year", columnDefinition = "INTEGER")
     private int effectiveYear;
     
     // Constructor with all fields
-    public TariffRule(BigDecimal rate, BigDecimal additionalFee,
+    public TariffRule(BigDecimal rate, List<BigDecimal> additionalFees,
                      int effectiveYear) {
         
         this.rate = rate;
-        this.additionalFee = additionalFee;
+        this.additionalFees = additionalFees;
         this.effectiveYear = effectiveYear;
        
     }
