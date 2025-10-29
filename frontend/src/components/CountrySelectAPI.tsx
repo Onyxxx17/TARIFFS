@@ -1,74 +1,71 @@
 import { useState, useEffect, useRef } from 'react';
-import { BASE_URL } from '../config';
+import { fetchWithAuth } from '../utils/api';
 
-interface Product {
-  id: number;
+interface Country {
+  countryCode: string;
   name: string;
-  category: {
-    id: number;
-    name: string;
-  };
 }
 
-interface ProductSelectProps {
+interface CountrySelectAPIProps {
   label: string;
-  value: Product | null;
-  onPick: (product: Product | null) => void;
+  value: string;
+  onChange: (countryCode: string) => void;
   placeholder?: string;
 }
 
-export default function ProductSelect({ 
+export default function CountrySelectAPI({ 
   label, 
   value, 
-  onPick, 
-  placeholder = "Search for a product..." 
-}: ProductSelectProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  onChange, 
+  placeholder = "Search for a country..." 
+}: CountrySelectAPIProps) {
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch products on mount
+  // Fetch countries on mount
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCountries = async () => {
       setLoading(true);
       setError("");
       try {
-        const response = await fetch(`${BASE_URL}/api/products`);
-        if (!response.ok) throw new Error("Failed to fetch products");
+        const response = await fetchWithAuth('/api/countries', {
+          method: 'GET',
+        });
+        if (!response.ok) throw new Error("Failed to fetch countries");
         const data = await response.json();
-        setProducts(data);
-        setFilteredProducts(data);
+        setCountries(data);
+        setFilteredCountries(data);
       } catch (err) {
-        setError("Failed to load products");
+        setError("Failed to load countries");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchCountries();
   }, []);
 
-  // Filter products based on search term
+  // Filter countries based on search term
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFilteredProducts(products);
+      setFilteredCountries(countries);
       return;
     }
 
     const term = searchTerm.toLowerCase();
-    const filtered = products.filter(
-      (product) =>
-        product.id.toString().includes(term) ||
-        product.name.toLowerCase().includes(term) ||
-        product.category.name.toLowerCase().includes(term)
+    const filtered = countries.filter(
+      (country) =>
+        country.countryCode.toLowerCase().includes(term) ||
+        country.name.toLowerCase().includes(term)
     );
-    setFilteredProducts(filtered);
-  }, [searchTerm, products]);
+    setFilteredCountries(filtered);
+  }, [searchTerm, countries]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -82,16 +79,18 @@ export default function ProductSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (product: Product) => {
-    onPick(product);
+  const handleSelect = (country: Country) => {
+    onChange(country.countryCode);
     setSearchTerm("");
     setIsOpen(false);
   };
 
   const handleClear = () => {
-    onPick(null);
+    onChange("");
     setSearchTerm("");
   };
+
+  const selectedCountry = countries.find(c => c.countryCode === value);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -103,11 +102,11 @@ export default function ProductSelect({
       <div className="relative">
         <input
           type="text"
-          value={value ? `${value.id} - ${value.name}` : searchTerm}
+          value={selectedCountry ? selectedCountry.name : searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setIsOpen(true);
-            if (value) onPick(null);
+            if (selectedCountry) onChange("");
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
@@ -116,7 +115,7 @@ export default function ProductSelect({
         />
         
         {/* Clear button */}
-        {value && (
+        {selectedCountry && (
           <button
             type="button"
             onClick={handleClear}
@@ -135,24 +134,24 @@ export default function ProductSelect({
       {/* Dropdown */}
       {isOpen && !loading && (
         <div className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-lg max-h-64 overflow-y-auto">
-          {filteredProducts.length === 0 ? (
+          {filteredCountries.length === 0 ? (
             <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
-              No products found
+              No countries found
             </div>
           ) : (
             <ul className="py-1">
-              {filteredProducts.map((product) => (
-                <li key={product.id}>
+              {filteredCountries.map((country) => (
+                <li key={country.countryCode}>
                   <button
                     type="button"
-                    onClick={() => handleSelect(product)}
+                    onClick={() => handleSelect(country)}
                     className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-600 focus:bg-slate-50 dark:focus:bg-slate-600 focus:outline-none"
                   >
                     <div className="font-medium text-slate-900 dark:text-white">
-                      {product.id} - {product.name}
+                      {country.name}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      {product.category.name}
+                      {country.countryCode}
                     </div>
                   </button>
                 </li>
@@ -164,7 +163,7 @@ export default function ProductSelect({
 
       {/* Loading state */}
       {loading && (
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Loading products...</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Loading countries...</p>
       )}
     </div>
   );

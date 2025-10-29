@@ -73,22 +73,26 @@ export default function SignupPage() {
       className="
           min-h-screen flex items-center justify-center px-4
           bg-[radial-gradient(90%_70%_at_50%_0%,#EBF2FF_0%,#F6F8FF_45%,#FFFFFF_100%)]
+          dark:bg-[radial-gradient(90%_70%_at_50%_0%,#1e293b_0%,#0f172a_45%,#020617_100%)]
+          transition-colors
         "
     >
       <div className="w-full max-w-md">
         <div
           className="
-              rounded-3xl bg-white/95 backdrop-blur
-              border border-slate-100
+              rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur
+              border border-slate-100 dark:border-slate-700
               shadow-[0_20px_60px_rgba(30,58,138,0.10)]
+              dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)]
               px-8 py-9 sm:px-10 sm:py-10
+              transition-colors
             "
         >
           {/* Title */}
-          <h1 className="text-[26px] font-semibold tracking-tight text-slate-900">
+          <h1 className="text-[26px] font-semibold tracking-tight text-slate-900 dark:text-white">
             Create account
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Join us to get started</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Join us to get started</p>
 
           <button
             type="button"
@@ -129,9 +133,9 @@ export default function SignupPage() {
 
           {/* Divider */}
           <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs text-slate-500">or</span>
-            <div className="h-px flex-1 bg-slate-200" />
+            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+            <span className="text-xs text-slate-500 dark:text-slate-400">or</span>
+            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
           </div>
 
           {/* Form */}
@@ -139,7 +143,7 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="username"
-                className="block text-xs font-medium text-slate-700 mb-2"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Username
               </label>
@@ -152,10 +156,10 @@ export default function SignupPage() {
                 required
                 className="
                     w-full rounded-xl
-                    border border-slate-200 bg-white
-                    px-4 py-3 text-slate-900 placeholder-slate-400
+                    border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700
+                    px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
                     focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                    transition
+                    transition transition-colors
                   "
               />
             </div>
@@ -163,7 +167,7 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-medium text-slate-700 mb-2"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Email
               </label>
@@ -176,10 +180,10 @@ export default function SignupPage() {
                 required
                 className="
                     w-full rounded-xl
-                    border border-slate-200 bg-white
-                    px-4 py-3 text-slate-900 placeholder-slate-400
+                    border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700
+                    px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
                     focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                    transition
+                    transition transition-colors
                   "
               />
             </div>
@@ -187,7 +191,7 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-medium text-slate-700 mb-2"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Password
               </label>
@@ -200,13 +204,13 @@ export default function SignupPage() {
                 required
                 className="
                     w-full rounded-xl
-                    border border-slate-200 bg-white
-                    px-4 py-3 text-slate-900 placeholder-slate-400
+                    border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700
+                    px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
                     focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                    transition
+                    transition transition-colors
                   "
               />
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Password must be at least 8 characters, include uppercase, lowercase, number, and special character.
               </p>
             </div>
@@ -214,7 +218,7 @@ export default function SignupPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-xs font-medium text-slate-700 mb-2"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
                 Confirm password
               </label>
@@ -227,18 +231,18 @@ export default function SignupPage() {
                 required
                 className="
                     w-full rounded-xl
-                    border border-slate-200 bg-white
-                    px-4 py-3 text-slate-900 placeholder-slate-400
+                    border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700
+                    px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
                     focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                    transition
+                    transition transition-colors
                   "
               />
             </div>
 
             {/* Error */}
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                <p className="text-red-600 text-sm font-medium">{error}</p>
+              <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3">
+                <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
               </div>
             )}
 
@@ -261,11 +265,11 @@ export default function SignupPage() {
           </form>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-sm text-slate-600">
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-semibold text-[#1E40AF] hover:underline"
+              className="font-semibold text-[#1E40AF] dark:text-blue-400 hover:underline"
             >
               Log in
             </Link>
