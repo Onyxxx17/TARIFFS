@@ -86,3 +86,16 @@ Accept: application/json
 
 ###
 GET http://localhost:8080/api/products
+
+### 9. Predict Tariff Rate
+# Testing if the prediction logic works
+POST http://localhost:8080/api/tariffs/predict
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fromCountryCode": "CHN",
+  "toCountryCode": "USA",
+  "productId": 1,
+  "year": 2026
+}
