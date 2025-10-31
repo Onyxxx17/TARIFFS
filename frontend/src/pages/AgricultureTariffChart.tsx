@@ -9,12 +9,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import ProductSelect from "../components/ProductSelect";
+import CountrySelectAPI from "../components/CountrySelectAPI";
 
 import { fetchWithAuth } from "../utils/api";
-interface Country {
-  countryCode: string;
-  countryName: string;
-}
 
 interface Product {
   id: number;
@@ -36,18 +33,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div
         style={{
-          backgroundColor: "white",
+          backgroundColor: "var(--tooltip-bg, white)",
           border: "1px solid #e5e7eb",
           padding: "8px 12px",
           borderRadius: "8px",
           boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
         }}
+        className="dark:bg-slate-800 dark:border-slate-600"
       >
-        <p style={{ margin: 0, fontWeight: 600, color: "#1a73e8" }}>
+        <p style={{ margin: 0, fontWeight: 600, color: "#1a73e8" }} className="dark:text-blue-400">
           Year {label}
         </p>
         {payload.map((p: any, idx: number) => (
-          <p key={idx} style={{ margin: 0, color: p.stroke }}>
+          <p key={idx} style={{ margin: 0, color: p.stroke }} className="dark:text-slate-200">
             {p.name}: {p.value}%
           </p>
         ))}
@@ -58,31 +56,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const AgricultureTariffChart = () => {
-  const [countries, setCountries] = useState<Country[]>([]);
   const [fromCountryCode, setFromCountryCode] = useState("");
   const [toCountryCode, setToCountryCode] = useState("");
   const [product, setProduct] = useState<Product | null>(null);
   const [tariffData, setTariffData] = useState<TariffRateData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Fetch countries on mount
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetchWithAuth(`/api/countries`, {
-          method: "GET",
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setCountries(data);
-        }
-      } catch (err) {
-        console.error("Error fetching countries:", err);
-      }
-    };
-    fetchCountries();
-  }, []);
 
   useEffect(() => {
     if (!fromCountryCode || !toCountryCode || !product) {
@@ -153,55 +132,33 @@ const AgricultureTariffChart = () => {
   const summaryStats = getSummaryStats();
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 mt-8">
+    <div className="max-w-7xl mx-auto space-y-6 mt-8 px-4">
       {/* Selection Form */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 relative overflow-visible">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6 relative overflow-visible transition-colors">
         <div className="text-center mb-6">
-          <h3 className="text-2xl font-semibold text-slate-900">
+          <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">
             Tariff Rates Over Time
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Select two countries and a product to visualize tariff rates from
             1996 to 2025
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              From Country:
-            </label>
-            <select
-              value={fromCountryCode}
-              onChange={(e) => setFromCountryCode(e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select a country</option>
-              {countries.map((country) => (
-                <option key={country.countryCode} value={country.countryCode}>
-                  {country.countryCode} - {country.countryName}
-                </option>
-              ))}
-            </select>
-          </div>
+          <CountrySelectAPI
+            label="From Country"
+            value={fromCountryCode}
+            onChange={setFromCountryCode}
+            placeholder="Search for a country..."
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              To Country:
-            </label>
-            <select
-              value={toCountryCode}
-              onChange={(e) => setToCountryCode(e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select a country</option>
-              {countries.map((country) => (
-                <option key={country.countryCode} value={country.countryCode}>
-                  {country.countryCode} - {country.countryName}
-                </option>
-              ))}
-            </select>
-          </div>
+          <CountrySelectAPI
+            label="To Country"
+            value={toCountryCode}
+            onChange={setToCountryCode}
+            placeholder="Search for a country..."
+          />
 
           <div className="self-end">
             <ProductSelect
@@ -214,7 +171,7 @@ const AgricultureTariffChart = () => {
         </div>
 
         {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-300">
             {error}
           </div>
         )}
@@ -222,26 +179,26 @@ const AgricultureTariffChart = () => {
 
       {/* Chart */}
       {loading ? (
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 text-center">
-          <p className="text-slate-500">Loading tariff data...</p>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6 text-center transition-colors">
+          <p className="text-slate-500 dark:text-slate-400">Loading tariff data...</p>
         </div>
       ) : tariffData.length > 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6 transition-colors">
           {/* Summary Statistics Banner */}
           {summaryStats && (
-            <div className="mb-6 bg-slate-50 border border-slate-200 rounded-lg p-4">
+            <div className="mb-6 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg p-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                     Change
                   </p>
                   <p
                     className={`text-xl font-bold ${
                       summaryStats.trendDirection === "increase"
-                        ? "text-red-600"
+                        ? "text-red-600 dark:text-red-400"
                         : summaryStats.trendDirection === "decrease"
-                        ? "text-green-600"
-                        : "text-slate-700"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-slate-700 dark:text-slate-300"
                     }`}
                   >
                     {summaryStats.change >= 0 ? "+" : ""}
@@ -250,28 +207,28 @@ const AgricultureTariffChart = () => {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                     Current
                   </p>
-                  <p className="text-xl font-bold text-slate-900">
+                  <p className="text-xl font-bold text-slate-900 dark:text-white">
                     {summaryStats.lastRate.toFixed(2)}%
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                     Average
                   </p>
-                  <p className="text-xl font-bold text-slate-900">
+                  <p className="text-xl font-bold text-slate-900 dark:text-white">
                     {summaryStats.avgRate.toFixed(2)}%
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                     Range
                   </p>
-                  <p className="text-xl font-bold text-slate-900">
+                  <p className="text-xl font-bold text-slate-900 dark:text-white">
                     {summaryStats.minRate.toFixed(2)}% –{" "}
                     {summaryStats.maxRate.toFixed(2)}%
                   </p>
@@ -281,10 +238,10 @@ const AgricultureTariffChart = () => {
           )}
 
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
               Tariff Rates Over Time (1996–2025)
             </h3>
-            <p className="text-sm text-slate-600 mt-1">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               {toCountryCode} tariff rates on imports from {fromCountryCode} •
               Product: {product?.name}
             </p>
@@ -334,11 +291,11 @@ const AgricultureTariffChart = () => {
 
           {/* Analysis Description */}
           {summaryStats && (
-            <div className="mt-6 p-5 bg-slate-50 border border-slate-200 rounded-lg">
-              <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wide">
+            <div className="mt-6 p-5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-3 uppercase tracking-wide">
                 Executive Summary
               </h4>
-              <p className="text-sm text-slate-700 leading-relaxed">
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                 Over the {tariffData.length}-year period from{" "}
                 {tariffData[0].year} to {tariffData[tariffData.length - 1].year}
                 , the tariff rate applied by {toCountryCode} on imports from{" "}
@@ -375,8 +332,8 @@ const AgricultureTariffChart = () => {
           )}
         </div>
       ) : (
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 text-center">
-          <p className="text-slate-500">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-6 text-center transition-colors">
+          <p className="text-slate-500 dark:text-slate-400">
             Select two countries and a product to view tariff rates over time.
           </p>
         </div>

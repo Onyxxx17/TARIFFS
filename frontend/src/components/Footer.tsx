@@ -8,7 +8,7 @@ export default function Footer({
   tagline = "Empowering Smarter Decisions with AI-Driven Tariff Insights and Business Trends.",
 }: FooterProps) {
   return (
-    <footer className="bg-white text-slate-700">
+    <footer className="bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-colors">
       <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-12 gap-43">
         {/* Left: brand + socials */}
         <div className="md:col-span-5">
@@ -27,12 +27,12 @@ export default function Footer({
                 />
               </svg>
             </span>
-            <span className="text-xl font-semibold text-slate-900">
+            <span className="text-xl font-semibold text-slate-900 dark:text-white">
               {brandName}
             </span>
           </div>
 
-          <p className="mt-4 max-w-md text-slate-500 leading-relaxed">
+          <p className="mt-4 max-w-md text-slate-500 dark:text-slate-400 leading-relaxed">
             {tagline}
           </p>
 
@@ -70,20 +70,20 @@ export default function Footer({
       </div>
 
       {/* bottom bar */}
-      <div className="border-t border-slate-200">
+      <div className="border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-slate-600 dark:text-slate-400">
               {brandName} © {new Date().getFullYear()}
             </span>
           </div>
           {/* add legal links here */}
-          <div className="hidden md:flex items-center gap-4 text-sm text-slate-500">
-            <a href="#" className="hover:text-slate-900">
+          <div className="hidden md:flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+            <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">
               Privacy
             </a>
-            <a href="#" className="hover:text-slate-900">
+            <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">
               Terms
             </a>
           </div>
@@ -104,13 +104,13 @@ function LinkColumn({
 }) {
   return (
     <div>
-      <h3 className="text-slate-900 font-semibold"> {title} </h3>
+      <h3 className="text-slate-900 dark:text-white font-semibold"> {title} </h3>
       <ul className="mt-4 space-y-3">
         {links.map((l) => (
           <li key={l.label}>
             <a
               href={l.href}
-              className="text-slate-500 hover:text-slate-900 transition-colors"
+              className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               {l.label}
             </a>
@@ -136,7 +136,7 @@ function SocialIcon({
       target="_blank"  //newtab
       rel = "noopener noreferrer"
       aria-label={label}
-      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition"
     >
       {kind === "facebook" && (
         <svg

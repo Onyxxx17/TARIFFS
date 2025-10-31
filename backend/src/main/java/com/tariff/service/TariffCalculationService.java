@@ -1,6 +1,9 @@
 package com.tariff.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,17 +71,53 @@ public class TariffCalculationService {
         if (rule == null) {
             throw new TariffRuleNotFoundException(request.getFromCountry(), request.getToCountry(), request.getEffectiveYear(), request.getProductId());
         }
-
         BigDecimal rate = rule.getRate();
-        BigDecimal additionalFee = rule.getAdditionalFee() != null ? rule.getAdditionalFee() : BigDecimal.ZERO;
+        BigDecimal hundred = new BigDecimal("100");
 
-        // Calculate percentage-based tariff
-        BigDecimal percentageTariff = importValue.multiply(rate).divide(BigDecimal.valueOf(100));
+        // Ensure additional fees are loaded from the database
+        List<BigDecimal> additionalFees = rule.getAdditionalFees();
+        if (additionalFees == null) {
+            additionalFees = new ArrayList<>();
+        }
 
-        // Total tariff includes both percentage-based tariff and additional fees
-        BigDecimal totalTariff = percentageTariff.add(additionalFee);
+        // Debug logging
+        System.out.println("Tariff Rule ID: " + rule.getId());
+        System.out.println("Base tariff rate: " + rate + "%");
+        System.out.println("Additional fees from database: " + additionalFees);
+        System.out.println("Calculation type: " + request.getCalculationType());
+
+        // Step 1: Calculate base tariff (percentage-based)
+        BigDecimal baseTariffAmount = importValue.multiply(rate.divide(hundred, 10, RoundingMode.HALF_UP));
+
+        // Step 2: Calculate additional fees (each applied to import value)
+        BigDecimal totalAdditionalFeesAmount = BigDecimal.ZERO;
+        for (BigDecimal feeRate : additionalFees) {
+            BigDecimal feeAmount = importValue.multiply(feeRate.divide(hundred, 10, RoundingMode.HALF_UP));
+            totalAdditionalFeesAmount = totalAdditionalFeesAmount.add(feeAmount);
+            System.out.println("Applied additional fee " + feeRate + "%: $" + feeAmount);
+        }
+
+        // Step 3: Combine total tariff and cost
+        BigDecimal totalTariff = baseTariffAmount.add(totalAdditionalFeesAmount);
         BigDecimal totalCost = importValue.add(totalTariff);
 
-        return new TariffCalculationResponse(request.getFromCountry(), request.getToCountry(), rate, totalTariff, totalCost, additionalFee, request.getCalculationType());
+        // Debug summary
+        System.out.println("Calculation summary:");
+        System.out.println("  Import value: $" + importValue);
+        System.out.println("  Base tariff (" + rate + "%): $" + baseTariffAmount);
+        System.out.println("  Total additional fees: $" + totalAdditionalFeesAmount);
+        System.out.println("  Total tariff: $" + totalTariff);
+        System.out.println("  Final total cost: $" + totalCost);
+
+        return new TariffCalculationResponse(
+                request.getFromCountry(),
+                request.getToCountry(),
+                rate,
+                totalTariff,
+                totalCost,
+                totalAdditionalFeesAmount,
+                request.getCalculationType(),
+                additionalFees
+        );
     }
 }
