@@ -94,8 +94,8 @@ export default function ProductSelect({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+    <div className="relative w-full" ref={dropdownRef}>
+      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">
         {label}
       </label>
 
@@ -111,7 +111,7 @@ export default function ProductSelect({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500"
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 sm:py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
           disabled={loading}
         />
         
@@ -120,7 +120,7 @@ export default function ProductSelect({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
           >
             ✕
           </button>
@@ -129,14 +129,14 @@ export default function ProductSelect({
 
       {/* Error message */}
       {error && (
-        <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>
+        <p className="mt-1 text-xs text-red-600">{error}</p>
       )}
 
       {/* Dropdown */}
       {isOpen && !loading && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-lg max-h-64 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg max-h-48 overflow-y-auto">
           {filteredProducts.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
+            <div className="px-3 py-3 sm:py-2 text-sm text-slate-500">
               No products found
             </div>
           ) : (
@@ -146,12 +146,12 @@ export default function ProductSelect({
                   <button
                     type="button"
                     onClick={() => handleSelect(product)}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-600 focus:bg-slate-50 dark:focus:bg-slate-600 focus:outline-none"
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 focus:bg-slate-50 focus:outline-none"
                   >
-                    <div className="font-medium text-slate-900 dark:text-white">
+                    <div className="font-medium text-slate-900">
                       {product.id} - {product.name}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    <div className="text-xs text-slate-500 mt-0.5">
                       {product.category.name}
                     </div>
                   </button>
@@ -164,7 +164,7 @@ export default function ProductSelect({
 
       {/* Loading state */}
       {loading && (
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Loading products...</p>
+        <p className="mt-1 text-xs text-slate-500">Loading products...</p>
       )}
     </div>
   );

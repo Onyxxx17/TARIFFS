@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { fetchWithAuth } from "../utils/api";
-import { ChevronDown, Moon, Sun } from "lucide-react"; 
+import { ChevronDown, Menu, X, BarChart2, FileText } from "lucide-react"; 
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -10,24 +10,13 @@ export default function Header() {
   );
   const [openFeatures, setOpenFeatures] = useState(false);
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [userName, setUserName] = useState<string>("");
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const mobileToggleRef = useRef<HTMLButtonElement | null>(null);
   const navigate = useNavigate();
-
-  // Initialize dark mode from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("darkMode");
-    if (saved === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      // Default to light mode
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    }
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -35,39 +24,6 @@ export default function Header() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  // Dark mode effect - runs when darkMode changes
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    const html = document.documentElement;
-    const newMode = !darkMode;
-    
-    console.log("Current darkMode state:", darkMode);
-    console.log("New darkMode state:", newMode);
-    console.log("HTML classes before:", html.className);
-    
-    if (newMode) {
-      html.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-    } else {
-      html.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    }
-    
-    console.log("HTML classes after:", html.className);
-    console.log("LocalStorage darkMode:", localStorage.getItem("darkMode"));
-    
-    setDarkMode(newMode);
-  };
 
   // keep header state in sync when token changes in other tabs/components
   useEffect(() => {
@@ -119,6 +75,24 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openUserMenu]);
 
+  // Close mobile menu when clicking outside the menu and the hamburger button
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(target) &&
+        mobileToggleRef.current &&
+        !mobileToggleRef.current.contains(target)
+      ) {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [mobileOpen]);
+
   const handleLogout = async () => {
     // Close it
     setOpenUserMenu(false);
@@ -157,32 +131,32 @@ export default function Header() {
   return (
     <header
       className={[
-        "fixed top-0 inset-x-0 z-50 h-[72px] border-b transition-colors",
+        "fixed top-0 inset-x-0 z-50 h-[64px] sm:h-[72px] border-b transition-colors",
         scrolled 
-          ? "bg-white/95 dark:bg-slate-900/95 shadow-sm" 
-          : "bg-white/90 dark:bg-slate-900/90",
-        "backdrop-blur dark:border-slate-700",
+          ? "bg-white/95 shadow-sm" 
+          : "bg-white/90",
+        "backdrop-blur",
       ].join(" ")}
     >
-      <div className="max-w-8xl mx-auto h-20 px-9 flex items-center justify-between">
+      <div className="max-w-8xl mx-auto h-16 sm:h-20 px-4 sm:px-6 md:px-9 flex items-center justify-between">
         {/* logo -> home */}
         <Link
           to="/"
-          className="flex items-center gap-3 font-extrabold tracking-wide text-slate-900 dark:text-white transition-colors"
+          className="flex items-center gap-2 sm:gap-3 font-extrabold tracking-wide text-slate-700 transition-colors text-sm sm:text-base"
         >
-          <span className="w-4 h-4 rounded-md bg-gradient-to-b from-blue-700 to-blue-500 shadow-[0_0_18px_rgba(59,130,246,.6)]" />
-          TARIFF
+          <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-md bg-gradient-to-b from-blue-700 to-blue-500 shadow-[0_0_18px_rgba(59,130,246,.6)]" />
+          <span className="ml-1">TARIFF</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-slate-600 dark:text-slate-300">
+  <nav className="hidden sm:flex items-center gap-1 lg:gap-8 text-slate-600">
           <Link
-            className="hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-md transition-colors"
+            className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm"
             to="/"
           >
             Home
           </Link>
           <Link
-            className="hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-md transition-colors"
+            className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm"
             to="/dashboard"
           >
             Dashboard
@@ -194,7 +168,7 @@ export default function Header() {
             onMouseEnter={() => setOpenFeatures(true)}
             onMouseLeave={() => setOpenFeatures(false)}
           >
-            <button className="flex items-center gap-1 hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-md transition-colors">
+            <button className="flex items-center gap-1 hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm">
               Features
               <ChevronDown
                 size={16}
@@ -205,16 +179,16 @@ export default function Header() {
             </button>
 
             {openFeatures && (
-              <div className="absolute top-10 left-0 w-60 bg-white dark:bg-slate-800 border dark:border-slate-700 shadow-lg rounded-lg z-50">
+              <div className="absolute top-10 left-0 w-60 bg-white border shadow-lg rounded-lg z-50">
                 <Link
                   to="/dashboard/analytics"
-                  className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-md transition-colors"
+                  className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
                 >
                   Analytics Dashboard
                 </Link>
                 <Link
                   to="/logging"
-                  className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-md transition-colors"
+                  className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
                 >
                   Tariff Logging
                 </Link>
@@ -222,29 +196,57 @@ export default function Header() {
             )}
           </div>
 
-          <Link className="hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-md transition-colors" to="/blog">
+          <Link className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm" to="/blog">
             Blog
           </Link>
           <Link
-            className="hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-md transition-colors"
+            className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm"
             to="/contact"
           >
             Contact
           </Link>
+
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Mobile quick actions + hamburger - visible when nav is hidden */}
+        <div className="sm:hidden flex items-center gap-2">
+          {/* quick links: analytics & logging as icons for mobile */}
+          <Link to="/dashboard/analytics" className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:bg-slate-100 transition" aria-label="Analytics">
+            <BarChart2 size={18} />
+          </Link>
+          <Link to="/logging" className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:bg-slate-100 transition" aria-label="Tariff Logging">
+            <FileText size={18} />
+          </Link>
+          {/* quick login button so user doesn't need to open menu */}
+          {!isLoggedIn && (
+            <Link to="/login" className="inline-flex items-center px-3 py-1 rounded-md text-sm border border-slate-300 text-slate-700 hover:bg-slate-50">
+              Log in
+            </Link>
+          )}
+          <div>
+            <button
+              ref={mobileToggleRef}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Open menu"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:bg-slate-100 transition"
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+  <div className="hidden sm:flex items-center gap-2 sm:gap-3">
           {!isLoggedIn ? (
             <>
               <Link
                 to="/login"
-                className="px-3 py-2 rounded-lg border border-slate-400 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-3 py-2 rounded-lg border border-slate-400 text-xs sm:text-sm text-slate-700 hover:bg-slate-100 transition-colors whitespace-nowrap"
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
-                className="px-4 py-2 rounded-lg bg-gradient-to-b from-blue-600 to-blue-700 text-white text-sm font-semibold shadow-[0_8px_18px_rgba(59,130,246,.35)] hover:from-blue-700 hover:to-blue-800 transition-all"
+                className="px-3 sm:px-4 py-2 rounded-lg bg-gradient-to-b from-blue-600 to-blue-700 text-white text-xs sm:text-sm font-semibold shadow-[0_8px_18px_rgba(59,130,246,.35)] hover:from-blue-700 hover:to-blue-800 transition-all whitespace-nowrap"
               >
                 Sign up
               </Link>
@@ -253,15 +255,15 @@ export default function Header() {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setOpenUserMenu(!openUserMenu)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
                 {/* Avatar - Bigger size */}
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 flex items-center justify-center text-white text-base font-bold shadow-lg ring-2 ring-blue-500/20 dark:ring-blue-400/30">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-base font-bold shadow-lg ring-2 ring-blue-500/20">
                   {getInitials(userName)}
                 </div>
                 <ChevronDown
                   size={16}
-                  className={`text-slate-600 dark:text-slate-400 transition-transform ${
+                  className={`text-slate-600 transition-transform ${
                     openUserMenu ? "rotate-180" : ""
                   }`}
                 />
@@ -269,47 +271,22 @@ export default function Header() {
 
               {/* Dropdown Menu */}
               {openUserMenu && (
-                <div className="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                <div className="absolute right-0 top-12 w-48 sm:w-56 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden z-50">
                   {/* User Info */}
-                  <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                  <div className="px-3 sm:px-4 py-3 border-b border-slate-200 bg-slate-50">
+                    <p className="text-xs sm:text-sm font-semibold text-slate-700 truncate">
                       {userName}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       Signed in
                     </p>
                   </div>
 
                   {/* Menu Items */}
                   <div className="py-1">
-                    {/* Dark Mode Toggle */}
-                    <button
-                      onClick={toggleDarkMode}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex items-center justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        {darkMode ? (
-                          <>
-                            <Moon size={16} className="text-blue-500" />
-                            Dark Mode
-                          </>
-                        ) : (
-                          <>
-                            <Sun size={16} className="text-amber-500" />
-                            Light Mode
-                          </>
-                        )}
-                      </span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
-                        {darkMode ? "On" : "Off"}
-                      </span>
-                    </button>
-
-                    <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
-
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -322,6 +299,29 @@ export default function Header() {
             </div>
           )}
         </div>
+        {/* Mobile menu panel */}
+        {mobileOpen && (
+          <div ref={mobileMenuRef} className="sm:hidden fixed inset-x-0 top-16 bg-white border-t border-slate-200 shadow-md z-50 max-h-[calc(100vh-4rem)] overflow-auto">
+            <div className="px-3 py-3 space-y-2">
+              <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/">Home</Link>
+              <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/dashboard">Dashboard</Link>
+              <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/blog">Blog</Link>
+              <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/contact">Contact</Link>
+              {/* auth actions - only show login/signup when not logged in */}
+              {!isLoggedIn ? (
+                <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-stretch gap-2">
+                  <Link onClick={() => setMobileOpen(false)} to="/login" className="w-full text-center px-3 py-2 rounded-md border border-slate-300 text-sm">Log in</Link>
+                  <Link onClick={() => setMobileOpen(false)} to="/signup" className="w-full text-center px-3 py-2 rounded-md bg-blue-600 text-white text-sm">Sign up</Link>
+                </div>
+              ) : (
+                <div className="pt-2 border-t border-slate-100 flex flex-col items-stretch gap-2">
+                  <Link onClick={() => { setMobileOpen(false); }} to="/profile" className="w-full text-left px-3 py-2 rounded-md text-slate-700">Account</Link>
+                  <button onClick={() => { setMobileOpen(false); handleLogout(); }} className="w-full text-left px-3 py-2 rounded-md text-red-600 hover:bg-red-50">Log out</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

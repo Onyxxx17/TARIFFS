@@ -8,11 +8,11 @@ export default function Footer({
   tagline = "Empowering Smarter Decisions with AI-Driven Tariff Insights and Business Trends.",
 }: FooterProps) {
   return (
-    <footer className="bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-colors">
-      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-12 gap-43">
-        {/* Left: brand + socials */}
-        <div className="md:col-span-5">
-          <div className="flex items-center gap-3">
+    <footer className="bg-white text-slate-700 transition-colors">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
+    {/* Left: brand + socials */}
+    <div className="md:col-span-6">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-700 shadow-sm">
               {/*  bolt logo */}
               <svg
@@ -27,18 +27,18 @@ export default function Footer({
                 />
               </svg>
             </span>
-            <span className="text-xl font-semibold text-slate-900 dark:text-white">
+            <span className="text-lg sm:text-xl font-semibold text-slate-900">
               {brandName}
             </span>
           </div>
 
-          <p className="mt-4 max-w-md text-slate-500 dark:text-slate-400 leading-relaxed">
+          {/* tagline hidden on very small screens to save vertical space */}
+          <p className="mt-4 max-w-md text-xs sm:text-sm text-slate-500 leading-relaxed">
             {tagline}
           </p>
 
           <div className="mt-6 flex items-center gap-3">
             {/* Socials Icons */}
-
             <SocialIcon label="Facebook" href="https://facebook.com" kind="facebook" />
             <SocialIcon label="Instagram" href="https://instagram.com" kind="instagram" />
             <SocialIcon label="LinkedIn" href="https://linkedin.com" kind="linkedin" />
@@ -47,7 +47,8 @@ export default function Footer({
         </div>
 
         {/* Right: 2 columns of links */}
-        <div className="md:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-12">
+  <div className="md:col-span-6 flex justify-end">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-12">
           <LinkColumn
             title="About Us"
             links={[
@@ -68,22 +69,23 @@ export default function Footer({
           />
         </div>
       </div>
+    </div>
 
       {/* bottom bar */}
-      <div className="border-t border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="border-t border-slate-200">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-            <span className="text-sm text-slate-600 dark:text-slate-400">
+            <span className="text-xs sm:text-sm text-slate-600">
               {brandName} © {new Date().getFullYear()}
             </span>
           </div>
           {/* add legal links here */}
-          <div className="hidden md:flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-            <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-500">
+            <a href="#" className="hover:text-slate-900 transition-colors">
               Privacy
             </a>
-            <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+            <a href="#" className="hover:text-slate-900 transition-colors">
               Terms
             </a>
           </div>
@@ -104,13 +106,13 @@ function LinkColumn({
 }) {
   return (
     <div>
-      <h3 className="text-slate-900 dark:text-white font-semibold"> {title} </h3>
+      <h3 className="text-slate-900 font-semibold"> {title} </h3>
       <ul className="mt-4 space-y-3">
         {links.map((l) => (
           <li key={l.label}>
             <a
               href={l.href}
-              className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-slate-500 hover:text-slate-900 transition-colors"
             >
               {l.label}
             </a>
@@ -133,10 +135,10 @@ function SocialIcon({
   return (
     <a
       href={href}
-      target="_blank"  //newtab
-      rel = "noopener noreferrer"
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label={label}
-      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition"
+      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition"
     >
       {kind === "facebook" && (
         <svg
@@ -191,3 +193,4 @@ function SocialIcon({
     </a>
   );
 }
+

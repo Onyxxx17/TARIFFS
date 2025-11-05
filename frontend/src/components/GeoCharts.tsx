@@ -96,12 +96,71 @@ export default function GeoChart({
     const width = rect?.width ?? wrapperRef.current.getBoundingClientRect().width;
     const h = rect?.height ?? height;
 
-    svg.attr("viewBox", `-100 -100 ${width + 200} ${h + 0}`)
+    svg.attr("viewBox", `0 0 ${width} ${h}`)
        .attr("width", width)
-       .attr("height", h);
+       .attr("height", h)
+       .attr("preserveAspectRatio", "xMidYMid meet");
 
-    const projection = geoMercator().scale(120).translate([width / 2, h / 2]);
-    const path = geoPath().projection(projection);
+    // Use fitSize so the geojson fills the available area responsively
+    const projection = geoMercator();
+    try {
+      // fitSize will compute appropriate scale & translate for the current geojson
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      projection.fitSize([width, h], geojson as any);
+  // adjust scale multiplier by viewport width so desktop maps are a bit larger
+  // - small phones: stronger multiplier
+  // - tablets: slight multiplier
+  // - large desktops: modest multiplier to make map more prominent
+  const multiplier = width < 420 ? 1.3 : width < 900 ? 1.06 : 1.12;
+      try {
+        // @ts-ignore - d3 projection scale() getter
+        const current = projection.scale();
+        // apply multiplier first
+        // @ts-ignore
+        projection.scale(current * multiplier);
+
+        // compute visual bounds of the whole geojson using the updated projection
+        // and nudge the map downward if the top edge (y0) is too close to the
+        // SVG top. This helps relocate high-latitude features (e.g. Russia)
+        // further down so they don't look 'cut off' or split.
+        // Create a temporary path to calculate pixel bounds.
+        try {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          const tmpPath = geoPath().projection(projection as any);
+          const b = tmpPath.bounds(geojson as any);
+          const y0 = b[0][1];
+          // target top padding increases on larger viewports so high-latitude
+          // countries are pushed down more and not clipped
+          const desiredTop = h * (width < 420 ? 0.10 : width < 900 ? 0.08 : 0.12); // target top padding
+          let delta = 0;
+          if (y0 < desiredTop) {
+            delta = desiredTop - y0;
+          }
+
+          // read current translate and apply vertical delta
+          // @ts-ignore
+          const t = projection.translate ? projection.translate() : [width / 2, h / 2];
+          // @ts-ignore
+          projection.translate([width / 2, (t[1] ?? h / 2) + delta]);
+        } catch (innerErr) {
+          // if bounds computation fails, apply a small default nudge
+          const yOffset = width < 420 ? h * 0.06 : h * 0.02;
+          // @ts-ignore
+          const t = projection.translate ? projection.translate() : [width / 2, h / 2];
+          // @ts-ignore
+          projection.translate([width / 2, (t[1] ?? h / 2) + yOffset]);
+        }
+      } catch (err) {
+        // ignore if projection API differs
+      }
+    } catch (e) {
+      // fallback: set a reasonable default and apply same downward nudge
+      const yOffset = width < 420 ? h * 0.06 : h * 0.02;
+      projection.scale(Math.min(width, h) / 1.8).translate([width / 2, h / 2 + yOffset]);
+    }
+    const path = geoPath().projection(projection as any);
 
     const fillFor = (d: any) => {
       const code = getAlpha3(d.properties);               //use alpha-3

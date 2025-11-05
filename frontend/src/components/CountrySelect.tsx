@@ -64,7 +64,7 @@ export default function CountrySelect({
 
   return (
     <div className="flex flex-col gap-1" ref={boxRef}>
-      <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">{label}</label>
+      <label className="block text-xs sm:text-sm font-medium text-slate-500">{label}</label>
 
       <div className="relative">
         <input
@@ -75,11 +75,11 @@ export default function CountrySelect({
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="w-full rounded-md border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-200 dark:focus:ring-blue-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-200"
         />
 
         {open && (
-          <div className="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-lg">
+          <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-slate-300 bg-white shadow-lg">
             {filtered.map((opt) => (
               <button
                 key={opt.code}
@@ -89,13 +89,13 @@ export default function CountrySelect({
                   setQ(opt.name);  // show name in search bar
                   setOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600"
+                className="w-full text-left px-3 py-2 text-sm text-slate-900 hover:bg-slate-50"
               >
-                {opt.name} <span className="text-slate-400 dark:text-slate-500">({opt.code})</span>
+                {opt.name} <span className="text-slate-400">({opt.code})</span>
               </button>
             ))}
             {filtered.length === 0 && (
-              <div className="px-3 py-2 text-sm text-slate-400 dark:text-slate-500">No matches</div>
+              <div className="px-3 py-2 text-sm text-slate-400">No matches</div>
             )}
           </div>
         )}
