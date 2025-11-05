@@ -155,7 +155,7 @@ export default function TariffCalculatorSection() {
             return;
           }
 
-          // ✅ Add additionalFees and totalAdditionalFees
+          // ✅ Fix payload to match backend SaveCalculationRequest
           const savePayload = {
             fromCountryId: fromCountryCode,
             toCountryId: toCountryCode,
@@ -164,11 +164,11 @@ export default function TariffCalculatorSection() {
             year: Number(year),
             tariffRate: result.tariffRate,
             calculatedTariff: result.calculatedTariff,
-            totalAdditionalFees: result.totalAdditionalFees || 0,
-            additionalFees: result.additionalFees || [],
-            totalCost: result.totalCost
+            additionalFee: result.additionalFees[0],
+            totalCost: result.totalCost,
+            calculationType: calculationType
           };
-
+          console.log("Save payload:", savePayload);
           const saveResponse = await fetchWithAuth("/api/import-records/save-calculation", {
             method: "POST",
             body: JSON.stringify(savePayload),

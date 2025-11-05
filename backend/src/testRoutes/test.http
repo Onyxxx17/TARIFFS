@@ -55,7 +55,8 @@ Authorization: Bearer
   "productId": 10129,
   "unitCost": 25,
   "quantity": 1000,
-  "effectiveYear": 2025
+  "effectiveYear": 2025,
+  "calculationType": "QUANTITY"
 }
 
 ### 6. Calculate Tariff (without authentication)

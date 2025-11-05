@@ -32,8 +32,9 @@ public class ImportRecord {
     private int year;
     private double tariffRate;
     private double calculatedTariff;
-    private double additionalFee;
+    private double additionalFee; // stores the percentage rate
     private double totalCost;
+    private String calculationType; // WEIGHT or QUANTITY
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -59,6 +60,7 @@ public class ImportRecord {
         this.additionalFee = additionalFee;
         this.totalCost = totalCost;
         this.product = product;
+        this.calculationType = "QUANTITY"; // default value
     }
 
 }

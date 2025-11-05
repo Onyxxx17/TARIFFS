@@ -5,19 +5,22 @@ import com.tariff.entity.User;
 import com.tariff.exception.UserAlreadyExistsException;
 import com.tariff.service.UserService;
 import com.tariff.service.JwtBlacklistService;
-
 import com.tariff.dto.SignupRequest;
 import com.tariff.dto.SignupResponse;
 import com.tariff.dto.LoginRequest;
 import com.tariff.dto.LoginResponse;
 import com.tariff.dto.RefreshTokenRequest;
 import com.tariff.dto.RefreshTokenResponse;
+import com.tariff.dto.*;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Map;
 
@@ -40,6 +43,22 @@ public class AuthController {
         this.refreshTokenService = refreshTokenService;
         this.jwtUtils = jwtUtils;
         this.jwtBlacklistService = jwtBlacklistService;
+    }
+
+    @GetMapping("/oauth2/failure")
+    public void googleLoginFailure(HttpServletResponse response) {
+        try {
+            String errorUrl = System.getenv("FRONTEND_URL") != null
+                    ? System.getenv("FRONTEND_URL") + "/login?error=oauth_failed"
+                    : "http://localhost:5173/login?error=oauth_failed";
+            response.sendRedirect(errorUrl);
+        } catch (IOException e) {
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "OAuth login failed");
+            } catch (IOException ex) {
+                System.err.println("Failed to send error response: " + ex.getMessage());
+            }
+        }
     }
 
     // --- Signup ---
@@ -84,7 +103,12 @@ public class AuthController {
                 request.username(),
                 request.email(),
                 hashedPassword,
-                userRole
+                userRole,
+                null, // firstName - can be added later
+                null, // lastName - can be added later  
+                null, // profileImageUrl
+                false, // emailVerified - false for normal signup
+                "LOCAL" // provider
         );
 
         userService.addUser(user);
@@ -163,17 +187,14 @@ public class AuthController {
     // @PostMapping("/create-admin")
     // @PreAuthorize("hasRole('ADMIN')")
     // public ResponseEntity<?> createAdmin(@RequestBody SignupRequest request) {
-
     //     Optional<User> existingEmail = userService.findByEmail(request.email());
     //     if (existingEmail.isPresent()) {
     //         throw new UserAlreadyExistsException(request.email());
     //     }
-
     //     Optional<User> existingUsername = userService.findByUsername(request.username());
     //     if (existingUsername.isPresent()) {
     //         throw new UserAlreadyExistsException(request.username());
     //     }
-
     //     // Password constraints (same as signup)
     //     String pw = request.password();
     //     if (pw.length() < 8) {
@@ -191,10 +212,8 @@ public class AuthController {
     //     if (!pw.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
     //         return ResponseEntity.badRequest().body("Password must contain at least one special character.");
     //     }
-
     //     // Hash the password before saving
     //     String hashedPassword = BCrypt.withDefaults().hashToString(12, pw.toCharArray());
-
     //     // Create admin user
     //     User adminUser = new User(
     //             request.username(),
@@ -202,7 +221,6 @@ public class AuthController {
     //             hashedPassword,
     //             "ROLE_ADMIN"
     //     );
-
     //     userService.addUser(adminUser);
     //     return ResponseEntity.ok(new SignupResponse(request.username() + " (ADMIN)"));
     // }
