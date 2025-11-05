@@ -28,7 +28,7 @@ public class TariffPredictionService {
         String fromCountryCode = request.getFromCountryCode();
         String toCountryCode = request.getToCountryCode();
         Long productId = request.getProductId();
-        int targetYear = request.getYear();
+        int targetYear = request.getPredictedYear();
 
         // Fetch all tariff rules for the toCountry + product
         List<TariffRule> allRules = tariffRuleRepository.findByToCountryAndProduct(toCountryCode, productId);

@@ -9,6 +9,7 @@ import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
 
 import AnalyticsDashboard from "./pages/AgricultureTariffChart";
+import TariffPredictionDisplay from "./pages/TariffPredictionPages";
 
 function NotFound() {
   return <div className="mx-auto max-w-3xl p-6">Page not found.</div>;
@@ -23,7 +24,7 @@ export default function App() {
           <Route path="login" element={<LoginPage />} /> {/* Login */}
           <Route path="signup" element={<SignupPage />} /> {/* Signup */}
           <Route path="logging" element={<TariffLoggingDisplay />} />
-         
+          <Route path="/tariff-prediction" element={<TariffPredictionDisplay />} />
           <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
 
           {/* Blog list + detail */}
