@@ -3,6 +3,7 @@ package com.tariff.config;
 import java.io.IOException;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -24,6 +25,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     private final JWTUtils jwtUtils;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     public OAuth2LoginSuccessHandler(UserService userService,
             RefreshTokenService refreshTokenService,
@@ -78,9 +82,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String jwtToken = jwtUtils.generateTokenFromUsername(user.getEmail(), user.getRole());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-        String frontendUrl = System.getenv("FRONTEND_URL") != null ? System.getenv("FRONTEND_URL") : "http://localhost:5173";
         String redirectUrl = String.format("%s/auth/callback?token=%s&refreshToken=%s&email=%s",
-                frontendUrl,
+                this.frontendUrl,
                 jwtToken,
                 refreshToken.getToken(),
                 user.getEmail());

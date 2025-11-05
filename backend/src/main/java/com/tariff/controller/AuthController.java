@@ -12,6 +12,7 @@ import com.tariff.dto.LoginResponse;
 import com.tariff.dto.RefreshTokenRequest;
 import com.tariff.dto.RefreshTokenResponse;
 import com.tariff.dto.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,9 @@ public class AuthController {
     private final JWTUtils jwtUtils;
     private final JwtBlacklistService jwtBlacklistService;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     public AuthController(UserService userService, RefreshTokenService refreshTokenService, JWTUtils jwtUtils, JwtBlacklistService jwtBlacklistService) {
         this.userService = userService;
         this.refreshTokenService = refreshTokenService;
@@ -48,8 +52,8 @@ public class AuthController {
     @GetMapping("/oauth2/failure")
     public void googleLoginFailure(HttpServletResponse response) {
         try {
-            String errorUrl = System.getenv("FRONTEND_URL") != null
-                    ? System.getenv("FRONTEND_URL") + "/login?error=oauth_failed"
+            String errorUrl = frontendUrl != null
+                    ? frontendUrl + "/login?error=oauth_failed"
                     : "http://localhost:5173/login?error=oauth_failed";
             response.sendRedirect(errorUrl);
         } catch (IOException e) {
