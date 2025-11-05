@@ -72,8 +72,15 @@ export default function Header() {
   // keep header state in sync when token changes in other tabs/components
   useEffect(() => {
     const onStorage = () => setIsLoggedIn(!!localStorage.getItem("token"));
+    const onAuthStateChanged = () => setIsLoggedIn(!!localStorage.getItem("token"));
+    
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener("authStateChanged", onAuthStateChanged);
+    
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("authStateChanged", onAuthStateChanged);
+    };
   }, []);
 
   // Fetch user info when logged in

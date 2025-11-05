@@ -50,9 +50,10 @@ export default function LoginPage() {
   }
 
   const handleGoogleLogin = () => {
-    // Implement Google OAuth here
-    console.log("Google login clicked");
+    // Use the backend URL for OAuth2 authorization
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/oauth2/authorization/google`;
   };
+
 
   return (
     <div
