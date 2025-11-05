@@ -11,6 +11,7 @@ public class SaveCalculationRequest {
     private double calculatedTariff;
     private double additionalFee;
     private double totalCost;
+    private String calculationType;
 
     public SaveCalculationRequest() {
     }

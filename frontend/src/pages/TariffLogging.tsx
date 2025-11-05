@@ -11,9 +11,9 @@ interface CalculationRecord {
   year: number;
   tariffRate: number;
   calculatedTariff: number;
-  totalAdditionalFees?: number;      // combined value
-  additionalFees?: number[];         // array of individual fees
+  additionalFee: number;           // stores the percentage rate
   totalCost: number;
+  calculationType?: string;        // WEIGHT or QUANTITY
   timestamp?: string;
 }
 
@@ -213,13 +213,16 @@ export default function TariffLoggingDisplay() {
                           Year
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Rate (%)
+                          Base Rate (%)
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                           Base Tariff ($)
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Additional Fees
+                          Additional Fee Rate (%)
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                          Calculation Type
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                           Total Cost ($)
@@ -231,9 +234,6 @@ export default function TariffLoggingDisplay() {
                     </thead>
                     <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                       {logs.map((log, idx) => {
-                        // Calculate additional fees in dollars
-                        const additionalFeesDollar = (log.totalAdditionalFees || 0) * log.value / 100;
-                        
                         return (
                           <tr key={log.id} className={idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-gray-50 dark:bg-slate-700/50"}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -255,12 +255,12 @@ export default function TariffLoggingDisplay() {
                               ${log.calculatedTariff?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              <div className="flex flex-col">
-                                <span>{log.totalAdditionalFees?.toFixed(2) || "0"}%</span>
-                                <span className="text-xs text-gray-500 dark:text-slate-400">
-                                  (${additionalFeesDollar.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
-                                </span>
-                              </div>
+                              {log.additionalFee?.toFixed(2) || "0"}%
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                                {log.calculationType || "QUANTITY"}
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-700 dark:text-green-400">
                               ${log.totalCost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
