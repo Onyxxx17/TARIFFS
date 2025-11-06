@@ -1,0 +1,189 @@
+import { useState } from "react";
+import { fetchWithAuth } from "../utils/api";
+import CountrySelect, { type CountryOption } from "../components/CountrySelect";
+import ProductSelect from "../components/ProductSelect";
+
+interface Product {
+  id: number;
+  name: string;
+  category: {
+    id: number;
+    name: string;
+  };
+}
+
+interface TariffPredictionResponse {
+  fromCountryCode: string;
+  toCountryCode: string;
+  productId: number;
+  predictedYear: number;
+  predictedRate: number;
+  modelFit: number;
+  historicalRates?: { year: number; rate: number }[];
+}
+
+export default function TariffPredictionPage() {
+  const [fromCountry, setFromCountry] = useState<CountryOption | null>(null);
+  const [toCountry, setToCountry] = useState<CountryOption | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [year, setYear] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<TariffPredictionResponse | null>(null);
+
+  // Generate future years dropdown
+  const years = Array.from({ length: 2050 - 2026 + 1 }, (_, i) => 2026 + i);
+
+  const getCountryCodeByName = async (name: string): Promise<string | null> => {
+    try {
+      const res = await fetchWithAuth(`/api/countries/search/by-name?name=${encodeURIComponent(name)}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.countryCode;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching country code:", err);
+      return null;
+    }
+  };
+
+  const handlePredict = async () => {
+    setError("");
+    setResult(null);
+
+    if (!fromCountry || !toCountry || !product || !year) {
+      setError("All fields are required.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const fromCode = await getCountryCodeByName(fromCountry.name);
+      const toCode = await getCountryCodeByName(toCountry.name);
+
+      if (!fromCode || !toCode) {
+        setError("Could not find valid country codes.");
+        setLoading(false);
+        return;
+      }
+
+      const payload = {
+        fromCountryCode: fromCode,
+        toCountryCode: toCode,
+        productId: product.id,
+        predictedYear: Number(year),
+      };
+
+      console.log("Sending payload:", payload);
+
+      const res = await fetchWithAuth("/api/tariffs/predict", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Prediction failed.");
+      }
+
+      const data: TariffPredictionResponse = await res.json();
+      setResult(data);
+    } catch (err: any) {
+      console.error("Prediction error:", err);
+      setError(err.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">
+            Tariff Rate Prediction
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Predict future tariff rates based on historical trade data.
+          </p>
+        </div>
+
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-8 border border-slate-200 dark:border-slate-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <CountrySelect label="Exporting From" value={fromCountry} onPick={setFromCountry} />
+            <CountrySelect label="Importing To" value={toCountry} onPick={setToCountry} />
+            <ProductSelect label="Product" value={product} onPick={setProduct} placeholder="Search product..." />
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Predict Year
+              </label>
+              <select
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">-- Select Year --</option>
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <button
+            onClick={handlePredict}
+            disabled={loading}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-colors disabled:opacity-60"
+          >
+            {loading ? "Predicting..." : "Predict Tariff Rate"}
+          </button>
+        </div>
+
+        {result && (
+          <div className="mt-10 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 p-8">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+              Prediction Results
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-800 dark:text-slate-300">
+              <p>
+                <span className="font-semibold">From:</span> {result.fromCountryCode}
+              </p>
+              <p>
+                <span className="font-semibold">To:</span> {result.toCountryCode}
+              </p>
+              <p>
+                <span className="font-semibold">Product ID:</span> {result.productId}
+              </p>
+              <p>
+                <span className="font-semibold">Predicted Year:</span> {result.predictedYear}
+              </p>
+              <p>
+                <span className="font-semibold">Predicted Tariff Rate:</span>{" "}
+                {result.predictedRate.toFixed(2)}%
+              </p>
+              <p>
+                <span className="font-semibold">Model Fit (R²):</span>{" "}
+                {result.modelFit.toFixed(4)}
+              </p>
+
+            <div className="mt-4 text-sm text-slate-500 dark:text-slate-400 italic">
+                *Note: Tariff Prediction rates are calculated using a simple linear regression model, so some predictions may be inaccurate.
+            </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

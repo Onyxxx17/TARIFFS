@@ -225,7 +225,14 @@ export default function Header() {
                 >
                   Tariff Logging
                 </Link>
+                <Link
+                  to="/tariff-prediction"
+                  className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-md transition-colors"
+                >
+                  Tariff Prediction
+                </Link>
               </div>
+              
             )}
           </div>
 
