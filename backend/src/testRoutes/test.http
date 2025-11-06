@@ -47,7 +47,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 POST http://localhost:8080/api/tariffs/calculate
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer YOUR_JWT_TOKEN
+Authorization: Bearer 
 
 {
 "fromCountry": "North Korea",

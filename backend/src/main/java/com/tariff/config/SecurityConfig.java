@@ -72,11 +72,18 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/import-records/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/import-records/**").authenticated()
                 // --- Tariff Rules endpoints (GET for users, others for admin) ---
-                .requestMatchers(HttpMethod.GET, "/api/tariff-rules/rates-over-time").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/tariff-rules/**").authenticated()
+
                 .requestMatchers(HttpMethod.POST, "/api/tariff-rules/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/tariff-rules/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/tariff-rules/**").hasRole("ADMIN")
+                
+                // --- Additional Fees endpoints (part of tariff rules) ---
+                .requestMatchers(HttpMethod.GET, "/api/tariff-rules/additional-fees/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/tariff-rules/additional-fees/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/tariff-rules/additional-fees/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/tariff-rules/additional-fees/**").hasRole("ADMIN")
+                
                 // --- Product endpoints ---
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")

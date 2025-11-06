@@ -90,7 +90,6 @@ export default function TariffCalculatorSection() {
     setShowResult(false);
   };
 
-  // show sheet
   const submit = async () => {
     setError(""); // clear previous error
 
@@ -133,6 +132,7 @@ export default function TariffCalculatorSection() {
         setTariffResult(null);
         return;
       }
+
       const result = await response.json();
       setShowResult(true);
       setTariffResult(result);
@@ -142,7 +142,7 @@ export default function TariffCalculatorSection() {
         setShowResult(true);
         setTariffResult(null);
       } else {
-        // Save calculation to backend
+        // ✅ Save calculation to backend (no localStorage)
         try {
           // Always fetch country codes from backend by country names
           let fromCountryCode = "";
@@ -172,6 +172,7 @@ export default function TariffCalculatorSection() {
             return;
           }
 
+          // ✅ Add additionalFees and totalAdditionalFees
           const savePayload = {
             fromCountryId: fromCountryCode,
             toCountryId: toCountryCode,
@@ -180,7 +181,8 @@ export default function TariffCalculatorSection() {
             year: Number(year),
             tariffRate: result.tariffRate,
             calculatedTariff: result.calculatedTariff,
-            additionalFee: result.additionalFee || 0,
+            totalAdditionalFees: result.totalAdditionalFees || 0,
+            additionalFees: result.additionalFees || [],
             totalCost: result.totalCost
           };
 
