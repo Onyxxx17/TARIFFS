@@ -155,16 +155,18 @@ export default function TariffCalculatorSection() {
             return;
           }
 
-          // ✅ Fix payload to match backend SaveCalculationRequest
+          // Fix payload to match backend SaveCalculationRequest
           const savePayload = {
             fromCountryId: fromCountryCode,
             toCountryId: toCountryCode,
             productId: product.id,
-            value: Number(value),
+            value: result.importValue,
             year: Number(year),
             tariffRate: result.tariffRate,
             calculatedTariff: result.calculatedTariff,
-            additionalFee: result.additionalFees[0],
+            additionalFeeRate: result.additionalFees && result.additionalFees.length > 0 
+              ? result.additionalFees.reduce((sum: number, fee: number) => sum + fee, 0) : 0, // sum all additional fee rates
+            totalAdditionalFees: result.totalAdditionalFees ?? 0,
             totalCost: result.totalCost,
             calculationType: calculationType
           };

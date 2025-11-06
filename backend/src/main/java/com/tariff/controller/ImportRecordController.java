@@ -78,13 +78,15 @@ public class ImportRecordController {
         }
 
         ImportRecord record = new ImportRecord(
-                (int) request.getValue(),
+                request.getValue(),
                 request.getYear(),
                 request.getTariffRate(),
                 request.getCalculatedTariff(),
-                request.getAdditionalFee(),
+                request.getAdditionalFeeRate(),
+                request.getTotalAdditionalFees(),
                 request.getTotalCost(),
-                product
+                product,
+                request.getCalculationType()
         );
 
         ImportRecord saved = importRecordService.addImportRecordByProductAndUser(
