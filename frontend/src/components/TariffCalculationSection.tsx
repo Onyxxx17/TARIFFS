@@ -172,7 +172,15 @@ export default function TariffCalculatorSection() {
             return;
           }
 
-          // ✅ Add additionalFees and totalAdditionalFees
+           // ✅ Extract the first additional fee percentage or use 0 if none
+          const additionalFeePercentage = result.additionalFees && result.additionalFees.length > 0 
+            ? Number(result.additionalFees[0]) 
+            : 0;
+
+          console.log("Calculation Result:", result);
+          console.log("Additional Fees from response:", result.additionalFees);
+          console.log("Extracted Additional Fee Percentage:", additionalFeePercentage);
+
           const savePayload = {
             fromCountryId: fromCountryCode,
             toCountryId: toCountryCode,
@@ -181,10 +189,12 @@ export default function TariffCalculatorSection() {
             year: Number(year),
             tariffRate: result.tariffRate,
             calculatedTariff: result.calculatedTariff,
-            totalAdditionalFees: result.totalAdditionalFees || 0,
-            additionalFees: result.additionalFees || [],
-            totalCost: result.totalCost
+            additionalFee: additionalFeePercentage,
+            totalCost: result.totalCost,
+            calculationType: result.calculationType
           };
+
+          console.log("Save Payload being sent to backend:", savePayload);
 
           const saveResponse = await fetchWithAuth("/api/import-records/save-calculation", {
             method: "POST",
@@ -193,6 +203,8 @@ export default function TariffCalculatorSection() {
 
           if (!saveResponse.ok) {
             console.error("Failed to save calculation to backend");
+          } else {
+            console.log("Calculation saved successfully!");
           }
         } catch (error) {
           console.error("Error saving calculation to backend:", error);

@@ -71,10 +71,10 @@ export default function TariffResult({
             </div>
             <div className="text-slate-700">
               <div className="text-xs uppercase tracking-wide text-blue-900/80">
-                Additional Fee
+                Total Additional Fees
               </div>
               <div className="mt-1 text-2xl font-semibold text-blue-900 dark:text-blue-200">
-                {usd(tariffResult.additionalFee ?? 0)}
+                {usd(tariffResult.totalAdditionalFees ?? 0)}
               </div>
             </div>
             <div className="text-slate-700">
@@ -121,12 +121,22 @@ export default function TariffResult({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Percentage-based tariff ({tariffResult.tariffRate}%):</span>
-                <span className="font-medium text-slate-900 dark:text-white">{usd(((tariffResult.calculatedTariff ?? 0) - (tariffResult.additionalFee ?? 0)))}</span>
+                <span className="font-medium text-slate-900 dark:text-white">{usd(((tariffResult.calculatedTariff ?? 0) - (tariffResult.totalAdditionalFees ?? 0)))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Additional fees:</span>
-                <span className="font-medium text-slate-900 dark:text-white">{usd(tariffResult.additionalFee ?? 0)}</span>
+                <span className="text-slate-600 dark:text-slate-400">Total additional fees:</span>
+                <span className="font-medium text-slate-900 dark:text-white">{usd(tariffResult.totalAdditionalFees ?? 0)}</span>
               </div>
+              {tariffResult.additionalFees && tariffResult.additionalFees.length > 0 && (
+                <div className="pl-4 border-l-2 border-slate-300 space-y-1">
+                  {tariffResult.additionalFees.map((fee, idx) => (
+                    <div key={idx} className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
+                      <span>Additional Fee {idx + 1} ({Number(fee).toFixed(2)}%):</span>
+                      <span></span>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-semibold text-slate-900 dark:text-white">
                 <span>Total tariff:</span>
                 <span>{usd(tariffResult.calculatedTariff ?? 0)}</span>
