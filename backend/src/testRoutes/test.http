@@ -52,10 +52,10 @@ Authorization: Bearer
 {
 "fromCountry": "North Korea",
   "toCountry": "United States of America",
-  "productId": 10129,
+  "productId": 10420,
   "unitCost": 25,
   "quantity": 1000,
-  "effectiveYear": 2025,
+  "effectiveYear": 2010,
   "calculationType": "QUANTITY"
 }
 

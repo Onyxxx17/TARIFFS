@@ -9,7 +9,8 @@ public class SaveCalculationRequest {
     private int year;
     private double tariffRate;
     private double calculatedTariff;
-    private double additionalFee;
+    private double additionalFeeRate; // renamed from additionalFee to be more clear
+    private double totalAdditionalFees; // new field for total additional fees amount
     private double totalCost;
     private String calculationType;
 
@@ -18,7 +19,7 @@ public class SaveCalculationRequest {
 
     public SaveCalculationRequest(String fromCountryId, String toCountryId, Long productId,
             double value, int year, double tariffRate, double calculatedTariff,
-            double additionalFee, double totalCost) {
+            double additionalFeeRate, double totalAdditionalFees, double totalCost) {
         this.fromCountryId = fromCountryId;
         this.toCountryId = toCountryId;
         this.productId = productId;
@@ -26,7 +27,8 @@ public class SaveCalculationRequest {
         this.year = year;
         this.tariffRate = tariffRate;
         this.calculatedTariff = calculatedTariff;
-        this.additionalFee = additionalFee;
+        this.additionalFeeRate = additionalFeeRate;
+        this.totalAdditionalFees = totalAdditionalFees;
         this.totalCost = totalCost;
     }
 
@@ -87,12 +89,20 @@ public class SaveCalculationRequest {
         this.calculatedTariff = calculatedTariff;
     }
 
-    public double getAdditionalFee() {
-        return additionalFee;
+    public double getAdditionalFeeRate() {
+        return additionalFeeRate;
     }
 
-    public void setAdditionalFee(double additionalFee) {
-        this.additionalFee = additionalFee;
+    public void setAdditionalFeeRate(double additionalFeeRate) {
+        this.additionalFeeRate = additionalFeeRate;
+    }
+
+    public double getTotalAdditionalFees() {
+        return totalAdditionalFees;
+    }
+
+    public void setTotalAdditionalFees(double totalAdditionalFees) {
+        this.totalAdditionalFees = totalAdditionalFees;
     }
 
     public double getTotalCost() {

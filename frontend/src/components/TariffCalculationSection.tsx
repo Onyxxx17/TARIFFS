@@ -164,7 +164,9 @@ export default function TariffCalculatorSection() {
             year: Number(year),
             tariffRate: result.tariffRate,
             calculatedTariff: result.calculatedTariff,
-            additionalFee: result.totalAdditionalFees ?? 0,
+            additionalFeeRate: result.additionalFees && result.additionalFees.length > 0 
+              ? result.additionalFees.reduce((sum: number, fee: number) => sum + fee, 0) : 0, // sum all additional fee rates
+            totalAdditionalFees: result.totalAdditionalFees ?? 0,
             totalCost: result.totalCost,
             calculationType: calculationType
           };

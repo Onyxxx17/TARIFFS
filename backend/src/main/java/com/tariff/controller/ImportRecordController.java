@@ -82,7 +82,8 @@ public class ImportRecordController {
                 request.getYear(),
                 request.getTariffRate(),
                 request.getCalculatedTariff(),
-                request.getAdditionalFee(),
+                request.getAdditionalFeeRate(),
+                request.getTotalAdditionalFees(),
                 request.getTotalCost(),
                 product,
                 request.getCalculationType()

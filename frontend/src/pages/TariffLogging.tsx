@@ -11,7 +11,8 @@ interface CalculationRecord {
   year: number;
   tariffRate: number;
   calculatedTariff: number;
-  additionalFee: number;           // stores the total additional fees amount
+  additionalFee: number;           // stores the additional fee rate (%)
+  totalAdditionalFees: number;     // stores the total additional fees amount
   totalCost: number;
   calculationType?: string;        // WEIGHT or QUANTITY
   timestamp?: string;
@@ -255,14 +256,14 @@ export default function TariffLoggingDisplay() {
                               {log.tariffRate?.toFixed(2) || "0"}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              ${(log.calculatedTariff - log.additionalFee)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
+                              ${(log.calculatedTariff - (log.totalAdditionalFees || 0))?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
                             </td>
                             
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.value > 0 ? ((log.additionalFee / log.value) * 100).toFixed(2) : "0.00"}%
+                              {log.additionalFee?.toFixed(2) || "0.00"}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              ${log.additionalFee?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
+                              ${(log.totalAdditionalFees || 0)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
