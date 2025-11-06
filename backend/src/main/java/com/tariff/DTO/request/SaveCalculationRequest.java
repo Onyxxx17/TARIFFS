@@ -102,4 +102,12 @@ public class SaveCalculationRequest {
     public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
     }
+
+    public String getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(String calculationType) {
+        this.calculationType = calculationType;
+    }
 }

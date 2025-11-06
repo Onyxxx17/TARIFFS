@@ -11,7 +11,7 @@ interface CalculationRecord {
   year: number;
   tariffRate: number;
   calculatedTariff: number;
-  additionalFee: number;           // stores the percentage rate
+  additionalFee: number;           // stores the total additional fees amount
   totalCost: number;
   calculationType?: string;        // WEIGHT or QUANTITY
   timestamp?: string;
@@ -213,13 +213,16 @@ export default function TariffLoggingDisplay() {
                           Year
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Base Rate (%)
+                          Base Tariff Rate (%)
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                           Base Tariff ($)
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                           Additional Fee Rate (%)
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                          Additional Fees ($)
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                           Calculation Type
@@ -252,10 +255,14 @@ export default function TariffLoggingDisplay() {
                               {log.tariffRate?.toFixed(2) || "0"}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              ${log.calculatedTariff?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
+                              ${(log.calculatedTariff - log.additionalFee)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
+                            </td>
+                            
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                              {log.value > 0 ? ((log.additionalFee / log.value) * 100).toFixed(2) : "0.00"}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.additionalFee?.toFixed(2) || "0"}%
+                              ${log.additionalFee?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
