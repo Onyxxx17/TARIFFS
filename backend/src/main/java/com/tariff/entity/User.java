@@ -41,6 +41,13 @@ public class User {
 
     private String role;
 
+    // Additional user profile fields
+    private String firstName;
+    private String lastName;
+    private String profileImageUrl;
+    private Boolean emailVerified = false;
+    private String provider; // "LOCAL", "GOOGLE", etc.
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ImportRecord> importRecord;
@@ -55,5 +62,22 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.emailVerified = false;
+        this.provider = "LOCAL";
+    }
+
+    // Constructor for OAuth users (Google login)
+    public User(String username, String email, String password, String role,
+            String firstName, String lastName, String profileImageUrl,
+            Boolean emailVerified, String provider) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.profileImageUrl = profileImageUrl;
+        this.emailVerified = emailVerified;
+        this.provider = provider;
     }
 }

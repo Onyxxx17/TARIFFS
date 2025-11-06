@@ -9,11 +9,12 @@ interface CalculationRecord {
   product?: { id: number; name: string };
   value: number;
   year: number;
-  tariffRate: number; // Base Rate (%)
-  calculatedTariff: number; // Base Tariff ($)
-  additionalFee: number; // Additional Fee Rate (%)
+  tariffRate: number;
+  calculatedTariff: number;
+  additionalFee: number;           // stores the additional fee rate (%)
+  totalAdditionalFees: number;     // stores the total additional fees amount
   totalCost: number;
-  calculationType?: string; // "WEIGHT" or "QUANTITY"
+  calculationType?: string;        // WEIGHT or QUANTITY
   timestamp?: string;
 }
 
@@ -168,6 +169,7 @@ export default function TariffLoggingDisplay() {
                 <th className="px-6 py-3">Base Rate (%)</th>
                 <th className="px-6 py-3">Base Tariff ($)</th>
                 <th className="px-6 py-3">Additional Fee Rate (%)</th>
+                <th className="px-6 py-3">Additional Fee ($)</th>
                 <th className="px-6 py-3">Calculation Type</th>
                 <th className="px-6 py-3">Total Cost ($)</th>
                 <th className="px-6 py-3 text-right">Actions</th>
@@ -183,6 +185,7 @@ export default function TariffLoggingDisplay() {
                   <td className="px-6 py-4">{log.tariffRate.toFixed(2)}%</td>
                   <td className="px-6 py-4">${log.calculatedTariff.toLocaleString()}</td>
                   <td className="px-6 py-4">{log.additionalFee.toFixed(2)}%</td>
+                  <td className="px-6 py-4">${log.totalAdditionalFees.toLocaleString()}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${

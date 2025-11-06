@@ -32,8 +32,10 @@ public class ImportRecord {
     private int year;
     private double tariffRate;
     private double calculatedTariff;
-    private double additionalFee;
+    private double additionalFee; // stores the percentage rate
+    private double totalAdditionalFees; // stores the total amount of additional fees
     private double totalCost;
+    private String calculationType; // WEIGHT or QUANTITY
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -51,14 +53,28 @@ public class ImportRecord {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public ImportRecord(int value, int year, double tariffRate, double calculatedTariff, double additionalFee, double totalCost, Product product) {
+    public ImportRecord(double value, int year, double tariffRate, double calculatedTariff, double additionalFee, double totalAdditionalFees, double totalCost, Product product, String calculationType) {
+        this.value = (int) Math.round(value);
+        this.year = year;
+        this.tariffRate = tariffRate;
+        this.calculatedTariff = calculatedTariff;
+        this.additionalFee = additionalFee;
+        this.totalAdditionalFees = totalAdditionalFees;
+        this.totalCost = totalCost;
+        this.product = product;
+        this.calculationType = calculationType;
+    }
+
+    public ImportRecord(int value, int year, double tariffRate, double calculatedTariff, double additionalFee, double totalAdditionalFees, double totalCost, Product product) {
         this.value = value;
         this.year = year;
         this.tariffRate = tariffRate;
         this.calculatedTariff = calculatedTariff;
         this.additionalFee = additionalFee;
+        this.totalAdditionalFees = totalAdditionalFees;
         this.totalCost = totalCost;
         this.product = product;
+        this.calculationType = "QUANTITY"; // default value
     }
 
 }

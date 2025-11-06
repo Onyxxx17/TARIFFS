@@ -68,4 +68,14 @@ public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
         @Param("toCountryCode") String toCountryCode,
         @Param("productId") Long productId
     );
+
+    @Query("""
+    SELECT t FROM TariffRule t
+    WHERE t.toCountry.countryCode = :toCountryCode
+      AND t.product.id = :productId
+    """)
+    List<TariffRule> findByToCountryAndProduct(
+        @Param("toCountryCode") String toCountryCode,
+        @Param("productId") Long productId
+    );  
 }

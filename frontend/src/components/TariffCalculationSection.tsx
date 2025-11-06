@@ -172,30 +172,22 @@ export default function TariffCalculatorSection() {
             return;
           }
 
-           // ✅ Extract the first additional fee percentage or use 0 if none
-          const additionalFeePercentage = result.additionalFees && result.additionalFees.length > 0 
-            ? Number(result.additionalFees[0]) 
-            : 0;
-
-          console.log("Calculation Result:", result);
-          console.log("Additional Fees from response:", result.additionalFees);
-          console.log("Extracted Additional Fee Percentage:", additionalFeePercentage);
-
+          // Fix payload to match backend SaveCalculationRequest
           const savePayload = {
             fromCountryId: fromCountryCode,
             toCountryId: toCountryCode,
             productId: product.id,
-            value: Number(value),
+            value: result.importValue,
             year: Number(year),
             tariffRate: result.tariffRate,
             calculatedTariff: result.calculatedTariff,
-            additionalFee: additionalFeePercentage,
+            additionalFeeRate: result.additionalFees && result.additionalFees.length > 0 
+              ? result.additionalFees.reduce((sum: number, fee: number) => sum + fee, 0) : 0, // sum all additional fee rates
+            totalAdditionalFees: result.totalAdditionalFees ?? 0,
             totalCost: result.totalCost,
-            calculationType: result.calculationType
+            calculationType: calculationType
           };
-
-          console.log("Save Payload being sent to backend:", savePayload);
-
+          console.log("Save payload:", savePayload);
           const saveResponse = await fetchWithAuth("/api/import-records/save-calculation", {
             method: "POST",
             body: JSON.stringify(savePayload),

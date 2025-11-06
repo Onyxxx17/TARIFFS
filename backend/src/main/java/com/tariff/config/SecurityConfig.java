@@ -41,7 +41,7 @@ public class SecurityConfig {
      * users
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtBlacklistService jwtBlacklistService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtBlacklistService jwtBlacklistService, OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) throws Exception {
         // Create JWT filters
         JwtBlacklistFilter blacklistFilter = new JwtBlacklistFilter(jwtBlacklistService);
         JwtExpirationFilter expirationFilter = new JwtExpirationFilter(jwtBlacklistService);
@@ -60,9 +60,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/signup").permitAll()
                 .requestMatchers("/api/auth/refresh").permitAll()
+                .requestMatchers("/api/auth/oauth2/**").permitAll()
                 .requestMatchers("/api/auth/create-admin").hasRole("ADMIN")
                 .requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers("/api/auth/logout-all").authenticated()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 // --- Hello Controller endpoints (ALLOW ALL) ---
                 .requestMatchers("/api/hello/**").permitAll()
                 .requestMatchers("/api/status").permitAll()
@@ -73,17 +75,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/import-records/**").authenticated()
                 // --- Tariff Rules endpoints (GET for users, others for admin) ---
                 .requestMatchers(HttpMethod.GET, "/api/tariff-rules/**").authenticated()
-
                 .requestMatchers(HttpMethod.POST, "/api/tariff-rules/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/tariff-rules/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/tariff-rules/**").hasRole("ADMIN")
-                
                 // --- Additional Fees endpoints (part of tariff rules) ---
                 .requestMatchers(HttpMethod.GET, "/api/tariff-rules/additional-fees/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/tariff-rules/additional-fees/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/tariff-rules/additional-fees/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/tariff-rules/additional-fees/**").hasRole("ADMIN")
-                
                 // --- Product endpoints ---
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
@@ -112,6 +111,11 @@ public class SecurityConfig {
                 )
                 // Configure for stateless JWT authentication
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Configure OAuth2 Login
+                .oauth2Login(oauth2 -> oauth2
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureUrl("/api/auth/oauth2/failure")
+                )
                 // Configure OAuth2 Resource Server for JWT
                 .oauth2ResourceServer((oauth2) -> oauth2
                 .jwt(jwt -> jwt

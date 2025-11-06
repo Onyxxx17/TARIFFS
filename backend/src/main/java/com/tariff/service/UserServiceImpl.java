@@ -68,4 +68,21 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
+
+    @Override
+    public User createOAuthUser(String email, String username, String firstName, String lastName,
+            String profileImageUrl, Boolean emailVerified, String provider, String role) {
+        User user = new User(
+                username,
+                email,
+                "", // No password for OAuth users
+                role,
+                firstName,
+                lastName,
+                profileImageUrl,
+                emailVerified,
+                provider
+        );
+        return userRepository.save(user);
+    }
 }

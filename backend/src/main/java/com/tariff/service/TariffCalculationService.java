@@ -117,7 +117,8 @@ public class TariffCalculationService {
                 totalCost,
                 totalAdditionalFeesAmount,
                 request.getCalculationType(),
-                additionalFees
+                additionalFees,
+                importValue
         );
     }
 }

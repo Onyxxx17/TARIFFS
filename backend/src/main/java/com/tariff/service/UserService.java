@@ -22,4 +22,8 @@ public interface UserService {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);
+
+    // Method for creating OAuth users with additional profile information
+    User createOAuthUser(String email, String username, String firstName, String lastName,
+            String profileImageUrl, Boolean emailVerified, String provider, String role);
 }

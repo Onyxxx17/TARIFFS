@@ -28,8 +28,15 @@ export default function Header() {
   // keep header state in sync when token changes in other tabs/components
   useEffect(() => {
     const onStorage = () => setIsLoggedIn(!!localStorage.getItem("token"));
+    const onAuthStateChanged = () => setIsLoggedIn(!!localStorage.getItem("token"));
+    
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener("authStateChanged", onAuthStateChanged);
+    
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("authStateChanged", onAuthStateChanged);
+    };
   }, []);
 
   // Fetch user info when logged in
@@ -192,7 +199,14 @@ export default function Header() {
                 >
                   Tariff Logging
                 </Link>
+                <Link
+                  to="/tariff-prediction"
+                  className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-md transition-colors"
+                >
+                  Tariff Prediction
+                </Link>
               </div>
+              
             )}
           </div>
 

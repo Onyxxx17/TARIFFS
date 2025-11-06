@@ -52,10 +52,11 @@ Authorization: Bearer
 {
 "fromCountry": "North Korea",
   "toCountry": "United States of America",
-  "productId": 10129,
+  "productId": 10420,
   "unitCost": 25,
   "quantity": 1000,
-  "effectiveYear": 2025
+  "effectiveYear": 2010,
+  "calculationType": "QUANTITY"
 }
 
 ### 6. Calculate Tariff (without authentication)
@@ -86,3 +87,16 @@ Accept: application/json
 
 ###
 GET http://localhost:8080/api/products
+
+### 9. Predict Tariff Rate
+# Testing if the prediction logic works
+POST http://localhost:8080/api/tariffs/predict
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fromCountryCode": "CHN",
+  "toCountryCode": "USA",
+  "productId": 1,
+  "year": 2026
+}
