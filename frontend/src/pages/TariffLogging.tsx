@@ -34,7 +34,6 @@ export default function TariffLoggingDisplay() {
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [deleteError, setDeleteError] = useState("");
   const [showConfirmSingleDelete, setShowConfirmSingleDelete] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -76,13 +75,12 @@ export default function TariffLoggingDisplay() {
 
   const deleteEntry = async () => {
     if (deleteId === null) return;
-    setDeleteError("");
     try {
       const response = await fetchWithAuth(`/api/import-records/history/${deleteId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        setDeleteError("Failed to delete calculation");
+
         return;
       }
       setLogs(logs.filter((log) => log.id !== deleteId));
@@ -90,7 +88,6 @@ export default function TariffLoggingDisplay() {
       setDeleteId(null);
       if (logs.length === 1 && page > 0) setPage(page - 1);
     } catch (err) {
-      setDeleteError("Error deleting calculation");
     }
   };
 
