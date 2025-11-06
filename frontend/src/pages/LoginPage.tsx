@@ -53,9 +53,9 @@ export default function LoginPage() {
   return (
     <div
       className="
-      min-h-screen flex items-center justify-center px-4
+      min-h-screen flex items-center justify-center px-4 sm:px-6
       bg-[radial-gradient(90%_70%_at_50%_0%,#EBF2FF_0%,#F6F8FF_45%,#FFFFFF_100%)]
-      dark:bg-[radial-gradient(90%_70%_at_50%_0%,#1e293b_0%,#0f172a_45%,#020617_100%)]
+     
       transition-colors
     "
     >
@@ -64,26 +64,26 @@ export default function LoginPage() {
         {/* CARD */}
         <div
           className="
-          rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur
-          border border-slate-100 dark:border-slate-700
+          rounded-2xl sm:rounded-3xl bg-white/95 backdrop-blur
+          border border-slate-100
           shadow-[0_20px_60px_rgba(30,58,138,0.10)]
-          dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)]
-          px-8 py-9 sm:px-10 sm:py-10
+         
+          px-6 sm:px-8 py-8 sm:py-9
           transition-colors
         "
         >
           {/* Title */}
-          <h1 className="text-[26px] flex flex-col items-center justify-center font-semibold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-[26px] flex flex-col items-center justify-center font-semibold tracking-tight text-slate-900">
             Sign in
           </h1>
-          <p className="mt-3 text-sm mb-1 text-slate-500 dark:text-slate-400">Welcome back</p>
+          <p className="mt-2 sm:mt-3 text-sm mb-1 text-slate-500">Welcome back</p>
 
           {/* Form Fields */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5 mt-6 sm:mt-8">
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                className="block text-xs sm:text-sm font-semibold text-slate-700 mb-2"
               >
                 Email Address
               </label>
@@ -95,12 +95,11 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="
-                w-full rounded-xl
-                border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700
-                px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
+                w-full rounded-lg sm:rounded-xl
+                border border-slate-200 bg-white
+                px-4 py-3 sm:py-3 text-base sm:text-sm text-slate-900 placeholder-slate-400
                 transition-colors
                 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                transition
               "
               />
             </div>
@@ -108,7 +107,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300"
+                className="block text-xs sm:text-sm font-semibold mb-2 text-slate-700"
               >
                 Password
               </label>
@@ -120,20 +119,19 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="
-                w-full rounded-xl
-                border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700
-                px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
+                w-full rounded-lg sm:rounded-xl
+                border border-slate-200 bg-white
+                px-4 py-3 sm:py-3 text-base sm:text-sm text-slate-900 placeholder-slate-400
                 transition-colors
                 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                transition
               "
               />
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3">
-                <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
+              <div className="rounded-lg sm:rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+                <p className="text-red-600 text-xs sm:text-sm font-medium">{error}</p>
               </div>
             )}
 
@@ -142,7 +140,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className={`
-                  w-full rounded-xl px-4 py-3.5 text-white font-semibold
+                  w-full rounded-lg sm:rounded-xl px-4 py-3 sm:py-3.5 text-sm sm:text-base text-white font-semibold
                   transition-all
                   ${
                     loading
@@ -156,21 +154,21 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-            <span className="text-xs text-slate-500 dark:text-slate-400">or</span>
-            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+          <div className="my-4 sm:my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-xs text-slate-500">or</span>
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
 
           {/* Google Login */}
           <GoogleLoginButton />
 
           {/* Sign Up Link */}
-          <p className="text-center mt-6 text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-center mt-4 sm:mt-6 text-xs sm:text-sm text-slate-600">
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-semibold text-[#1E40AF] dark:text-blue-400 hover:underline"
+              className="font-semibold text-[#1E40AF] hover:underline"
             >
               Sign up
             </Link>

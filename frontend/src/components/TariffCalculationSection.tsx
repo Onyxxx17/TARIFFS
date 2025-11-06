@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import GeoChart from "./GeoCharts";
 import CountrySelect, { type CountryOption } from "./CountrySelect";
 import ProductSelect from "./ProductSelect";
@@ -35,6 +35,21 @@ export default function TariffCalculatorSection() {
   const [year, setYear] = useState("");
   const years = Array.from({ length: 2025 - 1996 + 1 }, (_, i) => 1996 + i);
   const [error, setError] = useState("");
+  const [yearOpen, setYearOpen] = useState(false);
+  const [yearQ, setYearQ] = useState<string>(year);
+  const yearBoxRef = useRef<HTMLDivElement | null>(null);
+
+  // close year dropdown when clicking outside
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (!yearBoxRef.current) return;
+      if (!yearBoxRef.current.contains(e.target as Node)) {
+        setYearOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
 
   // map inputs
   const onCountryPickFromMap = (p: { name: string; code?: string }) => {
@@ -70,6 +85,8 @@ export default function TariffCalculatorSection() {
     setQuantity("");
     setWeight("");
     setYear("");
+    setYearQ("");
+    setYearOpen(false);
     setShowResult(false);
   };
 
@@ -178,6 +195,8 @@ export default function TariffCalculatorSection() {
 
           if (!saveResponse.ok) {
             console.error("Failed to save calculation to backend");
+          } else {
+            console.log("Calculation saved successfully!");
           }
         } catch (error) {
           console.error("Error saving calculation to backend:", error);
@@ -198,57 +217,67 @@ export default function TariffCalculatorSection() {
     : null;
 
   return (
-    <section id="tariff-calculation" className="py-10 bg-white dark:bg-slate-900 transition-colors">
-      <div className="max-w-[1200px] mx-auto px-4">
+    <section id="tariff-calculation" className="pt-3 pb-6 sm:py-6 bg-white transition-colors">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-4">
         {/* Map section header  */}
         <div className="text-center mb-8">
           {/*  badge */}
-          <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200/70 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200/70 bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
             <span className="h-2 w-2 rounded-full bg-blue-600" />
             Calculate Tariffs
           </span>
 
           {/* headline */}
-          <h2 className="mt-4 text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="mt-4 text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900">
             Select your{" "}
-            <span className="bg-gradient-to-r from-blue-900 via-blue-500 to-blue-700 dark:from-blue-400 dark:via-blue-300 dark:to-blue-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-900 via-blue-500 to-blue-700 bg-clip-text text-transparent">
               Trade Destination
             </span>
           </h2>
 
           {/* subhead */}
-          <p className="mt-3 text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+          <p className="mt-3 text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
             For hundreds of destinations{" "}
-            <span className="font-semibold text-slate-800 dark:text-slate-200">worldwide </span>-
+            <span className="font-semibold text-slate-800">worldwide </span>-
             clear, simple, and accurate.
           </p>
         </div>
 
-        {/* Map */}
-        <GeoChart
-          height={420}
-          baseColor="#b3c5db"
-          highlightColor="#030e61"
-          onPick={onCountryPickFromMap}
-        />
+        {/* Map - show compact map on mobile, full map on tablet+ */}
+        <div className="block sm:hidden mb-4">
+          <GeoChart
+            height={260}
+            baseColor="#b3c5db"
+            highlightColor="#030e61"
+            onPick={onCountryPickFromMap}
+          />
+        </div>
 
-        {/* "Paper" card */}
-        <div className="mt-8 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm w-200 mx-auto transition-colors">
+        <div className="hidden sm:block mb-8">
+          <GeoChart
+            height={560}
+            baseColor="#b3c5db"
+            highlightColor="#030e61"
+            onPick={onCountryPickFromMap}
+          />
+        </div>
+
+  {/* "Paper" card */}
+  <div className="mt-6 sm:mt-8 rounded-xl sm:rounded-2xl border border-slate-200 bg-white shadow-sm mx-auto transition-colors w-full md:max-w-3xl">
           {/* Header */}
-          <div className="px-6 pt-6">
+          <div className="px-3 sm:px-6 pt-3 sm:pt-6">
             {/* title for form  */}
-            <div className="text-center mb-6">
-              <h3 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-white">
+            <div className="text-center mb-3 sm:mb-5">
+              <h3 className="text-lg sm:text-2xl font-semibold text-slate-900">
                 Calculate Tariffs
               </h3>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Pick countries and enter basic product info to estimate landed
-                costs.
+              <p className="mt-1 text-xs text-slate-500">
+                Pick countries and enter product info
               </p>
             </div>
 
             <div className="flex items-center gap-3" />
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-7">
+            <div className="mt-3 sm:mt-4 grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-6">
               <CountrySelect
                 label="Tariffs to:"
                 value={toValue}
@@ -263,7 +292,7 @@ export default function TariffCalculatorSection() {
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Calculation Type:
                 </label>
                 <div className="flex gap-4">
@@ -276,7 +305,7 @@ export default function TariffCalculatorSection() {
                       onChange={(e) => setCalculationType(e.target.value as "QUANTITY" | "WEIGHT")}
                       className="form-radio h-4 w-4 text-blue-600"
                     />
-                    <span className="ml-2 text-sm text-gray-700 dark:text-slate-300">By Quantity</span>
+                    <span className="ml-2 text-sm text-gray-700">By Quantity</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -287,7 +316,7 @@ export default function TariffCalculatorSection() {
                       onChange={(e) => setCalculationType(e.target.value as "QUANTITY" | "WEIGHT")}
                       className="form-radio h-4 w-4 text-blue-600"
                     />
-                    <span className="ml-2 text-sm text-gray-700 dark:text-slate-300">By Weight</span>
+                    <span className="ml-2 text-sm text-gray-700">By Weight</span>
                   </label>
                 </div>
               </div>
@@ -296,7 +325,7 @@ export default function TariffCalculatorSection() {
                 <div>
                   <label
                     htmlFor="quantity"
-                    className="text-sm font-medium text-gray-700 dark:text-slate-300"
+                    className="text-sm font-medium text-gray-700"
                     style={{ fontSize: "12px", marginRight: "10px" }}
                   >
                     Quantity:
@@ -309,14 +338,14 @@ export default function TariffCalculatorSection() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     placeholder="Enter the quantity"
-                    className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               ) : (
                 <div>
                   <label
                     htmlFor="weight"
-                    className="text-sm font-medium text-gray-700 dark:text-slate-300"
+                    className="text-sm font-medium text-gray-700"
                     style={{ fontSize: "12px", marginRight: "10px" }}
                   >
                     Weight (kg):
@@ -330,7 +359,7 @@ export default function TariffCalculatorSection() {
                     value={weight}
                     onChange={(e) => setWeight(e.target.value)}
                     placeholder="Enter weight in kg"
-                    className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               )}
@@ -338,42 +367,67 @@ export default function TariffCalculatorSection() {
               <div>
                 <label
                   htmlFor="year"
-                  className="w-full text-sm font-medium text-gray-700 dark:text-slate-300"
+                  className="w-full text-sm font-medium text-gray-700"
                   style={{ fontSize: "12px", marginRight: "10px" }}
                 >
                   Year:
                 </label>
-                <select
-                  id="year"
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                  className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="" disabled>
-                    -- Choose a year --
-                  </option>
-                  {years.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative" ref={yearBoxRef}>
+                  <input
+                    id="year"
+                    value={yearQ}
+                    onChange={(e) => {
+                      setYearQ(e.target.value);
+                      setYearOpen(true);
+                    }}
+                    onFocus={() => setYearOpen(true)}
+                    placeholder="-- Choose a year --"
+                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-200 bg-white"
+                  />
+
+                  {yearOpen && (
+                    <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-slate-300 bg-white shadow-lg">
+                      {years
+                        .filter((y) =>
+                          yearQ.trim() === "" ? true : String(y).includes(yearQ.trim())
+                        )
+                        .slice(0, 50)
+                        .map((y) => (
+                          <button
+                            key={y}
+                            type="button"
+                            onClick={() => {
+                              setYear(String(y));
+                              setYearQ(String(y));
+                              setYearOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm text-slate-900 hover:bg-slate-50"
+                          >
+                            {y}
+                          </button>
+                        ))}
+                      {years.filter((y) => (yearQ.trim() === "" ? true : String(y).includes(yearQ.trim()))).length === 0 && (
+                        <div className="px-3 py-2 text-sm text-slate-400">No matches</div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-4 flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={swap}
                 disabled={!to && !from}
-                className="inline-flex items-center px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-2 py-2 sm:py-1 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
               >
                 Swap
               </button>
               <button
                 type="button"
                 onClick={clearCountries}
-                className="inline-flex items-center px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-2 py-2 sm:py-1 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50 transition-colors"
               >
                 Clear All
               </button>
@@ -381,18 +435,18 @@ export default function TariffCalculatorSection() {
           </div>
 
           {/* Divider with label */}
-          <div className="mt-6 px-6">
+          <div className="mt-5 px-3 sm:px-6">
             <div className="relative">
-              <div className="border-t border-slate-200 dark:border-slate-700" />
-              <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white dark:bg-slate-800 px-3 text-[11px] tracking-wide text-slate-500 dark:text-slate-400">
+              <div className="border-t border-slate-200" />
+              <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-3 text-[11px] tracking-wide text-slate-500">
                 PRODUCT DETAILS
               </span>
             </div>
           </div>
 
           {/* Details */}
-          <div className="px-6 pb-6">
-            <div className="mt-6 space-y-4">
+          <div className="px-3 sm:px-6 pb-3">
+            <div className="mt-3 space-y-2">
               {/* Product Select */}
               <ProductSelect
                 label="Product"
@@ -403,9 +457,9 @@ export default function TariffCalculatorSection() {
 
               {/* Product value */}
               <div className="mt-4">
-                <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-slate-600 mb-1">
                   Unit Price{" "}
-                  <span className="text-slate-400 dark:text-slate-500">(in dollars)</span>
+                  <span className="text-slate-400">(in dollars)</span>
                 </label>
 
                 <input
@@ -415,16 +469,16 @@ export default function TariffCalculatorSection() {
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   placeholder="0.00"
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-500"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+            <div className="mt-5 flex flex-col gap-2">
               <button
                 onClick={submit}
-                className="inline-flex justify-center items-center rounded-lg bg-[#1450ef] hover:bg-blue-700 text-white text-sm px-4 py-2.5 shadow-sm transition-colors"
+                className="w-full inline-flex justify-center items-center rounded-lg bg-[#1450ef] hover:bg-blue-700 text-white text-sm px-3 py-2 sm:px-4 sm:py-3 shadow-sm transition-colors font-medium"
               >
                 Calculate Tariff
               </button>
@@ -435,9 +489,11 @@ export default function TariffCalculatorSection() {
                   setQuantity("");
                   setWeight("");
                   setYear("");
+                  setYearQ("");
+                  setYearOpen(false);
                   setShowResult(false);
                 }}
-                className="inline-flex justify-center items-center rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="w-full inline-flex justify-center items-center rounded-lg border border-slate-300 text-slate-700 text-sm px-3 py-2 sm:px-4 sm:py-3 hover:bg-slate-50 transition-colors"
               >
                 Reset Details
               </button>

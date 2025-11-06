@@ -34,7 +34,6 @@ export default function TariffLoggingDisplay() {
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [deleteError, setDeleteError] = useState("");
   const [showConfirmSingleDelete, setShowConfirmSingleDelete] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -45,16 +44,14 @@ export default function TariffLoggingDisplay() {
   const fetchCalculationHistory = async () => {
     setLoading(true);
     setError("");
-
     try {
       const response = await fetchWithAuth(`/api/import-records/history?page=${page}`);
-
       if (!response.ok) {
-        if (response.status === 403) {
-          setError("Email not verified. Please verify your email first.");
-        } else {
-          setError("Failed to load calculation history");
-        }
+        setError(
+          response.status === 403
+            ? "Email not verified. Please verify your email first."
+            : "Failed to load calculation history"
+        );
         setLoading(false);
         return;
       }
@@ -78,41 +75,28 @@ export default function TariffLoggingDisplay() {
 
   const deleteEntry = async () => {
     if (deleteId === null) return;
-    setDeleteError("");
-
     try {
       const response = await fetchWithAuth(`/api/import-records/history/${deleteId}`, {
         method: "DELETE",
       });
-
       if (!response.ok) {
-        setDeleteError("Failed to delete calculation");
+
         return;
       }
-
       setLogs(logs.filter((log) => log.id !== deleteId));
       setShowConfirmSingleDelete(false);
       setDeleteId(null);
-
-      if (logs.length === 1 && page > 0) {
-        setPage(page - 1);
-      }
+      if (logs.length === 1 && page > 0) setPage(page - 1);
     } catch (err) {
-      setDeleteError("Error deleting calculation");
     }
   };
 
-  const handlePreviousPage = () => {
-    if (page > 0) setPage(page - 1);
-  };
-
-  const handleNextPage = () => {
-    if (page < totalPages - 1) setPage(page + 1);
-  };
+  const handlePreviousPage = () => page > 0 && setPage(page - 1);
+  const handleNextPage = () => page < totalPages - 1 && setPage(page + 1);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center transition-colors">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -120,70 +104,48 @@ export default function TariffLoggingDisplay() {
 
   if (logs.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">Tariff Calculation History</h2>
-            {error ? (
-              <p className="mt-4 text-lg text-red-600 dark:text-red-400">{error}</p>
-            ) : (
-              <p className="mt-4 text-lg text-gray-500 dark:text-slate-400">No calculations have been logged yet.</p>
-            )}
-            <Link
-              to="/"
-              className="mt-6 inline-block bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white transition-colors"
-            >
-              Calculate a Tariff
-            </Link>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-50 py-12 px-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Tariff Calculation History</h2>
+        <p className="mt-3 text-gray-500">
+          {error || "No calculations have been logged yet."}
+        </p>
+        <Link
+          to="/"
+          className="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Calculate a Tariff
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">Tariff Calculation History</h2>
-          <p className="mt-4 text-lg text-gray-500 dark:text-slate-400">View your previous tariff calculations</p>
-          <p className="mt-2 text-sm text-gray-400 dark:text-slate-500">
-            Showing {logs.length} of {totalElements} calculations
+          <h2 className="text-3xl font-extrabold text-gray-900">Tariff Calculation History</h2>
+          <p className="mt-2 text-gray-500">View your previous tariff calculations</p>
+          <p className="mt-1 text-sm text-gray-400">
+            Showing {logs.length} of {totalElements} records
           </p>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-lg">
-            {error}
-          </div>
-        )}
-        {deleteError && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-lg">
-            {deleteError}
-          </div>
-        )}
-
-        {/* Delete Confirmation Modal */}
-        {showConfirmSingleDelete && deleteId !== null && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg max-w-sm mx-4 shadow-xl">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Confirm Delete Entry</h3>
-              <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
-                Are you sure you want to delete this tariff calculation? This action cannot be undone.
-              </p>
-              <div className="mt-4 flex justify-end space-x-3">
+        {/* Delete Modal */}
+        {showConfirmSingleDelete && (
+          <div className="fixed inset-0 backdrop-blur-sm bg-white/20 flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+              <h3 className="text-lg font-semibold text-gray-900">Delete Calculation?</h3>
+              <p className="mt-2 text-sm text-gray-500">This action cannot be undone.</p>
+              <div className="mt-4 flex justify-end gap-3">
                 <button
-                  onClick={() => {
-                    setShowConfirmSingleDelete(false);
-                    setDeleteId(null);
-                  }}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                  onClick={() => setShowConfirmSingleDelete(false)}
+                  className="px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteEntry}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 transition-colors"
+                  className="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition"
                 >
                   Delete
                 </button>
@@ -192,133 +154,87 @@ export default function TariffLoggingDisplay() {
           </div>
         )}
 
-        {/* Table with horizontal scrolling */}
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-              <div className="shadow overflow-hidden border-b border-gray-200 dark:border-slate-700 sm:rounded-lg">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-                    <thead className="bg-gray-50 dark:bg-slate-800">
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          From → To
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Product
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Value ($)
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Year
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Base Tariff Rate (%)
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Base Tariff ($)
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Additional Fee Rate (%)
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Additional Fees ($)
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Calculation Type
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Total Cost ($)
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-                      {logs.map((log, idx) => {
-                        return (
-                          <tr key={log.id} className={idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-gray-50 dark:bg-slate-700/50"}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.fromCountry?.name || "N/A"} → {log.toCountry?.name || "N/A"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.product?.name || "N/A"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              ${log.value?.toLocaleString() || "0"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.year}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.tariffRate?.toFixed(2) || "0"}%
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              ${(log.calculatedTariff - (log.totalAdditionalFees || 0))?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
-                            </td>
-                            
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              {log.additionalFee?.toFixed(2) || "0.00"}%
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              ${(log.totalAdditionalFees || 0)?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                                {log.calculationType || "QUANTITY"}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-700 dark:text-green-400">
-                              ${log.totalCost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <button
-                                onClick={() => handleDeleteClick(log.id)}
-                                className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 font-medium transition-colors"
-                              >
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Table */}
+        <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200 bg-white">
+          <table className="min-w-full text-sm text-left text-gray-700">
+            <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+              <tr>
+                <th className="px-6 py-3">From → To</th>
+                <th className="px-6 py-3">Product</th>
+                <th className="px-6 py-3">Value ($)</th>
+                <th className="px-6 py-3">Year</th>
+                <th className="px-6 py-3">Base Rate (%)</th>
+                <th className="px-6 py-3">Base Tariff ($)</th>
+                <th className="px-6 py-3">Additional Fee Rate (%)</th>
+                <th className="px-6 py-3">Additional Fee ($)</th>
+                <th className="px-6 py-3">Calculation Type</th>
+                <th className="px-6 py-3">Total Cost ($)</th>
+                <th className="px-6 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {logs.map((log) => (
+                <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">{log.fromCountry?.name} → {log.toCountry?.name}</td>
+                  <td className="px-6 py-4">{log.product?.name}</td>
+                  <td className="px-6 py-4">${log.value.toLocaleString()}</td>
+                  <td className="px-6 py-4">{log.year}</td>
+                  <td className="px-6 py-4">{log.tariffRate.toFixed(2)}%</td>
+                  <td className="px-6 py-4">${log.calculatedTariff.toLocaleString()}</td>
+                  <td className="px-6 py-4">{log.additionalFee.toFixed(2)}%</td>
+                  <td className="px-6 py-4">${log.totalAdditionalFees.toLocaleString()}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        log.calculationType === "WEIGHT"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-blue-100 text-blue-700"
+                      }`}
+                    >
+                      {log.calculationType || "—"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-green-600">
+                    ${log.totalCost.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => handleDeleteClick(log.id)}
+                      className="text-red-600 hover:text-red-800 font-medium"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-slate-700">
-          <div className="text-sm text-gray-600 dark:text-slate-400">
-            Page <span className="font-semibold">{page + 1}</span> of{" "}
-            <span className="font-semibold">{totalPages}</span>
-          </div>
-
-          <div className="flex gap-2">
+        {/* Pagination */}
+        <div className="flex justify-between items-center mt-6 text-sm text-gray-600">
+          <span>
+            Page <b>{page + 1}</b> of <b>{totalPages}</b>
+          </span>
+          <div className="space-x-2">
             <button
               onClick={handlePreviousPage}
               disabled={page === 0}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md border ${
                 page === 0
-                  ? "bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed"
-                  : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-200 hover:bg-gray-300 dark:hover:bg-slate-600"
+                  ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                  : "text-gray-700 hover:bg-gray-100 border-gray-300"
               }`}
             >
               Previous
             </button>
-
             <button
               onClick={handleNextPage}
               disabled={page >= totalPages - 1}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md border ${
                 page >= totalPages - 1
-                  ? "bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
               }`}
             >
               Next
