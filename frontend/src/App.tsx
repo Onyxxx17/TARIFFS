@@ -9,8 +9,11 @@ import AuthCallback from "./pages/AuthCallback";
 import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
 
+import Dashboard from "./pages/Dashboard";
 import AnalyticsDashboard from "./pages/AgricultureTariffChart";
 import TariffPredictionDisplay from "./pages/TariffPredictionPages";
+
+import Contact from "./pages/Contact";
 
 function NotFound() {
   return <div className="mx-auto max-w-3xl p-6">Page not found.</div>;
@@ -28,6 +31,9 @@ export default function App() {
           <Route path="logging" element={<TariffLoggingDisplay />} />
           <Route path="/tariff-prediction" element={<TariffPredictionDisplay />} />
           <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/contact" element={<Contact />} />
+          
 
           {/* Blog list + detail */}
           <Route path="/blog" element={<BlogList />} />
