@@ -23,12 +23,7 @@ export default function TariffResult({
   const usd = (n: number) =>
     n?.toLocaleString(undefined, { style: "currency", currency: "USD" });
 
-  const getUnitLabel = () => {
-    if (tariffResult?.calculationType === "WEIGHT") {
-      return "/kg";
-    }
-    return "/unit";
-  };
+
 
   if (error) {
     return (

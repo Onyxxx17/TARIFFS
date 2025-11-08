@@ -12,6 +12,7 @@ import BlogPost from "./pages/BlogPost";
 import Dashboard from "./pages/Dashboard";
 import AnalyticsDashboard from "./pages/AgricultureTariffChart";
 import TariffPredictionDisplay from "./pages/TariffPredictionPages";
+import TariffAIChat from "./pages/TariffAIChat";
 
 import Contact from "./pages/Contact";
 
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="auth/callback" element={<AuthCallback />} /> {/* OAuth2 Callback */}
           <Route path="logging" element={<TariffLoggingDisplay />} />
           <Route path="/tariff-prediction" element={<TariffPredictionDisplay />} />
+          <Route path="/ai-chat" element={<TariffAIChat />} />
           <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contact" element={<Contact />} />
