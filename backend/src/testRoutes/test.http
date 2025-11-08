@@ -101,5 +101,19 @@ Accept: application/json
   "year": 2026
 }
 
-###
-GET http://localhost:8080/api/
+
+###Test chatbot health
+
+GET http://localhost:8080/api/chat/health
+
+
+###Test chatbot result
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer
+
+{
+  "message" : "Explain me about Tariffs."
+}
+

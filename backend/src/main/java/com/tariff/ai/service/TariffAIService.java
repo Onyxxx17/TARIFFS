@@ -7,7 +7,7 @@ import com.tariff.ai.dto.TariffQueryResponse;
 import com.tariff.repository.CountryRepository;
 import com.tariff.repository.ProductRepository;
 import com.tariff.repository.TariffRuleRepository;
-import org.springframework.ai.chat.client.ChatClient;
+import com.tariff.service.GeminiService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,20 +16,20 @@ import java.util.Map;
 @Service
 public class TariffAIService {
 
-    private final ChatClient chatClient;
+    private final GeminiService geminiService;
     private final TextToSqlService textToSqlService;
     private final DatabaseQueryService databaseQueryService;
     private final CountryRepository countryRepository;
     private final ProductRepository productRepository;
     private final TariffRuleRepository tariffRuleRepository;
 
-    public TariffAIService(ChatClient.Builder chatClientBuilder,
+    public TariffAIService(GeminiService geminiService,
                           TextToSqlService textToSqlService,
                           DatabaseQueryService databaseQueryService,
                           CountryRepository countryRepository,
                           ProductRepository productRepository,
                           TariffRuleRepository tariffRuleRepository) {
-        this.chatClient = chatClientBuilder.build();
+        this.geminiService = geminiService;
         this.textToSqlService = textToSqlService;
         this.databaseQueryService = databaseQueryService;
         this.countryRepository = countryRepository;
@@ -42,29 +42,56 @@ public class TariffAIService {
         // First, try to get real data from database
         String realDataContext = getRealTariffData(request);
         
-        String userMessage = """
+        String systemPrompt = """
+                You are a tariff analysis expert. Analyze import tariffs and additional fees based on the provided data.
+                Return your response in JSON format with the following structure:
+                {
+                  "estimatedTariffRate": "percentage or description",
+                  "additionalFees": ["list of fees"],
+                  "summary": "brief analysis summary",
+                  "disclaimer": "legal disclaimer"
+                }
+                """;
+        
+        String userMessage = String.format("""
                 Analyze the import tariffs and additional fees for the following scenario:
-                - Product: {product}
-                - Exporting from: {origin}
-                - Importing to: {destination}
+                - Product: %s
+                - Exporting from: %s
+                - Importing to: %s
 
                 Real data from our database:
-                {realData}
+                %s
 
                 Based on the real data above (if available) and your knowledge, provide the estimated tariff rate, 
                 list any common additional fees (like VAT, customs processing fees, etc.), and give a brief summary.
                 If real data is available, prioritize it over general knowledge.
                 Also, include a disclaimer that this is an estimate and not legally binding financial advice.
-                """; 
+                """, 
+                request.productDescription(), 
+                request.originCountry(), 
+                request.destinationCountry(), 
+                realDataContext);
 
-        return this.chatClient.prompt()
-                .user(p -> p.text(userMessage)
-                        .param("product", request.productDescription())
-                        .param("origin", request.originCountry())
-                        .param("destination", request.destinationCountry())
-                        .param("realData", realDataContext))
-                .call()
-                .entity(TariffAnalysisResponse.class);
+        try {
+            String response = this.geminiService.generateContent(systemPrompt, userMessage);
+            // For now, return a simple response. You might want to parse the JSON response later
+            return new TariffAnalysisResponse(
+                "Based on available data", 
+                List.of(
+                    new TariffAnalysisResponse.Fee("VAT", "Variable", "Value Added Tax"),
+                    new TariffAnalysisResponse.Fee("Customs processing fee", "Variable", "Administrative processing fee")
+                ), 
+                response, 
+                "This is an estimate and not legally binding financial advice."
+            );
+        } catch (Exception e) {
+            return new TariffAnalysisResponse(
+                "Unable to determine", 
+                List.of(), 
+                "Error analyzing tariff data: " + e.getMessage(), 
+                "This is an estimate and not legally binding financial advice."
+            );
+        }
     }
     
     public TariffQueryResponse handleQuery(TariffQueryRequest request) {
@@ -173,37 +200,45 @@ public class TariffAIService {
             information while noting when specific data would require database lookup.
             """;
             
-        String response = this.chatClient.prompt()
-                .system(systemPrompt)
-                .user(query)
-                .call()
-                .content();
-                
-        return new TariffQueryResponse(
-            response,
-            "general",
-            null,
-            null,
-            false
-        );
+        try {
+            String response = this.geminiService.generateContent(systemPrompt, query);
+            return new TariffQueryResponse(
+                response,
+                "general",
+                null,  // data
+                null,  // sqlQuery
+                false  // hasData
+            );
+        } catch (Exception e) {
+            return new TariffQueryResponse(
+                "I apologize, but I encountered an error processing your query: " + e.getMessage(),
+                "general",
+                null,  // data
+                null,  // sqlQuery
+                false  // hasData
+            );
+        }
     }
     
     private String getAIInterpretation(String originalQuery, String queryResults) {
-        String prompt = """
-            The user asked: "{query}"
+        String systemPrompt = """
+            You are a data analyst expert. Interpret database query results and provide clear explanations.
+            """;
+            
+        String userPrompt = String.format("""
+            The user asked: "%s"
             
             Here are the results from our database:
-            {results}
+            %s
             
             Please provide a clear, helpful interpretation of these results in response to the user's question.
             If the results are empty, explain that no data was found and suggest alternative queries.
-            """;
+            """, originalQuery, queryResults);
             
-        return this.chatClient.prompt()
-                .user(p -> p.text(prompt)
-                        .param("query", originalQuery)
-                        .param("results", queryResults))
-                .call()
-                .content();
+        try {
+            return this.geminiService.generateContent(systemPrompt, userPrompt);
+        } catch (Exception e) {
+            return "I found some data but encountered an error interpreting it: " + e.getMessage();
+        }
     }
 }

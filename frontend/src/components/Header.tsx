@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { fetchWithAuth } from "../utils/api";
-import { ChevronDown, Menu, X, BarChart2, FileText } from "lucide-react"; 
+import { ChevronDown, Menu, X, BarChart2, FileText } from "lucide-react";
+
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -12,11 +13,12 @@ export default function Header() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userName, setUserName] = useState<string>("");
-  
+ 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileToggleRef = useRef<HTMLButtonElement | null>(null);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -25,19 +27,21 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+
   // keep header state in sync when token changes in other tabs/components
   useEffect(() => {
     const onStorage = () => setIsLoggedIn(!!localStorage.getItem("token"));
     const onAuthStateChanged = () => setIsLoggedIn(!!localStorage.getItem("token"));
-    
+   
     window.addEventListener("storage", onStorage);
     window.addEventListener("authStateChanged", onAuthStateChanged);
-    
+   
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("authStateChanged", onAuthStateChanged);
     };
   }, []);
+
 
   // Fetch user info when logged in
   useEffect(() => {
@@ -46,6 +50,7 @@ export default function Header() {
         setUserName("");
         return;
       }
+
 
       try {
         // Decode JWT to get user email/name or fetch from API
@@ -65,8 +70,10 @@ export default function Header() {
       }
     };
 
+
     fetchUserInfo();
   }, [isLoggedIn]);
+
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -76,11 +83,13 @@ export default function Header() {
       }
     };
 
+
     if (openUserMenu) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openUserMenu]);
+
 
   // Close mobile menu when clicking outside the menu and the hamburger button
   useEffect(() => {
@@ -100,10 +109,11 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [mobileOpen]);
 
+
   const handleLogout = async () => {
     // Close it
     setOpenUserMenu(false);
-    
+   
     // Try to call logout API using fetchWithAuth
     try {
       await fetchWithAuth("/api/auth/logout", {
@@ -113,6 +123,7 @@ export default function Header() {
       console.error("Logout failed:", error);
     }
 
+
     // Clear local storage
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
@@ -120,10 +131,12 @@ export default function Header() {
     setIsLoggedIn(false);
     setUserName("");
 
+
     // notify other tabs/components
     window.dispatchEvent(new Event("storage"));
     navigate("/");
   };
+
 
   // Function to get user initials for avatar
   const getInitials = (name: string) => {
@@ -135,12 +148,13 @@ export default function Header() {
     return name.substring(0, 2).toUpperCase();
   };
 
+
   return (
     <header
       className={[
         "fixed top-0 inset-x-0 z-50 h-[64px] sm:h-[72px] border-b transition-colors",
-        scrolled 
-          ? "bg-white/95 shadow-sm" 
+        scrolled
+          ? "bg-white/95 shadow-sm"
           : "bg-white/90",
         "backdrop-blur",
       ].join(" ")}
@@ -155,6 +169,7 @@ export default function Header() {
           <span className="ml-1">TARIFF</span>
         </Link>
 
+
   <nav className="hidden sm:flex items-center gap-1 lg:gap-8 text-slate-600">
           <Link
             className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm"
@@ -168,6 +183,7 @@ export default function Header() {
           >
             Dashboard
           </Link>
+
 
           {/* Features dropdown */}
           <div
@@ -184,6 +200,7 @@ export default function Header() {
                 }`}
               />
             </button>
+
 
             {openFeatures && (
               <div className="absolute top-10 left-0 w-60 bg-white border shadow-lg rounded-lg z-50">
@@ -212,9 +229,10 @@ export default function Header() {
                   AI Assistant
                 </Link>
               </div>
-              
+             
             )}
           </div>
+
 
           <Link className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm" to="/blog">
             Blog
@@ -226,7 +244,9 @@ export default function Header() {
             Contact
           </Link>
 
+
         </nav>
+
 
         {/* Mobile quick actions + hamburger - visible when nav is hidden */}
         <div className="sm:hidden flex items-center gap-2">
@@ -254,6 +274,7 @@ export default function Header() {
             </button>
           </div>
         </div>
+
 
   <div className="hidden sm:flex items-center gap-2 sm:gap-3">
           {!isLoggedIn ? (
@@ -289,6 +310,7 @@ export default function Header() {
                 />
               </button>
 
+
               {/* Dropdown Menu */}
               {openUserMenu && (
                 <div className="absolute right-0 top-12 w-48 sm:w-56 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden z-50">
@@ -301,6 +323,7 @@ export default function Header() {
                       Signed in
                     </p>
                   </div>
+
 
                   {/* Menu Items */}
                   <div className="py-1">
@@ -346,3 +369,7 @@ export default function Header() {
     </header>
   );
 }
+
+
+
+
