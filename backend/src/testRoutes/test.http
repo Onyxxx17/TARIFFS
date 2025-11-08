@@ -100,3 +100,18 @@ Accept: application/json
   "productId": 1,
   "year": 2026
 }
+
+###Test chatbot health
+
+GET http://localhost:8080/api/chat/health
+
+
+###Test chatbot result
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer
+
+{
+  "message" : "Explain me about Tariffs."
+}
