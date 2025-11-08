@@ -180,7 +180,7 @@ export default function TariffLoggingDisplay() {
                   <td className="px-6 py-4">${log.value.toLocaleString()}</td>
                   <td className="px-6 py-4">{log.year}</td>
                   <td className="px-6 py-4">{log.tariffRate.toFixed(2)}%</td>
-                  <td className="px-6 py-4">${log.calculatedTariff.toLocaleString()}</td>
+                  <td className="px-6 py-4">${(log.calculatedTariff - log.totalAdditionalFees).toLocaleString()}</td>
                   <td className="px-6 py-4">{log.additionalFee.toFixed(2)}%</td>
                   <td className="px-6 py-4">${log.totalAdditionalFees.toLocaleString()}</td>
                   <td className="px-6 py-4">

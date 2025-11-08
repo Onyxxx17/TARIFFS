@@ -106,6 +106,10 @@ public class SecurityConfig {
                 // --- Tariff calculation endpoint ---
                 .requestMatchers("/api/tariffs/calculate").authenticated()
                 .requestMatchers("/api/tariffs/calculate/**").authenticated()
+
+                //Chatbot
+                .requestMatchers(HttpMethod.POST,"/api/chat/**").authenticated()
+                .requestMatchers(HttpMethod.GET,"/api/chat/health").permitAll()
                 // --- Default rule - require authentication for anything else ---
                 .anyRequest().authenticated()
                 )
