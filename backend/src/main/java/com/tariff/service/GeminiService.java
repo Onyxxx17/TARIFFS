@@ -49,15 +49,51 @@ public class GeminiService {
 
             String text = response.text();
 
-            // If Gemini doesn’t produce anything useful
+            // If Gemini doesn't produce anything useful
             if (text == null || text.trim().isEmpty()) {
                 return "I'm not certain about that. Please check the Tariff Calculator tool on the homepage for more details.";
             }
 
-            return text;
+            // Remove markdown formatting but keep structure
+            return cleanMarkdownFormatting(text);
 
         } catch (Exception e) {
             return "I'm sorry, I encountered an error while processing your request. Please try again later or use the Tariff Calculator on the homepage. Error: " + e.getMessage();
         }
+    }
+
+    /**
+     * Removes markdown formatting (*, **, `) while preserving meaningful empty lines
+     * and structure for readability.
+     */
+    private String cleanMarkdownFormatting(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+
+        // Remove bold (**text**)
+        text = text.replaceAll("\\*\\*([^*]+)\\*\\*", "$1");
+        
+        // Remove italic (*text*)
+        text = text.replaceAll("(?<!\\*)\\*([^*]+)\\*(?!\\*)", "$1");
+        
+        // Remove inline code (`text`)
+        text = text.replaceAll("`([^`]+)`", "$1");
+        
+        // Remove code block markers (```language and ```)
+        text = text.replaceAll("```[a-zA-Z]*\\n?", "");
+        
+        // Remove headers (### text -> text)
+        text = text.replaceAll("^#{1,6}\\s+", "");
+        text = text.replaceAll("\\n#{1,6}\\s+", "\n");
+        
+        // Clean up bullet points but keep structure
+        // Replace * or - at start of line with simple dash
+        text = text.replaceAll("(?m)^\\s*[*-]\\s+", "• ");
+        
+        // Preserve double newlines (paragraph breaks) but clean up excessive ones
+        text = text.replaceAll("\\n{3,}", "\n\n");
+        
+        return text.trim();
     }
 }
