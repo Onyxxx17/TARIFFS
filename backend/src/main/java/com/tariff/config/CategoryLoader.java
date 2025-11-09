@@ -15,6 +15,8 @@ public class CategoryLoader {
     @Autowired
     private CategoryRepository categoryRepository;
 
+
+
     public void loadData() {
         try{
             File file = new File("src/main/java/com/tariff/csvs/categories.csv");
