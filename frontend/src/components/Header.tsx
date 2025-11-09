@@ -138,7 +138,7 @@ export default function Header() {
   return (
     <header
       className={[
-        "fixed top-0 inset-x-0 z-50 h-[64px] sm:h-[72px] border-b transition-colors",
+        "fixed top-0 inset-x-0 z-60 h-[64px] sm:h-[72px] border-b transition-colors pointer-events-auto",
         scrolled 
           ? "bg-white/95 shadow-sm" 
           : "bg-white/90",
