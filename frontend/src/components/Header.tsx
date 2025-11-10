@@ -201,9 +201,8 @@ export default function Header() {
               />
             </button>
 
-
             {openFeatures && (
-              <div className="absolute top-10 left-0 w-60 bg-white border shadow-lg rounded-lg z-50">
+              <div className="absolute top-full left-0 w-60 bg-white border shadow-lg rounded-lg z-50 mt-0">
                 <Link
                   to="/dashboard/analytics"
                   className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
@@ -218,7 +217,7 @@ export default function Header() {
                 </Link>
                 <Link
                   to="/tariff-prediction"
-                  className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-md transition-colors"
+                  className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
                 >
                   Tariff Prediction
                 </Link>
@@ -229,7 +228,6 @@ export default function Header() {
                   AI Assistant
                 </Link>
               </div>
-             
             )}
           </div>
 

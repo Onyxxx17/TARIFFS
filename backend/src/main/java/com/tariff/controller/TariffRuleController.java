@@ -21,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tariff-rules")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TariffRuleController {
 
     private TariffRuleService tariffRuleService;

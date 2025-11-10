@@ -99,31 +99,31 @@ export default function TariffPredictionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">
+          <h1 className="text-4xl font-extrabold text-slate-900 mb-2">
             Tariff Rate Prediction
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-slate-600">
             Predict future tariff rates based on historical trade data.
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-8 border border-slate-200 dark:border-slate-700">
+        <div className="bg-white rounded-xl shadow-md p-8 border border-slate-200">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <CountrySelect label="Exporting From" value={fromCountry} onPick={setFromCountry} />
             <CountrySelect label="Importing To" value={toCountry} onPick={setToCountry} />
             <ProductSelect label="Product" value={product} onPick={setProduct} placeholder="Search product..." />
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Predict Year
               </label>
               <select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-300 bg-white text-slate-900 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Select Year --</option>
                 {years.map((y) => (
@@ -136,7 +136,7 @@ export default function TariffPredictionPage() {
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md">
+            <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md">
               {error}
             </div>
           )}
@@ -151,11 +151,11 @@ export default function TariffPredictionPage() {
         </div>
 
         {result && (
-          <div className="mt-10 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 p-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+          <div className="mt-10 bg-white rounded-xl shadow-md border border-slate-200 p-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
               Prediction Results
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-800 dark:text-slate-300">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-800">
               <p>
                 <span className="font-semibold">From:</span> {result.fromCountryCode}
               </p>
@@ -177,7 +177,7 @@ export default function TariffPredictionPage() {
                 {result.modelFit.toFixed(4)}
               </p>
 
-            <div className="mt-4 text-sm text-slate-500 dark:text-slate-400 italic">
+            <div className="mt-4 text-sm text-slate-500 italic">
                 *Note: Tariff Prediction rates are calculated using a simple linear regression model, so some predictions may be inaccurate.
             </div>
             </div>

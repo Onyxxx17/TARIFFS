@@ -18,9 +18,11 @@ import com.tariff.entity.TariffRule;
 import com.tariff.service.TariffRuleAdditionalFeesService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/tariff-rules/additional-fees")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TariffRuleAdditionalFeesController {
     
     @Autowired

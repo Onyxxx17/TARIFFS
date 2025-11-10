@@ -4,6 +4,7 @@ import com.tariff.dto.request.ChatRequest;
 import com.tariff.dto.response.ChatResponse;
 import com.tariff.service.GeminiService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "AI Chatbot endpoints")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ChatController {
 
     @Autowired

@@ -24,6 +24,7 @@ import java.util.List;
 @Hidden
 @RestController
 @RequestMapping("/api/import-records")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ImportRecordController {
 
     private final ImportRecordService importRecordService;
