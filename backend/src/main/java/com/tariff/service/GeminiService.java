@@ -84,12 +84,15 @@ public class GeminiService {
      */
     private String detectAndExecuteTool(String userMessage) {
         try {
-            String lowerMessage = userMessage.toLowerCase();
+            // Normalize and lowercase user message to improve keyword detection.
+            // Collapse repeated characters (e.g. "finddd" -> "find") so small typos still match keywords.
+            String lowerMessage = userMessage == null ? "" : userMessage.toLowerCase();
+            String normalized = lowerMessage.replaceAll("(\\w)\\1+", "$1");
 
             // Pattern 1: Search for products
-            if (lowerMessage.contains("search") || lowerMessage.contains("find")
-                    || lowerMessage.contains("show me") || lowerMessage.contains("list")
-                    || lowerMessage.contains("do you have") || lowerMessage.contains("products")) {
+            if (normalized.contains("search") || normalized.contains("find")
+                    || normalized.contains("show me") || normalized.contains("list")
+                    || normalized.contains("do you have") || normalized.contains("products")) {
 
                 // Extract search query
                 String query = extractSearchQuery(userMessage);
@@ -106,8 +109,8 @@ public class GeminiService {
             }
 
             // Pattern 2: Get tariff rates
-            if (lowerMessage.contains("tariff rate") || lowerMessage.contains("duty")
-                    || lowerMessage.contains("additional fee") || lowerMessage.contains("from") && lowerMessage.contains("to")) {
+            if (normalized.contains("tariff rate") || normalized.contains("duty")
+                    || normalized.contains("additional fee") || (normalized.contains("from") && normalized.contains("to"))) {
 
                 Map<String, String> countries = extractCountries(userMessage);
                 if (countries != null && countries.containsKey("from") && countries.containsKey("to")) {

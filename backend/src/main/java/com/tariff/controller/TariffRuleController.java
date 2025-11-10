@@ -1,23 +1,29 @@
 package com.tariff.controller;
 
+import java.util.List;
+
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tariff.dto.PageResponse;
 import com.tariff.dto.response.TariffComparisonDTO;
 import com.tariff.dto.response.TariffRateOverTimeDTO;
 import com.tariff.entity.TariffRule;
 import com.tariff.service.TariffRuleService;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tariff-rules")
@@ -31,8 +37,10 @@ public class TariffRuleController {
     }
 
     @GetMapping
-    public Page<TariffRule> getAllTariffRules(@ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return tariffRuleService.listTariffRule(pageable);
+    public ResponseEntity<PageResponse<TariffRule>> getAllTariffRules(
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        var page = tariffRuleService.listTariffRule(pageable);
+        return ResponseEntity.ok(new PageResponse<>(page));
     }
 
     @GetMapping("/{id}")
@@ -45,38 +53,30 @@ public class TariffRuleController {
 
     // Backward compatibility - returns rules where country is either from or to
     @GetMapping("/country/{countryCode}")
-    public Page<TariffRule> getTariffRulesByCountry(
+    public ResponseEntity<PageResponse<TariffRule>> getTariffRulesByCountry(
             @Parameter(description = "Country Code", example = "C840")
             @PathVariable String countryCode,
             @ParameterObject @PageableDefault(size = 10) Pageable pageable
     ) {
-        return tariffRuleService.getTariffRulesByCountryCode(countryCode, pageable);
-    }
-
-    // New endpoint for from country
-    @GetMapping("/from-country/{fromCountryCode}")
-    public Page<TariffRule> getTariffRulesByFromCountry(
-            @Parameter(description = "Country Code", example = "C840")
-            @PathVariable String fromCountryCode,
-            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return tariffRuleService.getTariffRulesByFromCountryCode(fromCountryCode, pageable);
+        var page = tariffRuleService.getTariffRulesByCountryCode(countryCode, pageable);
+        return ResponseEntity.ok(new PageResponse<>(page));
     }
 
     // New endpoint for to country
     @GetMapping("/to-country/{toCountryCode}")
-    public Page<TariffRule> getTariffRulesByToCountry(
-            @Parameter(description = "Country Code", example = "C840")
-            @PathVariable String toCountryCode,
+    public ResponseEntity<PageResponse<TariffRule>> getTariffRulesByToCountry(
+            @PathVariable("toCountryCode") String toCountryCode,
             @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return tariffRuleService.getTariffRulesByToCountryCode(toCountryCode, pageable);
+        var page = tariffRuleService.getTariffRulesByToCountryCode(toCountryCode, pageable);
+        return ResponseEntity.ok(new PageResponse<>(page));
     }
 
     @GetMapping("/product/{productId}")
-    public Page<TariffRule> getTariffRulesByProduct(
-            @Parameter(description = "Product ID", example = "10129")
+    public ResponseEntity<PageResponse<TariffRule>> getTariffRulesByProduct(
             @PathVariable Long productId,
             @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return tariffRuleService.getTariffRulesByProductId(productId, pageable);
+        var page = tariffRuleService.getTariffRulesByProductId(productId, pageable);
+        return ResponseEntity.ok(new PageResponse<>(page));
     }
 
     @PostMapping
@@ -87,11 +87,11 @@ public class TariffRuleController {
     // Backward compatibility - sets both from and to country to the same country
     @PostMapping("/country/{countryCode}/product/{productId}")
     public TariffRule createTariffRuleWithCountryAndProduct(
-            @PathVariable String fromCountryCode,
-            @PathVariable String toCountryCode,
-            @PathVariable Long productId,
+            @PathVariable("countryCode") String countryCode,
+            @PathVariable("productId") Long productId,
             @RequestBody TariffRule tariffRule) {
-        return tariffRuleService.addTariffRuleByCountriesAndProduct(fromCountryCode, toCountryCode, productId, tariffRule);
+        // backward-compatible: same country for from and to
+        return tariffRuleService.addTariffRuleByCountriesAndProduct(countryCode, countryCode, productId, tariffRule);
     }
 
     // New endpoint for creating tariff rules with separate from and to countries
@@ -112,12 +112,12 @@ public class TariffRuleController {
     // Backward compatibility - updates rule associated with country (either from or to)
     @PutMapping("/country/{countryCode}/product/{productId}/{id}")
     public TariffRule updateTariffRuleWithCountryAndProduct(
-            @PathVariable String fromCountryCode,
-            @PathVariable String toCountryCode,
-            @PathVariable Long productId,
-            @PathVariable Long id,
+            @PathVariable("countryCode") String countryCode,
+            @PathVariable("productId") Long productId,
+            @PathVariable("id") Long id,
             @RequestBody TariffRule tariffRule) {
-        return tariffRuleService.updateTariffRule(fromCountryCode, toCountryCode, productId, id, tariffRule);
+        // backward-compatible: same country for from and to
+        return tariffRuleService.updateTariffRule(countryCode, countryCode, productId, id, tariffRule);
     }
 
     // New endpoint for updating tariff rules with specific from and to countries
@@ -140,11 +140,11 @@ public class TariffRuleController {
     // Backward compatibility - deletes rule associated with country (either from or to)
     @DeleteMapping("/country/{countryCode}/product/{productId}/{id}")
     public ResponseEntity<?> deleteTariffRuleWithCountryAndProduct(
-            @PathVariable String fromCountryCode,
-            @PathVariable String toCountryCode,
-            @PathVariable Long productId,
-            @PathVariable Long id) {
-        tariffRuleService.deleteTariffRule(fromCountryCode, toCountryCode, productId, id);
+            @PathVariable("countryCode") String countryCode,
+            @PathVariable("productId") Long productId,
+            @PathVariable("id") Long id) {
+        // backward-compatible: same country for from and to
+        tariffRuleService.deleteTariffRule(countryCode, countryCode, productId, id);
         return ResponseEntity.ok().build();
     }
 
@@ -158,7 +158,7 @@ public class TariffRuleController {
         tariffRuleService.deleteTariffRule(fromCountryCode, toCountryCode, productId, id);
         return ResponseEntity.ok().build();
     }
-    
+
     // New endpoint for getting tariff rates over time
     @GetMapping("/rates-over-time")
     public ResponseEntity<List<TariffRateOverTimeDTO>> getTariffRatesOverTime(
@@ -168,7 +168,7 @@ public class TariffRuleController {
         List<TariffRateOverTimeDTO> rates = tariffRuleService.getTariffRatesOverTime(fromCountryCode, toCountryCode, productId);
         return ResponseEntity.ok(rates);
     }
-    
+
     // New endpoint for comparing tariff rates between two countries
     @GetMapping("/compare-tariffs")
     public ResponseEntity<TariffComparisonDTO> compareTariffRates(

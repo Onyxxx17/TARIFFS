@@ -86,5 +86,9 @@ public class TariffRule {
         this.effectiveYear = effectiveYear;
     }
 
+    public void setId(long l) {
+       this.id = l;
+    }
+
 
 }
