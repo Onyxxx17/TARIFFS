@@ -4,6 +4,7 @@ import com.tariff.entity.Category;
 import com.tariff.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/industries")
+@SecurityRequirement(name = "Bearer Authentication")
 public class CategoryController {
     
     private CategoryService categoryService;
