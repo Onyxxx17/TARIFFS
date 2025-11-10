@@ -43,7 +43,7 @@ export default function HomePage() {
               Smarter <span className="text-[#4ea0ff]">Tariff</span> Calculator
             </h1>
             <p className="mt-4 text-base md:text-xl text-white/85">
-              Duties, taxes, landed cost — visualized and calculated instantly.
+              Duties, taxes, landed cost - visualized and calculated instantly.
             </p>
             <div className="mt-8">
               <a
