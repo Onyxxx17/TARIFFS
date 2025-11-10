@@ -100,3 +100,216 @@ Accept: application/json
   "productId": 1,
   "year": 2026
 }
+
+### ============================================
+### AI CHATBOT TESTS (Requires JWT Token)
+### ============================================
+### First login above to get a JWT token, then replace YOUR_JWT_TOKEN below
+
+### 10. Check Chatbot Health
+GET http://localhost:8080/api/chat/health
+
+### 11. General Knowledge Question (Uses Gemini AI)
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 
+
+{
+  "message": "What are tariffs?"
+}
+
+### 12. Another General Question
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "How do tariffs affect international trade?"
+}
+
+### ============================================
+### PRODUCT SEARCH TESTS (Uses Database Tool)
+### ============================================
+
+### 13. List ALL Products (Fixed - was returning empty before)
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 
+
+{
+  "message": "what products do you have"
+}
+
+### 14. List ALL Products (Alternative phrasing)
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "show me all products"
+}
+
+### 15. Search for Specific Products
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "search for electronics"
+}
+
+### 16. Search for Steel Products
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0YXJpZmYtYXBwbGljYXRpb24iLCJzdWIiOiJ0ZXN0QGV4YW1wbGVlZS5jb20iLCJleHAiOjE3NjI3NTk5MzQsImlhdCI6MTc2MjY3MzUzNCwic2NvcGUiOiJST0xFX1VTRVIifQ.nSBd5GexJlVY_JyiTcqYqky0uYnyAQghHKEMeTquSjXL_xT2kUCijuZp9KZzkIh_Z3Mbl1Rg07LGB5yBxNVjmQ
+
+{
+  "message": "do you have any steel products?"
+}
+
+### 17. Find Textile Items
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "find textile items"
+}
+
+### 18. Search for Agricultural Products
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 
+
+{
+  "message": "list agricultural products"
+}
+
+### ============================================
+### TARIFF RATE TESTS (Uses Database Tool)
+### ============================================
+
+### 19. Get Tariff Rate - Simple Query
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 
+
+{
+  "message": "What's the tariff rate from People's Republic of China to United States of America for product 10129"
+}
+
+### 20. Tariff Rate - Full Country Names
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "tariff from North Korea to United States"
+}
+
+### 21. Tariff Rate - Complex Query (Fixed - was causing NPE before)
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "What's the tariff rate for Goats,live from North Korea to United States if America"
+}
+
+### 22. Get Tariff with "Duty" Keyword
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "what's the duty from Philippines to US?"
+}
+
+### 23. Additional Fees Query
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "show me additional fees from China to United States"
+}
+
+### 24. Tariff Rate with Country Codes
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "tariff rate from CN to US"
+}
+
+### ============================================
+### ERROR HANDLING TESTS
+### ============================================
+
+### 25. Invalid Country Name (Should handle gracefully)
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "tariff from InvalidCountry to US"
+}
+
+### 26. Search for Non-existent Product
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "search for xyznonexistent"
+}
+
+### 27. Unauthorized Request (Should return 401)
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message": "what are tariffs?"
+}
+
+### ============================================
+### MIXED CONVERSATION TESTS
+### ============================================
+
+### 28. Mixed - General then Specific
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "What are tariffs and can you show me electronics products?"
+}
+
+### 29. Complex Query with Multiple Intents
+POST http://localhost:8080/api/chat/message
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "message": "I want to know the tariff from Japan to US for electronics"
+}

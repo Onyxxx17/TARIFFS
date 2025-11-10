@@ -27,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-
 public class Product {
 
     @Id 

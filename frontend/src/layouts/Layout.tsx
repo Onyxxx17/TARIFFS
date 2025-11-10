@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import FloatingChatbot from "../components/FloatingChatbot";
 import type { ReactNode } from "react";
 
 type LayoutProps = {
@@ -15,6 +16,9 @@ export default function Layout({ children }: LayoutProps) {
         {children ?? <Outlet />} {/* If children provided, show them; otherwise render routed page */}
       </main>
       <Footer />
+      
+      {/* Floating AI Chatbot - appears on all pages */}
+      <FloatingChatbot />
     </div>
   );
 }
