@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { fetchWithAuth } from "../utils/api";
-import { ChevronDown, Menu, X, BarChart2, FileText } from "lucide-react";
+import { ChevronDown, Menu, X, BarChart2, FileText, TrendingUp } from "lucide-react";
 
 
 export default function Header() {
@@ -248,9 +248,12 @@ export default function Header() {
 
         {/* Mobile quick actions + hamburger - visible when nav is hidden */}
         <div className="sm:hidden flex items-center gap-2">
-          {/* quick links: analytics & logging as icons for mobile */}
+          {/* quick links: analytics, prediction & logging as icons for mobile */}
           <Link to="/dashboard/analytics" className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:bg-slate-100 transition" aria-label="Analytics">
             <BarChart2 size={18} />
+          </Link>
+          <Link to="/tariff-prediction" className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:bg-slate-100 transition" aria-label="Tariff Prediction">
+            <TrendingUp size={16} />
           </Link>
           <Link to="/logging" className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:bg-slate-100 transition" aria-label="Tariff Logging">
             <FileText size={18} />
@@ -296,7 +299,7 @@ export default function Header() {
                 onClick={() => setOpenUserMenu(!openUserMenu)}
                 className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                {/* Avatar - Bigger size */}
+                {/* Avatar (initials only) */}
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-base font-bold shadow-lg ring-2 ring-blue-500/20">
                   {getInitials(userName)}
                 </div>
@@ -325,6 +328,7 @@ export default function Header() {
 
                   {/* Menu Items */}
                   <div className="py-1">
+                    {/* Profile link removed per user request */}
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
@@ -344,6 +348,16 @@ export default function Header() {
         {mobileOpen && (
           <div ref={mobileMenuRef} className="sm:hidden fixed inset-x-0 top-16 bg-white border-t border-slate-200 shadow-md z-50 max-h-[calc(100vh-4rem)] overflow-auto">
             <div className="px-3 py-3 space-y-2">
+              {isLoggedIn && (
+                <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-100">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-base font-bold">
+                    {getInitials(userName)}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-800 truncate">{userName}</p>
+                  </div>
+                </div>
+              )}
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/">Home</Link>
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/dashboard">Dashboard</Link>
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/blog">Blog</Link>
@@ -356,7 +370,6 @@ export default function Header() {
                 </div>
               ) : (
                 <div className="pt-2 border-t border-slate-100 flex flex-col items-stretch gap-2">
-                  <Link onClick={() => { setMobileOpen(false); }} to="/profile" className="w-full text-left px-3 py-2 rounded-md text-slate-700">Account</Link>
                   <button onClick={() => { setMobileOpen(false); handleLogout(); }} className="w-full text-left px-3 py-2 rounded-md text-red-600 hover:bg-red-50">Log out</button>
                 </div>
               )}

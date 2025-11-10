@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { fetchWithAuth } from "../utils/api";
 import CountrySelect, { type CountryOption } from "../components/CountrySelect";
@@ -99,19 +100,19 @@ export default function TariffPredictionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-2">
+    <div className="min-h-screen bg-gray-50 py-6 px-2 sm:py-12 sm:px-6 lg:px-8 transition-colors">
+      <div className="max-w-2xl sm:max-w-5xl mx-auto">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 mb-1">
             Tariff Rate Prediction
           </h1>
-          <p className="text-slate-600">
+          <p className="text-slate-600 text-xs sm:text-base">
             Predict future tariff rates based on historical trade data.
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-8 border border-slate-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-8 border border-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-6">
             <CountrySelect label="Exporting From" value={fromCountry} onPick={setFromCountry} />
             <CountrySelect label="Importing To" value={toCountry} onPick={setToCountry} />
             <ProductSelect label="Product" value={product} onPick={setProduct} placeholder="Search product..." />
@@ -123,7 +124,7 @@ export default function TariffPredictionPage() {
               <select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full border border-slate-300 bg-white text-slate-900 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-300 bg-white text-slate-900 rounded-md px-2 py-1.5 text-sm focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Select Year --</option>
                 {years.map((y) => (
@@ -136,7 +137,7 @@ export default function TariffPredictionPage() {
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md">
+            <div className="mb-2 p-1 text-xs bg-red-100 border border-red-300 text-red-700 rounded-md">
               {error}
             </div>
           )}
@@ -144,18 +145,18 @@ export default function TariffPredictionPage() {
           <button
             onClick={handlePredict}
             disabled={loading}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-colors disabled:opacity-60"
+            className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-colors disabled:opacity-60 text-sm"
           >
             {loading ? "Predicting..." : "Predict Tariff Rate"}
           </button>
         </div>
 
         {result && (
-          <div className="mt-10 bg-white rounded-xl shadow-md border border-slate-200 p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+          <div className="mt-6 sm:mt-10 bg-white rounded-xl shadow-md border border-slate-200 p-4 sm:p-8">
+            <h2 className="text-lg sm:text-2xl font-bold text-slate-900 mb-2">
               Prediction Results
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 text-slate-800 text-sm">
               <p>
                 <span className="font-semibold">From:</span> {result.fromCountryCode}
               </p>
@@ -177,7 +178,7 @@ export default function TariffPredictionPage() {
                 {result.modelFit.toFixed(4)}
               </p>
 
-            <div className="mt-4 text-sm text-slate-500 italic">
+            <div className="mt-2 text-sm text-slate-500 italic">
                 *Note: Tariff Prediction rates are calculated using a simple linear regression model, so some predictions may be inaccurate.
             </div>
             </div>

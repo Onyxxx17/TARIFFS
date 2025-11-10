@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { BotMessageSquare, X } from "lucide-react";
 import { fetchWithAuth } from "../utils/api";
 
 interface Message {
@@ -113,7 +114,7 @@ export default function FloatingChatbot() {
     <>
       {/* Floating Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col z-50 animate-slideUp">
+        <div className="fixed bottom-16 sm:bottom-24 right-3 sm:right-6 w-[92vw] sm:w-96 max-w-[420px] h-[65vh] sm:h-[500px] bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col z-50 animate-slideUp">
           {/* Header */}
           <div className="bg-blue-600 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -124,21 +125,19 @@ export default function FloatingChatbot() {
               onClick={toggleChat}
               className="text-white hover:text-gray-200 transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X size={18} />
             </button>
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 bg-gray-50 pb-20 sm:pb-4">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-lg px-3 py-2 text-sm ${
                     message.type === 'user'
                       ? 'bg-blue-600 text-white rounded-br-none'
                       : 'bg-white text-gray-900 shadow-sm rounded-bl-none'
@@ -174,22 +173,26 @@ export default function FloatingChatbot() {
 
           {/* Input Area */}
           <div className="border-t border-gray-200 p-3 bg-white rounded-b-lg">
-            <div className="flex space-x-2">
+            <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask about tariffs..."
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 border border-transparent bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:rounded-lg sm:bg-white sm:border-gray-300 sm:px-3 sm:py-2"
                 disabled={isLoading}
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                className="flex items-center justify-center bg-blue-600 text-white rounded-full w-10 h-10 sm:rounded-lg sm:w-auto sm:px-4 sm:py-2 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
               >
-                Send
+                <span className="sr-only">Send</span>
+                <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="hidden sm:inline">Send</span>
               </button>
             </div>
           </div>
@@ -207,13 +210,9 @@ export default function FloatingChatbot() {
         aria-label="Toggle chat"
       >
         {isOpen ? (
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          <X className="w-6 h-6 text-white" />
         ) : (
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
+          <BotMessageSquare className="w-6 h-6 text-white" />
         )}
       </button>
 
