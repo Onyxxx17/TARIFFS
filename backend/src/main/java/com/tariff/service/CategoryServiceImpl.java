@@ -36,9 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
     
     @Override
-    public Category updateCategory(Long id, Category Category) {
+    public Category updateCategory(Long id, Category updatedCategory) {
         return categoryRepository.findById(id).map(existingCategory -> {
-            existingCategory.setName(existingCategory.getName());
+            existingCategory.setName(updatedCategory.getName());
             return categoryRepository.save(existingCategory);
         }).orElseThrow(() -> new CategoryNotFoundException(id));
     }
