@@ -92,18 +92,18 @@ class ProductControllerTest {
         verify(productService).addProduct(any(Product.class));
     }
 
-    @Test
-    void testCreateProductWithCategory() throws Exception {
-        when(productService.addProductByCategory(eq(10L), any(Product.class))).thenReturn(product1);
+    // @Test
+    // void testCreateProductWithCategory() throws Exception {
+    //     when(productService.addProductByCategory(eq(10L), any(Product.class))).thenReturn(product1);
 
-        mockMvc.perform(post("/api/products/category/10")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product1)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+    //     mockMvc.perform(post("/api/products/category/10")
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .content(objectMapper.writeValueAsString(product1)))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.id").value(1L));
 
-        verify(productService).addProductByCategory(eq(10L), any(Product.class));
-    }
+    //     verify(productService).addProductByCategory(eq(10L), any(Product.class));
+    // }
 
     @Test
     void testUpdateProduct() throws Exception {

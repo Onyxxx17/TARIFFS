@@ -8,18 +8,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class TariffRuleControllerTest {
@@ -39,27 +44,34 @@ class TariffRuleControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(tariffRuleController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(tariffRuleController)
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .alwaysDo(print())
+                .build();
 
-        tariffRule = new TariffRule();
+        tariffRule = new TariffRule(new BigDecimal("10"), 2024);
         tariffRule.setId(1L);
-        tariffRule.setRate(new BigDecimal("10"));
-        tariffRule.setAdditionalFee(new BigDecimal("5"));
     }
 
+    // ✅ Get all tariff rules
     @Test
     void testGetAllTariffRules() throws Exception {
-        when(tariffRuleService.listTariffRule()).thenReturn(List.of(tariffRule));
 
-        mockMvc.perform(get("/api/tariff-rules"))
+        Page<TariffRule> page = new PageImpl<>(List.of(tariffRule));
+        
+        when(tariffRuleService.listTariffRule(any(Pageable.class))).thenReturn(page);
+
+        mockMvc.perform(get("/api/tariff-rules")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].rate").value(10))
-                .andExpect(jsonPath("$[0].additionalFee").value(5));
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].rate").value(10.0))
+                .andExpect(jsonPath("$.content[0].effectiveYear").value(2024));
 
-        verify(tariffRuleService).listTariffRule();
+        verify(tariffRuleService).listTariffRule(any(Pageable.class));
     }
 
+    // ✅ Get tariff rule by ID
     @Test
     void testGetTariffRuleById() throws Exception {
         when(tariffRuleService.getTariffRule(1L)).thenReturn(tariffRule);
@@ -67,52 +79,34 @@ class TariffRuleControllerTest {
         mockMvc.perform(get("/api/tariff-rules/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.rate").value(10))
-                .andExpect(jsonPath("$.additionalFee").value(5));
+                .andExpect(jsonPath("$.rate").value(10));
 
         verify(tariffRuleService).getTariffRule(1L);
     }
 
-//     @Test
-//     void testCreateTariffRuleWithCountryAndProduct() throws Exception {
-//         TariffRule tariffRule = new TariffRule();
-//         tariffRule.setRate(new BigDecimal("10"));
-//         tariffRule.setId(1L);
+    // ✅ Create tariff rule (simple)
+    @Test
+    void testCreateTariffRule() throws Exception {
+        when(tariffRuleService.addTariffRule(any(TariffRule.class))).thenReturn(tariffRule);
 
-//         when(tariffRuleService.addTariffRuleByCountriesAndProduct(eq("US"), eq("CN"), eq(1L), any(TariffRule.class)))
-//                 .thenReturn(tariffRule);
+        mockMvc.perform(post("/api/tariff-rules")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tariffRule)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.rate").value(10));
 
-//         mockMvc.perform(post("/api/tariff-rules/country/US/product/1")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(objectMapper.writeValueAsString(tariffRule)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.id").value(1))
-//                 .andExpect(jsonPath("$.rate").value(10));
+        verify(tariffRuleService).addTariffRule(any(TariffRule.class));
+    }
 
-//         verify(tariffRuleService).addTariffRuleByCountriesAndProduct(eq("US"), eq("CN"), eq(1L), any(TariffRule.class));
-//     }
-    
-//     @Test
-//     void createTariffRuleWithCountryAndProduct() throws Exception {
-//         when(tariffRuleService.addTariffRule(any(TariffRule.class))).thenReturn(tariffRule);
-
-//         mockMvc.perform(post("/api/tariff-rules")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(objectMapper.writeValueAsString(tariffRule)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.id").value(1))
-//                 .andExpect(jsonPath("$.rate").value(10));
-
-//         verify(tariffRuleService).addTariffRule(any(TariffRule.class));
-//     }
-
+    // ✅ Update tariff rule (simple)
     @Test
     void testUpdateTariffRule() throws Exception {
         when(tariffRuleService.updateTariffRule(eq(1L), any(TariffRule.class))).thenReturn(tariffRule);
 
         mockMvc.perform(put("/api/tariff-rules/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tariffRule)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tariffRule)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.rate").value(10));
@@ -120,6 +114,7 @@ class TariffRuleControllerTest {
         verify(tariffRuleService).updateTariffRule(eq(1L), any(TariffRule.class));
     }
 
+    // ✅ Delete tariff rule (simple)
     @Test
     void testDeleteTariffRule() throws Exception {
         doNothing().when(tariffRuleService).deleteTariffRule(1L);
@@ -130,85 +125,90 @@ class TariffRuleControllerTest {
         verify(tariffRuleService).deleteTariffRule(1L);
     }
 
+    // ✅ Create tariff rule with from/to countries and product
     @Test
     void testCreateTariffRuleWithCountriesAndProduct() throws Exception {
-        when(tariffRuleService.addTariffRuleByCountriesAndProduct(eq("US"), eq("SG"), eq(1L), any(TariffRule.class)))
+        when(tariffRuleService.addTariffRuleByCountriesAndProduct(eq("C840"), eq("C156"), eq(1L), any(TariffRule.class)))
                 .thenReturn(tariffRule);
 
-        mockMvc.perform(post("/api/tariff-rules/from-country/US/to-country/SG/product/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tariffRule)))
+        mockMvc.perform(post("/api/tariff-rules/from-country/C840/to-country/C156/product/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tariffRule)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
-        verify(tariffRuleService).addTariffRuleByCountriesAndProduct(eq("US"), eq("SG"), eq(1L), any(TariffRule.class));
+        verify(tariffRuleService).addTariffRuleByCountriesAndProduct(eq("C840"), eq("C156"), eq(1L), any(TariffRule.class));
     }
 
+    // ✅ Update tariff rule with from/to countries and product
     @Test
     void testUpdateTariffRuleWithCountriesAndProduct() throws Exception {
-        when(tariffRuleService.updateTariffRule(eq("US"), eq("SG"), eq(1L), eq(1L), any(TariffRule.class)))
+        when(tariffRuleService.updateTariffRule(eq("C840"), eq("C156"), eq(1L), eq(1L), any(TariffRule.class)))
                 .thenReturn(tariffRule);
 
-        mockMvc.perform(put("/api/tariff-rules/from-country/US/to-country/SG/product/1/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tariffRule)))
+        mockMvc.perform(put("/api/tariff-rules/from-country/C840/to-country/C156/product/1/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tariffRule)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
-        verify(tariffRuleService).updateTariffRule(eq("US"), eq("SG"), eq(1L), eq(1L), any(TariffRule.class));
+        verify(tariffRuleService).updateTariffRule(eq("C840"), eq("C156"), eq(1L), eq(1L), any(TariffRule.class));
     }
 
+    // ✅ Delete tariff rule with from/to countries and product
     @Test
     void testDeleteTariffRuleWithCountriesAndProduct() throws Exception {
-        doNothing().when(tariffRuleService).deleteTariffRule("US", "SG", 1L, 1L);
+        doNothing().when(tariffRuleService).deleteTariffRule("C840", "C156", 1L, 1L);
 
-        mockMvc.perform(delete("/api/tariff-rules/from-country/US/to-country/SG/product/1/1"))
+        mockMvc.perform(delete("/api/tariff-rules/from-country/C840/to-country/C156/product/1/1"))
                 .andExpect(status().isOk());
 
-        verify(tariffRuleService).deleteTariffRule("US", "SG", 1L, 1L);
+        verify(tariffRuleService).deleteTariffRule("C840", "C156", 1L, 1L);
     }
 
+    // ✅ Get tariff rules by country
     @Test
     void testGetTariffRulesByCountry() throws Exception {
-        when(tariffRuleService.getTariffRulesByCountryCode("US")).thenReturn(List.of(tariffRule));
+        Page<TariffRule> page = new PageImpl<>(List.of(tariffRule));
+        when(tariffRuleService.getTariffRulesByCountryCode(eq("C840"), any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/tariff-rules/country/US"))
+        mockMvc.perform(get("/api/tariff-rules/country/C840"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$.content[0].id").value(1));
 
-        verify(tariffRuleService).getTariffRulesByCountryCode("US");
+        verify(tariffRuleService).getTariffRulesByCountryCode(eq("C840"), any(Pageable.class));
     }
 
-    @Test
-    void testGetTariffRulesByFromCountry() throws Exception {
-        when(tariffRuleService.getTariffRulesByFromCountryCode("US")).thenReturn(List.of(tariffRule));
-
-        mockMvc.perform(get("/api/tariff-rules/from-country/US"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
-
-        verify(tariffRuleService).getTariffRulesByFromCountryCode("US");
-    }
-
-    @Test
-    void testGetTariffRulesByToCountry() throws Exception {
-        when(tariffRuleService.getTariffRulesByToCountryCode("SG")).thenReturn(List.of(tariffRule));
-
-        mockMvc.perform(get("/api/tariff-rules/to-country/SG"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
-
-        verify(tariffRuleService).getTariffRulesByToCountryCode("SG");
-    }
-
+    // // ✅ Get tariff rules by from country
+    // @Test
+    // void testGetTariffRulesByFromCountry() throws Exception {
+    //     Page<TariffRule> page = new PageImpl<>(List.of(tariffRule));
+    //     when(tariffRuleService.getTariffRulesByFromCountryCode(eq("C840"), any(Pageable.class))).thenReturn(page);
+    //     mockMvc.perform(get("/api/tariff-rules/from-country/C840"))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.content[0].id").value(1));
+    //     verify(tariffRuleService).getTariffRulesByFromCountryCode(eq("C840"), any(Pageable.class));
+    // }
+    // // ✅ Get tariff rules by to country
+    // @Test
+    // void testGetTariffRulesByToCountry() throws Exception {
+    //     Page<TariffRule> page = new PageImpl<>(List.of(tariffRule));
+    //     when(tariffRuleService.getTariffRulesByToCountryCode(eq("C840"), any(Pageable.class))).thenReturn(page);
+    //     mockMvc.perform(get("/api/tariff-rules/to-country/C840"))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.content[0].id").value(1));
+    //     verify(tariffRuleService).getTariffRulesByToCountryCode(eq("C840"), any(Pageable.class));
+    // }
+    // ✅ Get tariff rules by product
     @Test
     void testGetTariffRulesByProduct() throws Exception {
-        when(tariffRuleService.getTariffRulesByProductId(1L)).thenReturn(List.of(tariffRule));
+        Page<TariffRule> page = new PageImpl<>(List.of(tariffRule));
+        when(tariffRuleService.getTariffRulesByProductId(eq(11029L), any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/tariff-rules/product/1"))
+        mockMvc.perform(get("/api/tariff-rules/product/11029"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$.content[0].id").value(1));
 
-        verify(tariffRuleService).getTariffRulesByProductId(1L);
+        verify(tariffRuleService).getTariffRulesByProductId(eq(11029L), any(Pageable.class));
     }
 }

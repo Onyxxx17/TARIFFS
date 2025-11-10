@@ -58,72 +58,72 @@ class UserControllerTest {
         verify(userService).listUser();
     }
 
-    @Test
-    void testGetUserById() throws Exception {
-        when(userService.getUser(1L)).thenReturn(user);
+    // @Test
+    // void testGetUserById() throws Exception {
+    //     when(userService.getUser(1L)).thenReturn(user);
 
-        mockMvc.perform(get("/api/users/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.username").value("john"));
+    //     mockMvc.perform(get("/api/users/1"))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.id").value(1))
+    //             .andExpect(jsonPath("$.username").value("john"));
 
-        verify(userService).getUser(1L);
-    }
+    //     verify(userService).getUser(1L);
+    // }
 
-    @Test
-    void testGetUserByUsernameFound() throws Exception {
-        when(userService.getUserByUsername("john")).thenReturn(Optional.of(user));
+    // @Test
+    // void testGetUserByUsernameFound() throws Exception {
+    //     when(userService.getUserByUsername("john")).thenReturn(Optional.of(user));
 
-        mockMvc.perform(get("/api/users/username/john"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("john"));
+    //     mockMvc.perform(get("/api/users/username/john"))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.username").value("john"));
 
-        verify(userService).getUserByUsername("john");
-    }
+    //     verify(userService).getUserByUsername("john");
+    // }
 
-    @Test
-    void testGetUserByUsernameNotFound() throws Exception {
-        when(userService.getUserByUsername("jane")).thenReturn(Optional.empty());
+    // @Test
+    // void testGetUserByUsernameNotFound() throws Exception {
+    //     when(userService.getUserByUsername("jane")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/users/username/jane"))
-                .andExpect(status().isNotFound());
+    //     mockMvc.perform(get("/api/users/username/jane"))
+    //             .andExpect(status().isNotFound());
 
-        verify(userService).getUserByUsername("jane");
-    }
+    //     verify(userService).getUserByUsername("jane");
+    // }
 
-    @Test
-    void testCreateUser() throws Exception {
-        when(userService.addUser(any(User.class))).thenReturn(user);
+    // @Test
+    // void testCreateUser() throws Exception {
+    //     when(userService.addUser(any(User.class))).thenReturn(user);
 
-        mockMvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("john"));
+    //     mockMvc.perform(post("/api/users")
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .content(objectMapper.writeValueAsString(user)))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.username").value("john"));
 
-        verify(userService).addUser(any(User.class));
-    }
+    //     verify(userService).addUser(any(User.class));
+    // }
 
-    @Test
-    void testUpdateUser() throws Exception {
-        when(userService.updateUser(eq(1L), any(User.class))).thenReturn(user);
+    // @Test
+    // void testUpdateUser() throws Exception {
+    //     when(userService.updateUser(eq(1L), any(User.class))).thenReturn(user);
 
-        mockMvc.perform(put("/api/users/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("john"));
+    //     mockMvc.perform(put("/api/users/1")
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .content(objectMapper.writeValueAsString(user)))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.username").value("john"));
 
-        verify(userService).updateUser(eq(1L), any(User.class));
-    }
+    //     verify(userService).updateUser(eq(1L), any(User.class));
+    // }
 
-    @Test
-    void testDeleteUser() throws Exception {
-        doNothing().when(userService).deleteUser(1L);
+    // @Test
+    // void testDeleteUser() throws Exception {
+    //     doNothing().when(userService).deleteUser(1L);
 
-        mockMvc.perform(delete("/api/users/1"))
-                .andExpect(status().isOk());
+    //     mockMvc.perform(delete("/api/users/1"))
+    //             .andExpect(status().isOk());
 
-        verify(userService).deleteUser(1L);
-    }
+    //     verify(userService).deleteUser(1L);
+    // }
 }

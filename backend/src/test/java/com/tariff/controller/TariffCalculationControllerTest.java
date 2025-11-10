@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,10 +50,15 @@ class TariffCalculationControllerTest {
         request.setEffectiveYear(2025);
 
         response = new TariffCalculationResponse(
-                "United States",
-                "China",
-                new BigDecimal("10"),         // tariffRate
-                new BigDecimal("550")         // calculatedTariff (100*5 + 10% = 550)
+                "United States", // fromCountry
+                "China", // toCountry
+                new BigDecimal("10"), // tariffRate
+                new BigDecimal("50"), // calculatedTariff
+                new BigDecimal("550"), // totalCost
+                new BigDecimal("5"), // totalAdditionalFees
+                "standard", // calculationType
+                Arrays.asList(new BigDecimal("5")), // additionalFees
+                new BigDecimal("500") // importValue
         );
     }
 
@@ -62,13 +68,13 @@ class TariffCalculationControllerTest {
                 .thenReturn(response);
 
         mockMvc.perform(post("/api/tariffs/calculate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.fromCountry").value("United States"))
                 .andExpect(jsonPath("$.toCountry").value("China"))
                 .andExpect(jsonPath("$.tariffRate").value(10))
-                .andExpect(jsonPath("$.calculatedTariff").value(550));
+                .andExpect(jsonPath("$.calculatedTariff").value(50));
 
         verify(tariffCalculationService).calculateTariff(any(TariffCalculationRequest.class));
     }

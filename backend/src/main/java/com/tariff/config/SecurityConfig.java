@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/import-records/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/import-records/**").authenticated()
                 // --- Tariff Rules endpoints (GET for users, others for admin) ---
-                .requestMatchers(HttpMethod.GET, "/api/tariff-rules/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/tariff-rules/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/tariff-rules/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/tariff-rules/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/tariff-rules/**").hasRole("ADMIN")

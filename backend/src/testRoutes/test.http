@@ -1,6 +1,7 @@
 ### Tariff API Test File
 ### This file contains ready-to-use API requests for testing the Tariffs application
-
+###
+GET http://localhost:8080/api/tariff-rules
 ### 1. User Signup
 POST http://localhost:8080/api/auth/signup
 Content-Type: application/json

@@ -35,7 +35,10 @@ class UserTest {
         List<ImportRecord> imports = List.of();
         List<RefreshToken> tokens = List.of();
 
-        User user = new User(1L, "user1", "user1@mail.com", "pass", "ADMIN", imports, tokens);
+        User user = new User("user1", "user1@mail.com", "pass", "ADMIN");
+        user.setId(1L);
+        user.setImportRecord(imports);
+        user.setRefreshTokens(tokens);
 
         assertThat(user.getId()).isEqualTo(1L);
         assertThat(user.getUsername()).isEqualTo("user1");
@@ -48,9 +51,12 @@ class UserTest {
 
     @Test
     void testToStringEqualsHashCodeCanEqual() {
-        User user1 = new User(1L, "user1", "user1@mail.com", "pass", "ADMIN", List.of(), List.of());
-        User user2 = new User(1L, "user1", "user1@mail.com", "pass", "ADMIN", List.of(), List.of());
-        User user3 = new User(2L, "user2", "user2@mail.com", "pass2", "USER", List.of(), List.of());
+        User user1 = new User("user1", "user1@mail.com", "pass", "ADMIN");
+        user1.setId(1L);
+        User user2 = new User("user1", "user1@mail.com", "pass", "ADMIN");
+        user2.setId(1L);
+        User user3 = new User("user2", "user2@mail.com", "pass2", "USER");
+        user3.setId(2L);
 
         // toString
         String toString = user1.toString();

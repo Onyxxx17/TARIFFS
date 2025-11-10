@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,27 +47,6 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     public ImportRecord getImportRecord(Long id) {
         return importRecordRepository.findById(id)
                 .orElseThrow(() -> new ImportRecordNotFoundException(id));
-    }
-
-    @Override
-    public List<ImportRecord> getImportRecordsByFromCountryCode(String fromCountryCode) {
-        if (!countryRepository.existsById(fromCountryCode)) {
-            throw new CountryNotFoundException(fromCountryCode);
-        }
-        return importRecordRepository.findByFromCountryCountryCode(fromCountryCode);
-    }
-
-    @Override
-    public List<ImportRecord> getImportRecordsByToCountryCode(String toCountryCode) {
-        if (!countryRepository.existsById(toCountryCode)) {
-            throw new CountryNotFoundException(toCountryCode);
-        }
-        return importRecordRepository.findByToCountryCountryCode(toCountryCode);
-    }
-
-    @Override
-    public List<ImportRecord> getImportRecordsByFromCountryCodeAndToCountryCode(String fromCountryCode, String toCountryCode) {
-        return importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode(fromCountryCode, toCountryCode);
     }
 
     @Override
@@ -131,25 +109,6 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     }
 
     @Override
-    public ImportRecord updateImportRecordByCountries(String fromCountryCode, String toCountryCode, ImportRecord importRecord, Long id) {
-        if (!countryRepository.existsById(fromCountryCode)) {
-            throw new CountryNotFoundException(fromCountryCode);
-        }
-        if (!countryRepository.existsById(toCountryCode)) {
-            throw new CountryNotFoundException(toCountryCode);
-        }
-        return importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode(fromCountryCode, toCountryCode)
-                .stream()
-                .filter(record -> record.getId().equals(id))
-                .findFirst()
-                .map(existingRecord -> {
-                    existingRecord.setValue(importRecord.getValue());
-                    existingRecord.setYear(importRecord.getYear());
-                    return importRecordRepository.save(existingRecord);
-                }).orElseThrow(() -> new ImportRecordNotFoundException(id));
-    }
-
-    @Override
     public void deleteImportRecordByProductAndUser(Long productId, Long userId, Long id) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
@@ -186,29 +145,6 @@ public class ImportRecordServiceImpl implements ImportRecordService {
         }
         importRecordRepository.deleteById(id);
 
-    }
-
-    @Override
-    public void deleteImportRecordByCountries(String fromCountryCode, String toCountryCode, Long id) {
-        if (!countryRepository.existsById(fromCountryCode)) {
-            throw new CountryNotFoundException(fromCountryCode);
-        }
-        if (!countryRepository.existsById(toCountryCode)) {
-            throw new CountryNotFoundException(toCountryCode);
-        }
-        List<ImportRecord> records = importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode(fromCountryCode, toCountryCode);
-        if (records.isEmpty()) {
-            throw new ImportRecordNotFoundException(id);
-        }
-        records.stream()
-                .filter(record -> record.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        importRecordRepository::delete,
-                        () -> {
-                            throw new ImportRecordNotFoundException(id);
-                        }
-                );
     }
 
     @Override

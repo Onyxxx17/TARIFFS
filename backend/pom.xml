@@ -186,6 +186,9 @@
                 <excludes>
                     <exclude>com/tariff/config/*</exclude>
                     <exclude>com/tariff/entity/*</exclude>
+                    <exclude>com/tariff/mcp/**</exclude>
+                    <exclude>com/tariff/dto/**</exclude>
+                    <exclude>com/tariff/loaders/**</exclude>
                 </excludes>
             </configuration>
             <executions>

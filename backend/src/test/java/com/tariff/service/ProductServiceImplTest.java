@@ -94,21 +94,6 @@ class ProductServiceImplTest {
         assertEquals(product, saved);
     }
 
-    @Test
-    void testAddProductByCategory_Success() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
-        when(productRepository.save(product)).thenReturn(product);
-
-        Product saved = productService.addProductByCategory(1L, product);
-        assertEquals(category, saved.getCategory());
-    }
-
-    @Test
-    void testAddProductByCategory_CategoryNotFound() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(CategoryNotFoundException.class, () -> productService.addProductByCategory(1L, product));
-    }
-
     // --- UPDATE ---
     @Test
     void testUpdateProduct_Success() {

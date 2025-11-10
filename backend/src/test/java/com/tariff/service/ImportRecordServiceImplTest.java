@@ -119,16 +119,16 @@ class ImportRecordServiceImplTest {
     @Test
     void testAddImportRecordByProductAndUser_ProductNotFound() {
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ProductNotFoundException.class, () ->
-            importRecordService.addImportRecordByProductAndUser(1L, 1L, importRecord));
+        assertThrows(ProductNotFoundException.class, ()
+                -> importRecordService.addImportRecordByProductAndUser(1L, 1L, importRecord));
     }
 
     @Test
     void testAddImportRecordByProductAndUser_UserNotFound() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () ->
-            importRecordService.addImportRecordByProductAndUser(1L, 1L, importRecord));
+        assertThrows(UserNotFoundException.class, ()
+                -> importRecordService.addImportRecordByProductAndUser(1L, 1L, importRecord));
     }
 
     @Test
@@ -145,15 +145,15 @@ class ImportRecordServiceImplTest {
     @Test
     void testAddImportRecordByCountryPair_FromCountryNotFound() {
         when(countryRepository.findById("US")).thenReturn(Optional.empty());
-        assertThrows(CountryNotFoundException.class, () ->
-            importRecordService.addImportRecordByCountryPair("US", "CN", importRecord));
+        assertThrows(CountryNotFoundException.class, ()
+                -> importRecordService.addImportRecordByCountryPair("US", "CN", importRecord));
     }
 
     @Test
     void testAddImportRecordByCountryPair_ToCountryNotFound() {
         when(countryRepository.findById("CN")).thenReturn(Optional.empty());
-        assertThrows(CountryNotFoundException.class, () ->
-            importRecordService.addImportRecordByCountryPair("US", "CN", importRecord));
+        assertThrows(CountryNotFoundException.class, ()
+                -> importRecordService.addImportRecordByCountryPair("US", "CN", importRecord));
     }
 
     // --- GET BY FILTERS ---
@@ -185,42 +185,6 @@ class ImportRecordServiceImplTest {
         assertThrows(UserNotFoundException.class, () -> importRecordService.getImportRecordsByUserId(1L));
     }
 
-    @Test
-    void testGetImportRecordsByFromCountryCode_Success() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(importRecordRepository.findByFromCountryCountryCode("US")).thenReturn(Arrays.asList(importRecord));
-        List<ImportRecord> records = importRecordService.getImportRecordsByFromCountryCode("US");
-        assertEquals(1, records.size());
-    }
-
-    @Test
-    void testGetImportRecordsByFromCountryCode_NotFound() {
-        when(countryRepository.existsById("US")).thenReturn(false);
-        assertThrows(CountryNotFoundException.class, () -> importRecordService.getImportRecordsByFromCountryCode("US"));
-    }
-
-    @Test
-    void testGetImportRecordsByToCountryCode_Success() {
-        when(countryRepository.existsById("CN")).thenReturn(true);
-        when(importRecordRepository.findByToCountryCountryCode("CN")).thenReturn(Arrays.asList(importRecord));
-        List<ImportRecord> records = importRecordService.getImportRecordsByToCountryCode("CN");
-        assertEquals(1, records.size());
-    }
-
-    @Test
-    void testGetImportRecordsByToCountryCode_NotFound() {
-        when(countryRepository.existsById("CN")).thenReturn(false);
-        assertThrows(CountryNotFoundException.class, () -> importRecordService.getImportRecordsByToCountryCode("CN"));
-    }
-
-    @Test
-    void testGetImportRecordsByFromCountryCodeAndToCountryCode() {
-        when(importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode("US", "CN"))
-            .thenReturn(Arrays.asList(importRecord));
-        List<ImportRecord> records = importRecordService.getImportRecordsByFromCountryCodeAndToCountryCode("US", "CN");
-        assertEquals(1, records.size());
-    }
-
     // --- UPDATE ---
     @Test
     void testUpdateImportRecord_Success() {
@@ -242,7 +206,7 @@ class ImportRecordServiceImplTest {
         when(productRepository.existsById(1L)).thenReturn(true);
         when(userRepository.existsById(1L)).thenReturn(true);
         when(importRecordRepository.findByIdAndProductIdAndUserId(1L, 1L, 1L))
-            .thenReturn(Optional.of(importRecord));
+                .thenReturn(Optional.of(importRecord));
         when(importRecordRepository.save(importRecord)).thenReturn(importRecord);
 
         ImportRecord updated = importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord);
@@ -252,16 +216,16 @@ class ImportRecordServiceImplTest {
     @Test
     void testUpdateImportRecordByProductAndUser_ProductNotFound() {
         when(productRepository.existsById(1L)).thenReturn(false);
-        assertThrows(ProductNotFoundException.class, () ->
-            importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord));
+        assertThrows(ProductNotFoundException.class, ()
+                -> importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord));
     }
 
     @Test
     void testUpdateImportRecordByProductAndUser_UserNotFound() {
         when(productRepository.existsById(1L)).thenReturn(true);
         when(userRepository.existsById(1L)).thenReturn(false);
-        assertThrows(UserNotFoundException.class, () ->
-            importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord));
+        assertThrows(UserNotFoundException.class, ()
+                -> importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord));
     }
 
     @Test
@@ -269,45 +233,8 @@ class ImportRecordServiceImplTest {
         when(productRepository.existsById(1L)).thenReturn(true);
         when(userRepository.existsById(1L)).thenReturn(true);
         when(importRecordRepository.findByIdAndProductIdAndUserId(1L, 1L, 1L)).thenReturn(Optional.empty());
-        assertThrows(ImportRecordNotFoundException.class, () ->
-            importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord));
-    }
-
-    @Test
-    void testUpdateImportRecordByCountries_Success() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(countryRepository.existsById("CN")).thenReturn(true);
-        when(importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode("US", "CN"))
-            .thenReturn(Arrays.asList(importRecord));
-        when(importRecordRepository.save(importRecord)).thenReturn(importRecord);
-
-        ImportRecord updated = importRecordService.updateImportRecordByCountries("US", "CN", importRecord, 1L);
-        assertEquals(importRecord, updated);
-    }
-
-    @Test
-    void testUpdateImportRecordByCountries_FromCountryNotFound() {
-        when(countryRepository.existsById("US")).thenReturn(false);
-        assertThrows(CountryNotFoundException.class, () ->
-            importRecordService.updateImportRecordByCountries("US", "CN", importRecord, 1L));
-    }
-
-    @Test
-    void testUpdateImportRecordByCountries_ToCountryNotFound() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(countryRepository.existsById("CN")).thenReturn(false);
-        assertThrows(CountryNotFoundException.class, () ->
-            importRecordService.updateImportRecordByCountries("US", "CN", importRecord, 1L));
-    }
-
-    @Test
-    void testUpdateImportRecordByCountries_RecordNotFound() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(countryRepository.existsById("CN")).thenReturn(true);
-        when(importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode("US", "CN"))
-            .thenReturn(List.of());
-        assertThrows(ImportRecordNotFoundException.class, () ->
-            importRecordService.updateImportRecordByCountries("US", "CN", importRecord, 1L));
+        assertThrows(ImportRecordNotFoundException.class, ()
+                -> importRecordService.updateImportRecordByProductAndUser(1L, 1L, 1L, importRecord));
     }
 
     // --- DELETE ---
@@ -321,8 +248,8 @@ class ImportRecordServiceImplTest {
     @Test
     void testDeleteImportRecord_NotFound() {
         when(importRecordRepository.existsById(1L)).thenReturn(false);
-        assertThrows(ImportRecordNotFoundException.class, () ->
-            importRecordService.deleteImportRecord(1L));
+        assertThrows(ImportRecordNotFoundException.class, ()
+                -> importRecordService.deleteImportRecord(1L));
     }
 
     @Test
@@ -330,7 +257,7 @@ class ImportRecordServiceImplTest {
         when(productRepository.existsById(1L)).thenReturn(true);
         when(userRepository.existsById(1L)).thenReturn(true);
         when(importRecordRepository.findByIdAndProductIdAndUserId(1L, 1L, 1L))
-            .thenReturn(Optional.of(importRecord));
+                .thenReturn(Optional.of(importRecord));
 
         assertDoesNotThrow(() -> importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
         verify(importRecordRepository).delete(importRecord);
@@ -339,16 +266,16 @@ class ImportRecordServiceImplTest {
     @Test
     void testDeleteImportRecordByProductAndUser_ProductNotFound() {
         when(productRepository.existsById(1L)).thenReturn(false);
-        assertThrows(ProductNotFoundException.class, () ->
-            importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
+        assertThrows(ProductNotFoundException.class, ()
+                -> importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
     }
 
     @Test
     void testDeleteImportRecordByProductAndUser_UserNotFound() {
         when(productRepository.existsById(1L)).thenReturn(true);
         when(userRepository.existsById(1L)).thenReturn(false);
-        assertThrows(UserNotFoundException.class, () ->
-            importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
+        assertThrows(UserNotFoundException.class, ()
+                -> importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
     }
 
     @Test
@@ -356,43 +283,8 @@ class ImportRecordServiceImplTest {
         when(productRepository.existsById(1L)).thenReturn(true);
         when(userRepository.existsById(1L)).thenReturn(true);
         when(importRecordRepository.findByIdAndProductIdAndUserId(1L, 1L, 1L)).thenReturn(Optional.empty());
-        assertThrows(ImportRecordNotFoundException.class, () ->
-            importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
+        assertThrows(ImportRecordNotFoundException.class, ()
+                -> importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
     }
 
-    @Test
-    void testDeleteImportRecordByCountries_Success() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(countryRepository.existsById("CN")).thenReturn(true);
-        when(importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode("US", "CN"))
-            .thenReturn(Arrays.asList(importRecord));
-
-        assertDoesNotThrow(() -> importRecordService.deleteImportRecordByCountries("US", "CN", 1L));
-        verify(importRecordRepository).delete(importRecord);
-    }
-
-    @Test
-    void testDeleteImportRecordByCountries_FromCountryNotFound() {
-        when(countryRepository.existsById("US")).thenReturn(false);
-        assertThrows(CountryNotFoundException.class, () ->
-            importRecordService.deleteImportRecordByCountries("US", "CN", 1L));
-    }
-
-    @Test
-    void testDeleteImportRecordByCountries_ToCountryNotFound() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(countryRepository.existsById("CN")).thenReturn(false);
-        assertThrows(CountryNotFoundException.class, () ->
-            importRecordService.deleteImportRecordByCountries("US", "CN", 1L));
-    }
-
-    @Test
-    void testDeleteImportRecordByCountries_RecordNotFound() {
-        when(countryRepository.existsById("US")).thenReturn(true);
-        when(countryRepository.existsById("CN")).thenReturn(true);
-        when(importRecordRepository.findByFromCountryCountryCodeAndToCountryCountryCode("US", "CN"))
-            .thenReturn(List.of());
-        assertThrows(ImportRecordNotFoundException.class, () ->
-            importRecordService.deleteImportRecordByCountries("US", "CN", 1L));
-    }
 }

@@ -6,37 +6,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tariff.entity.Product;
-import com.tariff.exception.CountryNotFoundException;
 import com.tariff.exception.CategoryNotFoundException;
 import com.tariff.exception.ProductNotFoundException;
-import com.tariff.repository.CountryRepository;
 import com.tariff.repository.CategoryRepository;
 import com.tariff.repository.ProductRepository;
 
 @Service
 @Transactional
 public class ProductServiceImpl implements ProductService {
-    
+
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
-    
+
     public ProductServiceImpl(ProductRepository productRepository,
-                            CategoryRepository categoryRepository) {
+            CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
     }
-    
+
     @Override
     public List<Product> listProduct() {
         return productRepository.findAll();
     }
-    
+
     @Override
     public Product getProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
     }
-    
 
     @Override
     public List<Product> getProductsByCategoryId(Long categoryId) {
@@ -45,21 +42,12 @@ public class ProductServiceImpl implements ProductService {
         }
         return productRepository.findByCategoryId(categoryId);
     }
-    
-    @Override
-    public Product addProductByCategory(Long categoryId, Product product) {
-        return categoryRepository.findById(categoryId).map(category -> {
-            product.setCategory(category);
-            return productRepository.save(product);
-        }).orElseThrow(() -> new CategoryNotFoundException(categoryId));
-    }
-    
-   
+
     @Override
     public Product addProduct(Product product) {
         return productRepository.save(product);
     }
-    
+
     @Override
     public Product updateProduct(Long id, Product product) {
         return productRepository.findById(id).map(existingProduct -> {
@@ -68,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
             return productRepository.save(existingProduct);
         }).orElseThrow(() -> new ProductNotFoundException(id));
     }
-    
+
     @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
