@@ -9,7 +9,7 @@ import AuthCallback from "./pages/AuthCallback";
 import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
 
-import TariffAIChat from "./pages/TariffAiChat";
+// import TariffAIChat from "./pages/TariffAiChat"; // Now using FloatingChatbot component in Layout
 
 import AnalyticsDashboard from "./pages/AgricultureTariffChart";
 import TariffPredictionDisplay from "./pages/TariffPredictionPages";
@@ -29,7 +29,7 @@ export default function App() {
           <Route path="auth/callback" element={<AuthCallback />} /> {/* OAuth2 Callback */}
           <Route path="logging" element={<TariffLoggingDisplay />} />
           <Route path="/tariff-prediction" element={<TariffPredictionDisplay />} />
-           <Route path="/ai-chat" element={<TariffAIChat />} />
+           {/* AI Chat now available as floating chatbot on all pages */}
            <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
           {/* <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contact" element={<Contact />} /> */}
