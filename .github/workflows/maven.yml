@@ -38,6 +38,7 @@ jobs:
          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
          FRONTEND_URL: ${{ secrets.FRONTEND_URL}}
          BASE_URL: ${{ secrets.BACKEND_URL}}
+         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY}}
               
         run: |
           cd backend
@@ -73,6 +74,7 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           FRONTEND_URL: ${{ secrets.FRONTEND_URL}}
           BASE_URL: ${{ secrets.BACKEND_URL}}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY}}
         run: |
           cd backend
           chmod +x mvnw
