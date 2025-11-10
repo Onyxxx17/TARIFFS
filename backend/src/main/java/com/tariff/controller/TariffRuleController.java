@@ -23,6 +23,7 @@ import com.tariff.entity.TariffRule;
 import com.tariff.service.TariffRuleService;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/tariff-rules")
