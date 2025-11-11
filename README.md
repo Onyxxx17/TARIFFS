@@ -1,13 +1,6 @@
-This is a great start! You have all the key technical instructions.
+# TARIFFS
 
-A good README file should also tell a story: what the project is, why it exists, and how someone can use it, from installation to features.
-
-Here is an improved version of your notes, formatted as a complete README.md file. I've added structure, placeholders for your project's details, and contextual information to make it much more user-friendly for any developer.
-
-[Project Name]
-[Add a one or two-sentence description of your project here. What problem does it solve? Who is it for?]
-
-This project is a full-stack application featuring a [Frontend Technology, e.g., React] frontend and a Java Spring Boot backend. It includes a tariff calculation engine, an interactive dashboard, and an AI chatbot.
+This project is a full-stack application featuring React frontend and a Java Springboot backend. It includes a tariff calculation engine, an interactive dashboard, and an AI chatbot.
 
 Features
 Tariff Calculation: Complex calculation engine for handling tariffs.
