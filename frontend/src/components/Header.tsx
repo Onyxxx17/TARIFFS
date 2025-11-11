@@ -208,7 +208,7 @@ export default function Header() {
                   to="/logging"
                   className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
                 >
-                  Calcultion History
+                  Calculation History
                 </Link>
                 <Link
                   to="/tariff-prediction"
@@ -222,6 +222,9 @@ export default function Header() {
           </div>
 
 
+          <Link className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm" to="/news">
+            News
+          </Link>
           <Link className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm" to="/blog">
             Blog
           </Link>
@@ -360,6 +363,7 @@ export default function Header() {
                 </div>
               )}
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/">Home</Link>
+              <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/news">News</Link>
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/blog">Blog</Link>
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/contact">Contact</Link>
               {/* auth actions - only show login/signup when not logged in */}

@@ -114,6 +114,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/chat/**").authenticated()
                 .requestMatchers(HttpMethod.GET,"/api/chat/health").permitAll()
                 // --- Default rule - require authentication for anything else ---
+                .requestMatchers("/api/news/**").permitAll()
                 .anyRequest().authenticated()
                 )
                 // Configure for stateless JWT authentication
