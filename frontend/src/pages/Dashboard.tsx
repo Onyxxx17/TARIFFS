@@ -75,44 +75,119 @@ export default function Dashboard() {
 
   if (userRole !== "ROLE_ADMIN") {
     return (
-      <div className="p-4 sm:p-6 lg:p-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">My Dashboard</h1>
-        <p className="mt-2 text-lg text-slate-600 dark:text-slate-400">Welcome to your personal dashboard.</p>
-        
-        <div className="mt-8 max-w-2xl">
-          <div className="bg-white dark:bg-slate-800 shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">Your Role & Actions</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-slate-400">Here's what you can do based on your account permissions.</p>
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Profile & Settings</h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">
+            Manage your account settings and view your profile information
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Information */}
+          <div className="lg:col-span-2">
+            <div className="bg-white dark:bg-slate-800 shadow rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Profile Information</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Your account details and preferences</p>
+              </div>
+              
+              <div className="px-6 py-6">
+                <div className="flex items-start space-x-6">
+                  {/* Profile Avatar */}
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                    {currentUserUsername ? currentUserUsername.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  
+                  {/* Profile Details */}
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">Display Name</dt>
+                      <dd className="mt-1 text-xl font-semibold text-slate-900 dark:text-white">{currentUserUsername || 'User'}</dd>
+                    </div>
+                    
+                    <div>
+                      <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">Email Address</dt>
+                      <dd className="mt-1 text-slate-900 dark:text-white">{currentUserEmail || 'Not available'}</dd>
+                    </div>
+                    
+                    <div>
+                      <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">Account Type</dt>
+                      <dd className="mt-1">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          {userRole === 'ROLE_ADMIN' ? 'Administrator' : 'Standard User'}
+                        </span>
+                      </dd>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="border-t border-gray-200 dark:border-slate-700 px-4 py-5 sm:p-0">
-              <dl className="sm:divide-y sm:divide-gray-200 dark:sm:divide-slate-700">
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500 dark:text-slate-400">Username</dt>
-                  <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{currentUserUsername || 'Not available'}</dd>
+          </div>
+
+          {/* Quick Actions & Status */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Quick Actions */}
+            <div className="bg-white dark:bg-slate-800 shadow rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Quick Actions</h3>
+              </div>
+              
+              <div className="px-6 py-4 space-y-3">
+                <Link 
+                  to="/logging" 
+                  className="flex items-center space-x-3 p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group"
+                >
+                  <div className="flex-shrink-0">
+                    <svg className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">Calculation History</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">View past tariff calculations</p>
+                  </div>
+                </Link>
+
+
+                <Link 
+                  to="/" 
+                  className="flex items-center space-x-3 p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group"
+                >
+                  <div className="flex-shrink-0">
+                    <svg className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-green-600 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">Calculate Tariffs</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Start a new calculation</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+            {/* Account Status */}
+            <div className="bg-white dark:bg-slate-800 shadow rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Account Status</h3>
+              </div>
+              
+              <div className="px-6 py-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Status</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-green-600 dark:text-green-400">Active</span>
+                  </div>
                 </div>
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500 dark:text-slate-400">Email</dt>
-                  <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{currentUserEmail || 'Not available'}</dd>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Member Since</span>
+                  <span className="text-sm font-medium text-slate-900 dark:text-white">Recently</span>
                 </div>
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500 dark:text-slate-400">Your Role</dt>
-                  <dd className="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{userRole || 'User'}</dd>
-                </div>
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500 dark:text-slate-400">Available Actions</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>Calculate new tariffs.</li>
-                      <li>
-                        <Link to="/logging" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                          View your calculation history.
-                        </Link>
-                      </li>
-                    </ul>
-                  </dd>
-                </div>
-              </dl>
+              </div>
             </div>
           </div>
         </div>

@@ -177,12 +177,7 @@ export default function Header() {
           >
             Home
           </Link>
-          <Link
-            className="hover:text-slate-700 py-2 px-2 lg:px-3 rounded-md transition-colors text-xs lg:text-sm"
-            to="/dashboard"
-          >
-            Dashboard
-          </Link>
+
 
 
           {/* Features dropdown */}
@@ -213,7 +208,7 @@ export default function Header() {
                   to="/logging"
                   className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
                 >
-                  Tariff Logging
+                  Calcultion History
                 </Link>
                 <Link
                   to="/tariff-prediction"
@@ -309,30 +304,41 @@ export default function Header() {
 
               {/* Dropdown Menu */}
               {openUserMenu && (
-                <div className="absolute right-0 top-12 w-48 sm:w-56 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden z-50">
+                <div className="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
                   {/* User Info */}
-                  <div className="px-3 sm:px-4 py-3 border-b border-slate-200 bg-slate-50">
-                    <p className="text-xs sm:text-sm font-semibold text-slate-700 truncate">
+                  <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">
                       {userName}
                     </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Signed in
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Account Settings
                     </p>
                   </div>
 
-
                   {/* Menu Items */}
                   <div className="py-1">
-                    {/* Profile link removed per user request */}
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setOpenUserMenu(false)}
+                      className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                       </svg>
-                      Log out
-                    </button>
+                      Profile & Settings
+                    </Link>
+
+                    <div className="border-t border-slate-200 dark:border-slate-700 mt-1 pt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Log out
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -354,7 +360,6 @@ export default function Header() {
                 </div>
               )}
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/">Home</Link>
-              <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/dashboard">Dashboard</Link>
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/blog">Blog</Link>
               <Link onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-md text-slate-700 hover:bg-slate-50" to="/contact">Contact</Link>
               {/* auth actions - only show login/signup when not logged in */}
