@@ -13,9 +13,13 @@ import com.tariff.exception.TariffRuleNotFoundException;
 import com.tariff.repository.CountryRepository;
 import com.tariff.repository.ProductRepository;
 import com.tariff.repository.TariffRuleRepository;
+import com.tariff.dto.response.TariffComparisonDTO;
+import com.tariff.dto.response.TariffRateOverTimeDTO;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -359,8 +363,111 @@ class TariffRuleServiceImplTest {
 
     @Test
     void testGetTariffRulesByProductId_ProductNotFound() {
-        when(productRepository.existsById(1L)).thenReturn(false);
-        assertThrows(ProductNotFoundException.class, () -> tariffRuleService.getTariffRulesByProductId(1L, Pageable.unpaged()));
+        when(productRepository.existsById(2L)).thenReturn(false);
+        assertThrows(ProductNotFoundException.class, () -> tariffRuleService.getTariffRulesByProductId(2L, Pageable.unpaged()));
     }
 
+    // ---------------- GET TARIFF RATES OVER TIME ----------------
+
+    @Test
+    void testGetTariffRatesOverTime_Success() {
+        // Given
+        String fromCountryCode = "C840";
+        String toCountryCode = "C156";
+        Long productId = 1L;
+        List<TariffRateOverTimeDTO> dbRates = new ArrayList<>();
+        dbRates.add(new TariffRateOverTimeDTO(2020, new BigDecimal("5.0")));
+        dbRates.add(new TariffRateOverTimeDTO(2021, new BigDecimal("5.5")));
+
+        when(countryRepository.existsById(fromCountryCode)).thenReturn(true);
+        when(countryRepository.existsById(toCountryCode)).thenReturn(true);
+        when(productRepository.existsById(productId)).thenReturn(true);
+        when(tariffRuleRepository.findTariffRatesOverTime(fromCountryCode, toCountryCode, productId)).thenReturn(dbRates);
+
+        // When
+        List<TariffRateOverTimeDTO> result = tariffRuleService.getTariffRatesOverTime(fromCountryCode, toCountryCode, productId);
+
+        // Then
+        assertEquals(30, result.size()); // 2025 - 1996 + 1
+        assertEquals(new BigDecimal("5.0"), result.stream().filter(r -> r.getYear() == 2020).findFirst().get().getRate());
+        assertEquals(new BigDecimal("5.5"), result.stream().filter(r -> r.getYear() == 2021).findFirst().get().getRate());
+        assertEquals(BigDecimal.ZERO, result.stream().filter(r -> r.getYear() == 1996).findFirst().get().getRate());
+        verify(tariffRuleRepository).findTariffRatesOverTime(fromCountryCode, toCountryCode, productId);
+    }
+
+    @Test
+    void testGetTariffRatesOverTime_FromCountryNotFound() {
+        when(countryRepository.existsById("XX")).thenReturn(false);
+        assertThrows(CountryNotFoundException.class, () -> tariffRuleService.getTariffRatesOverTime("XX", "C156", 1L));
+    }
+
+    @Test
+    void testGetTariffRatesOverTime_ToCountryNotFound() {
+        when(countryRepository.existsById("XX")).thenReturn(false);
+        assertThrows(CountryNotFoundException.class, () -> tariffRuleService.getTariffRatesOverTime("C840", "XX", 1L));
+    }
+
+    @Test
+    void testGetTariffRatesOverTime_ProductNotFound() {
+        when(productRepository.existsById(99L)).thenReturn(false);
+        assertThrows(ProductNotFoundException.class, () -> tariffRuleService.getTariffRatesOverTime("C840", "C156", 99L));
+    }
+
+    // ---------------- COMPARE TARIFF RATES ----------------
+
+    @Test
+    void testCompareTariffRates_Success() {
+        // Given
+        String country1Code = "C840";
+        String country2Code = "C156";
+        Long productId = 1L;
+
+        Country country1 = new Country();
+        country1.setCountryCode(country1Code);
+        country1.setName("USA");
+
+        Country country2 = new Country();
+        country2.setCountryCode(country2Code);
+        country2.setName("China");
+
+        List<TariffRateOverTimeDTO> country1Rates = Collections.singletonList(new TariffRateOverTimeDTO(2023, new BigDecimal("3.0")));
+        List<TariffRateOverTimeDTO> country2Rates = Collections.singletonList(new TariffRateOverTimeDTO(2023, new BigDecimal("7.0")));
+
+        when(countryRepository.findById(country1Code)).thenReturn(Optional.of(country1));
+        when(countryRepository.findById(country2Code)).thenReturn(Optional.of(country2));
+        when(productRepository.existsById(productId)).thenReturn(true);
+        when(tariffRuleRepository.findTariffRatesOverTime(country2Code, country1Code, productId)).thenReturn(country1Rates);
+        when(tariffRuleRepository.findTariffRatesOverTime(country1Code, country2Code, productId)).thenReturn(country2Rates);
+
+        // When
+        TariffComparisonDTO result = tariffRuleService.compareTariffRates(country1Code, country2Code, productId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(country1Code, result.getCountry1Code());
+        assertEquals("USA", result.getCountry1Name());
+        assertEquals(country2Code, result.getCountry2Code());
+        assertEquals("China", result.getCountry2Name());
+        assertEquals(productId, result.getProductId());
+        assertEquals(country1Rates, result.getCountry1Rates());
+        assertEquals(country2Rates, result.getCountry2Rates());
+    }
+
+    @Test
+    void testCompareTariffRates_Country1NotFound() {
+        when(countryRepository.findById("XX")).thenReturn(Optional.empty());
+        assertThrows(CountryNotFoundException.class, () -> tariffRuleService.compareTariffRates("XX", "C156", 1L));
+    }
+
+    @Test
+    void testCompareTariffRates_Country2NotFound() {
+        when(countryRepository.findById("XX")).thenReturn(Optional.empty());
+        assertThrows(CountryNotFoundException.class, () -> tariffRuleService.compareTariffRates("C840", "XX", 1L));
+    }
+
+    @Test
+    void testCompareTariffRates_ProductNotFound() {
+        when(productRepository.existsById(99L)).thenReturn(false);
+        assertThrows(ProductNotFoundException.class, () -> tariffRuleService.compareTariffRates("C840", "C156", 99L));
+    }
 }
