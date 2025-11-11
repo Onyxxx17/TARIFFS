@@ -22,12 +22,14 @@ import com.tariff.dto.response.TariffRateOverTimeDTO;
 import com.tariff.entity.TariffRule;
 import com.tariff.service.TariffRuleService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/tariff-rules")
+@Tag(name = "Tariff Rules", description = "Tariff rule management endpoints")
 public class TariffRuleController {
 
     private TariffRuleService tariffRuleService;
@@ -37,6 +39,7 @@ public class TariffRuleController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all tariff rules (paginated)", description = "Returns a paginated list of tariff rules")
     public ResponseEntity<PageResponse<TariffRule>> getAllTariffRules(
             @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
         var page = tariffRuleService.listTariffRule(pageable);
@@ -44,6 +47,7 @@ public class TariffRuleController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get tariff rule by ID", description = "Returns a specific tariff rule by its ID")
     public TariffRule getTariffRuleById(
             @Parameter(description = "ID of tariff rule", example = "2")
             @PathVariable Long id,
@@ -53,6 +57,7 @@ public class TariffRuleController {
 
     // Backward compatibility - returns rules where country is either from or to
     @GetMapping("/country/{countryCode}")
+    @Operation(summary = "Get tariff rules by country code", description = "Returns tariff rules where the country is either the exporting or importing country")
     public ResponseEntity<PageResponse<TariffRule>> getTariffRulesByCountry(
             @Parameter(description = "Country Code", example = "C840")
             @PathVariable String countryCode,
@@ -72,6 +77,7 @@ public class TariffRuleController {
     // }
 
     @GetMapping("/product/{productId}")
+    @Operation(summary = "Get tariff rules by product ID", description = "Returns tariff rules for a specific product")
     public ResponseEntity<PageResponse<TariffRule>> getTariffRulesByProduct(
             @PathVariable Long productId,
             @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
@@ -81,6 +87,8 @@ public class TariffRuleController {
 
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Create a new tariff rule (Admin only)", description = "Creates a new tariff rule - requires ADMIN role")
     public TariffRule createTariffRule(@RequestBody TariffRule tariffRule) {
         return tariffRuleService.addTariffRule(tariffRule);
     }
@@ -98,6 +106,8 @@ public class TariffRuleController {
 
     // New endpoint for creating tariff rules with separate from and to countries
     @PostMapping("/from-country/{fromCountryCode}/to-country/{toCountryCode}/product/{productId}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Create tariff rule with specific countries (Admin only)", description = "Creates a tariff rule for specific from/to countries and product - requires ADMIN role")
     public TariffRule createTariffRuleWithCountriesAndProduct(
             @PathVariable String fromCountryCode,
             @PathVariable String toCountryCode,
@@ -107,6 +117,8 @@ public class TariffRuleController {
     }
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Update a tariff rule (Admin only)", description = "Updates an existing tariff rule - requires ADMIN role")
     public TariffRule updateTariffRule(@PathVariable Long id, @RequestBody TariffRule tariffRule) {
         return tariffRuleService.updateTariffRule(id, tariffRule);
     }
@@ -124,6 +136,8 @@ public class TariffRuleController {
 
     // New endpoint for updating tariff rules with specific from and to countries
     @PutMapping("/from-country/{fromCountryCode}/to-country/{toCountryCode}/product/{productId}/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Update tariff rule with specific countries (Admin only)", description = "Updates a tariff rule for specific from/to countries and product - requires ADMIN role")
     public TariffRule updateTariffRuleWithCountriesAndProduct(
             @PathVariable String fromCountryCode,
             @PathVariable String toCountryCode,
@@ -134,6 +148,8 @@ public class TariffRuleController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Delete a tariff rule (Admin only)", description = "Deletes a tariff rule by ID - requires ADMIN role")
     public ResponseEntity<?> deleteTariffRule(@PathVariable Long id) {
         tariffRuleService.deleteTariffRule(id);
         return ResponseEntity.ok().build();
@@ -152,6 +168,8 @@ public class TariffRuleController {
 
     // New endpoint for deleting tariff rules with specific from and to countries
     @DeleteMapping("/from-country/{fromCountryCode}/to-country/{toCountryCode}/product/{productId}/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Delete tariff rule with specific countries (Admin only)", description = "Deletes a tariff rule for specific from/to countries and product - requires ADMIN role")
     public ResponseEntity<?> deleteTariffRuleWithCountriesAndProduct(
             @PathVariable String fromCountryCode,
             @PathVariable String toCountryCode,
@@ -163,6 +181,7 @@ public class TariffRuleController {
 
     // New endpoint for getting tariff rates over time
     @GetMapping("/rates-over-time")
+    @Operation(summary = "Get tariff rates over time", description = "Returns tariff rates for all years for given from/to countries and product")
     public ResponseEntity<List<TariffRateOverTimeDTO>> getTariffRatesOverTime(
             @RequestParam String fromCountryCode,
             @RequestParam String toCountryCode,
@@ -173,6 +192,7 @@ public class TariffRuleController {
 
     // New endpoint for comparing tariff rates between two countries
     @GetMapping("/compare-tariffs")
+    @Operation(summary = "Compare tariff rates between countries", description = "Compares tariff rates between two countries for a specific product")
     public ResponseEntity<TariffComparisonDTO> compareTariffRates(
             @RequestParam String country1Code,
             @RequestParam String country2Code,
@@ -183,11 +203,24 @@ public class TariffRuleController {
 
     // New endpoint for getting all tariff rules by from-country, to-country, and product (all years)
     @GetMapping("/by-countries-and-product")
+    @Operation(summary = "Get all tariff rules by countries and product", description = "Returns all tariff rules for given from/to countries and product across all years")
     public ResponseEntity<List<TariffRule>> getTariffRulesByCountriesAndProduct(
             @RequestParam String fromCountryCode,
             @RequestParam String toCountryCode,
             @RequestParam Long productId) {
         List<TariffRule> rules = tariffRuleService.getTariffRulesByCountriesAndProduct(fromCountryCode, toCountryCode, productId);
         return ResponseEntity.ok(rules);
+    }
+
+    // New endpoint for getting a specific tariff rule by countries, product, and year
+    @GetMapping("/by-countries-product-year")
+    @Operation(summary = "Get tariff rule by countries, product, and year", description = "Returns a specific tariff rule for given from/to countries, product, and effective year")
+    public ResponseEntity<TariffRule> getTariffRuleByCountriesProductAndYear(
+            @RequestParam String fromCountryCode,
+            @RequestParam String toCountryCode,
+            @RequestParam Long productId,
+            @RequestParam Integer year) {
+        TariffRule rule = tariffRuleService.getTariffRuleByCountriesProductAndYear(fromCountryCode, toCountryCode, productId, year);
+        return ResponseEntity.ok(rule);
     }
 }

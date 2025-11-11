@@ -12,8 +12,10 @@ import com.tariff.dto.LoginResponse;
 import com.tariff.dto.RefreshTokenRequest;
 import com.tariff.dto.RefreshTokenResponse;
 import com.tariff.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Authentication and authorization endpoints")
 public class AuthController {
 
     private final UserService userService;
@@ -50,6 +53,7 @@ public class AuthController {
     }
 
     @GetMapping("/oauth2/failure")
+    @Operation(summary = "OAuth2 login failure callback")
     public void googleLoginFailure(HttpServletResponse response) {
         try {
             String errorUrl = frontendUrl != null
@@ -67,6 +71,7 @@ public class AuthController {
 
     // --- Signup ---
     @PostMapping("/signup")
+    @Operation(summary = "Register a new user", description = "Creates a new user account with email, username, and password")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
         Optional<User> existingEmail = userService.findByEmail(request.email());
         if (existingEmail.isPresent()) {
@@ -121,6 +126,7 @@ public class AuthController {
 
     // --- Login ---
     @PostMapping("/login")
+    @Operation(summary = "User login", description = "Authenticates user with email and password, returns JWT token")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         Optional<User> userOpt = userService.findByEmail(request.email());
 
@@ -146,6 +152,7 @@ public class AuthController {
 
     // --- Refresh Token ---
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh JWT token", description = "Generates a new JWT token using a valid refresh token")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();
 
@@ -163,6 +170,8 @@ public class AuthController {
 
     // --- Logout ---
     @PostMapping("/logout")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "User logout", description = "Logs out the current user by blacklisting their JWT token")
     public ResponseEntity<?> logout(Authentication authentication, @RequestHeader("Authorization") String authHeader) {
         String authenticatedEmail = authentication.getName(); // JWT subject is the email
 

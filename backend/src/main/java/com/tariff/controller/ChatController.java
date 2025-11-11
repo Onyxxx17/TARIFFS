@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "AI Chatbot endpoints")
@@ -21,6 +20,7 @@ public class ChatController {
     private GeminiService geminiService;
 
     @PostMapping("/message")
+    @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Send a message to the AI chatbot")
     public ResponseEntity<ChatResponse> sendMessage(@RequestBody ChatRequest request) {
         

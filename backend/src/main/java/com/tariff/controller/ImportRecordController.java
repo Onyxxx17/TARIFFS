@@ -9,7 +9,7 @@ import com.tariff.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@SecurityRequirement(name = "Bearer Authentication")
 @Hidden
 @RestController
 @RequestMapping("/api/import-records")
+@Tag(name = "Import Records", description = "User calculation history endpoints")
 public class ImportRecordController {
 
     private final ImportRecordService importRecordService;
@@ -36,21 +36,25 @@ public class ImportRecordController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all import records", description = "Returns all import records for the authenticated user")
     public List<ImportRecord> getAllImportRecords() {
         return importRecordService.listImportRecord();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get import record by ID", description = "Returns a specific import record by ID")
     public ImportRecord getImportRecordById(@PathVariable Long id) {
         return importRecordService.getImportRecord(id);
     }
 
     @GetMapping("/product/{productId}")
+    @Operation(summary = "Get import records by product", description = "Returns import records filtered by product ID")
     public List<ImportRecord> getImportRecordsByProduct(@PathVariable Long productId) {
         return importRecordService.getImportRecordsByProductId(productId);
     }
 
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Get import records by user", description = "Returns import records for a specific user ID")
     public List<ImportRecord> getImportRecordsByUser(@PathVariable Long userId) {
         return importRecordService.getImportRecordsByUserId(userId);
     }

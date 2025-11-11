@@ -38,4 +38,6 @@ public interface TariffRuleService {
     TariffComparisonDTO compareTariffRates(String country1Code, String country2Code, Long productId);
 
     List<TariffRule> getTariffRulesByCountriesAndProduct(String fromCountryCode, String toCountryCode, Long productId);
+
+    TariffRule getTariffRuleByCountriesProductAndYear(String fromCountryCode, String toCountryCode, Long productId, Integer year);
 }
