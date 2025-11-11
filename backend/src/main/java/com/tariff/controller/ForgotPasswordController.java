@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Password Reset", description = "Password reset operations")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ForgotPasswordController {
 
     @Autowired

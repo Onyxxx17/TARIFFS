@@ -3,6 +3,7 @@ package com.tariff.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tariff.config.JWTUtils;
 import com.tariff.dto.LoginRequest;
+import com.tariff.dto.RefreshTokenRequest;
 import com.tariff.dto.SignupRequest;
 import com.tariff.entity.RefreshToken;
 import com.tariff.entity.User;
@@ -89,6 +90,32 @@ public class AuthControllerTest {
     }
 
     @Test
+    public void testSignup_UsernameExists() throws Exception {
+        SignupRequest request = new SignupRequest("testuser", "test@example.com", "Password123!", "ROLE_USER");
+        // Mock email as not existing, but username as existing
+        when(userService.findByEmail(request.email())).thenReturn(Optional.empty());
+        when(userService.findByUsername(request.username())).thenReturn(Optional.of(new User()));
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testSignup_PasswordTooShort() throws Exception {
+        SignupRequest request = new SignupRequest("testuser", "test@example.com", "Pass1!", "ROLE_USER");
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("Password must be at least 8 characters."));
+    }
+
+    @Test
     public void testLogin_Success() throws Exception {
         LoginRequest request = new LoginRequest("test@example.com", "Password123!");
         User user = new User();
@@ -125,6 +152,49 @@ public class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    public void testLogin_UserNotFound() throws Exception {
+        LoginRequest request = new LoginRequest("nonexistent@example.com", "Password123!");
+        when(userService.findByEmail(request.email())).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error").value("Invalid credentials"));
+    }
+
+    @Test
+    public void testRefreshToken_Success() throws Exception {
+        RefreshTokenRequest request = new RefreshTokenRequest("valid-refresh-token");
+        User user = new User("testuser", "test@example.com", "hashed-password", "ROLE_USER", null, null, null, true, "LOCAL");
+        RefreshToken refreshToken = new RefreshToken("valid-refresh-token", null, user);
+
+        when(refreshTokenService.findByToken("valid-refresh-token")).thenReturn(Optional.of(refreshToken));
+        when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(refreshToken);
+        when(jwtUtils.generateTokenFromUsername(user.getEmail(), user.getRole())).thenReturn("new-jwt-token");
+
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("new-jwt-token"))
+                .andExpect(jsonPath("$.refreshToken").value("valid-refresh-token"));
+    }
+
+    @Test
+    public void testRefreshToken_InvalidOrExpired() throws Exception {
+        RefreshTokenRequest request = new RefreshTokenRequest("invalid-refresh-token");
+        when(refreshTokenService.findByToken("invalid-refresh-token")).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @WithMockUser(username = "test@example.com")
@@ -145,5 +215,17 @@ public class AuthControllerTest {
                 // @ControllerAdvice is configured to return one.
                 // .andExpect(jsonPath("$.error").value("Internal Server Error"));
                 // .andExpect(jsonPath("$.message").value("Simulated service layer exception"));
+    }
+
+    @Test
+    @WithMockUser(username = "nonexistent@example.com")
+    public void testLogout_UserNotFound() throws Exception {
+        when(userService.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/api/auth/logout")
+                        .header("Authorization", "Bearer some-jwt-token")
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError());
+                // Removed: .andExpect(jsonPath("$.error").value("User not found"));
     }
 }

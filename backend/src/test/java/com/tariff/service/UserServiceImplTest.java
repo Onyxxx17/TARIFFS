@@ -7,20 +7,26 @@ import com.tariff.entity.User;
 import com.tariff.exception.UserNotFoundException;
 import com.tariff.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -123,5 +129,176 @@ class UserServiceImplTest {
         when(userRepository.existsById(1L)).thenReturn(false);
 
         assertThrows(UserNotFoundException.class, () -> userService.deleteUser(1L));
+    }
+
+    @Test
+    void testFindByEmail_Found() {
+        String email = "test@example.com";
+        user1.setEmail(email);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user1));
+
+        Optional<User> result = userService.findByEmail(email);
+
+        assertTrue(result.isPresent());
+        assertEquals(email, result.get().getEmail());
+        verify(userRepository).findByEmail(email);
+    }
+
+    @Test
+    void testFindByEmail_NotFound() {
+        String email = "notfound@example.com";
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        Optional<User> result = userService.findByEmail(email);
+
+        assertFalse(result.isPresent());
+        verify(userRepository).findByEmail(email);
+    }
+
+    @Test
+    void testFindByUsername_Found() {
+        String username = "john";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user1));
+
+        Optional<User> result = userService.findByUsername(username);
+
+        assertTrue(result.isPresent());
+        assertEquals(username, result.get().getUsername());
+        verify(userRepository).findByUsername(username);
+    }
+
+    @Test
+    void testFindByUsername_NotFound() {
+        String username = "not-john";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        Optional<User> result = userService.findByUsername(username);
+
+        assertFalse(result.isPresent());
+        verify(userRepository).findByUsername(username);
+    }
+
+    @Test
+    void testCreateOAuthUser() {
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User oauthUser = userService.createOAuthUser("oauth@test.com", "oauthuser", "OAuth", "User", "image.url", true, "google", "USER");
+
+        assertNotNull(oauthUser);
+        assertEquals("oauth@test.com", oauthUser.getEmail());
+        assertEquals("oauthuser", oauthUser.getUsername());
+        assertEquals("google", oauthUser.getProvider());
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void testCreatePasswordResetToken() {
+        String email = "test@example.com";
+        String token = "reset-token-123";
+        user1.setEmail(email);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user1));
+
+        userService.createPasswordResetToken(email, token);
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertEquals(token, savedUser.getResetToken());
+        assertNotNull(savedUser.getResetTokenExpiry());
+        assertTrue(savedUser.getResetTokenExpiry().isAfter(LocalDateTime.now()));
+    }
+
+    @Test
+    void testIsValidPasswordResetToken_Valid() {
+        String token = "valid-token";
+        user1.setResetToken(token);
+        user1.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.of(user1));
+
+        boolean isValid = userService.isValidPasswordResetToken(token);
+
+        assertTrue(isValid);
+    }
+
+    @Test
+    void testIsValidPasswordResetToken_Expired() {
+        String token = "expired-token";
+        user1.setResetToken(token);
+        user1.setResetTokenExpiry(LocalDateTime.now().minusHours(1));
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.of(user1));
+
+        boolean isValid = userService.isValidPasswordResetToken(token);
+
+        assertFalse(isValid);
+    }
+
+    @Test
+    void testIsValidPasswordResetToken_NotFound() {
+        String token = "not-found-token";
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.empty());
+
+        boolean isValid = userService.isValidPasswordResetToken(token);
+
+        assertFalse(isValid);
+    }
+
+    @Test
+    void testFindByPasswordResetToken_Found() {
+        String token = "found-token";
+        user1.setResetToken(token);
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.of(user1));
+
+        User result = userService.findByPasswordResetToken(token);
+
+        assertNotNull(result);
+        assertEquals(token, result.getResetToken());
+    }
+
+    @Test
+    void testFindByPasswordResetToken_NotFound() {
+        String token = "not-found-token";
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.empty());
+
+        User result = userService.findByPasswordResetToken(token);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testUpdatePassword() {
+        String token = "update-pass-token";
+        String newPassword = "newPassword123";
+        String encodedPassword = "encodedPassword123";
+        user1.setResetToken(token);
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.of(user1));
+        when(passwordEncoder.encode(newPassword)).thenReturn(encodedPassword);
+
+        userService.updatePassword(token, newPassword);
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertEquals(encodedPassword, savedUser.getPassword());
+        assertNull(savedUser.getResetToken());
+        assertNull(savedUser.getResetTokenExpiry());
+    }
+
+    @Test
+    void testClearPasswordResetToken() {
+        String token = "clear-token";
+        user1.setResetToken(token);
+        user1.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        when(userRepository.findByResetToken(token)).thenReturn(Optional.of(user1));
+
+        userService.clearPasswordResetToken(token);
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertNull(savedUser.getResetToken());
+        assertNull(savedUser.getResetTokenExpiry());
     }
 }

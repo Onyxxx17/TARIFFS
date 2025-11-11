@@ -1,21 +1,34 @@
 package com.tariff.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tariff.dto.request.SaveCalculationRequest;
 import com.tariff.entity.ImportRecord;
+import com.tariff.entity.Product;
 import com.tariff.service.ImportRecordService;
+import com.tariff.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,6 +39,9 @@ class ImportRecordControllerTest {
 
     @Mock
     private ImportRecordService importRecordService;
+
+    @Mock
+    private ProductService productService;
 
     @InjectMocks
     private ImportRecordController importRecordController;
@@ -148,6 +164,60 @@ class ImportRecordControllerTest {
                 .andExpect(status().isOk());
 
         verify(importRecordService).deleteImportRecord(1L);
+    }
+
+    @Test
+    void testSaveCalculation_Success() throws Exception {
+        SaveCalculationRequest request = new SaveCalculationRequest();
+        request.setProductId(10L);
+        request.setFromCountryId("US");
+        request.setToCountryId("CN");
+
+        Product product = new Product();
+        product.setId(10L);
+        product.setName("Test Product");
+
+        Authentication auth = new UsernamePasswordAuthenticationToken("user", "password");
+        when(importRecordService.getUserIdFromAuthentication(auth)).thenReturn(1L);
+        when(productService.getProduct(10L)).thenReturn(product);
+        when(importRecordService.addImportRecordByProductAndUser(anyLong(), anyLong(), any(ImportRecord.class))).thenReturn(record1);
+        when(importRecordService.addImportRecordByCountryPair(anyString(), anyString(), any(ImportRecord.class))).thenReturn(record1);
+
+        mockMvc.perform(post("/api/import-records/save-calculation")
+                        .principal(auth)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
+
+        verify(importRecordService).getUserIdFromAuthentication(auth);
+        verify(productService).getProduct(10L);
+        verify(importRecordService).addImportRecordByProductAndUser(eq(10L), eq(1L), any(ImportRecord.class));
+        verify(importRecordService).addImportRecordByCountryPair(eq("US"), eq("CN"), any(ImportRecord.class));
+    }
+
+    @Test
+    void testSaveCalculation_Unauthenticated() throws Exception {
+        SaveCalculationRequest request = new SaveCalculationRequest();
+
+        mockMvc.perform(post("/api/import-records/save-calculation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("User not authenticated"));
+    }
+
+
+    @Test
+    void testDeleteCalculationHistory_Success() throws Exception {
+        Authentication auth = new UsernamePasswordAuthenticationToken("user", "password");
+        when(importRecordService.getUserIdFromAuthentication(auth)).thenReturn(1L);
+        doNothing().when(importRecordService).deleteCalculationHistory(5L, 1L);
+
+        mockMvc.perform(delete("/api/import-records/history/5").principal(auth))
+                .andExpect(status().isOk());
+
+        verify(importRecordService).deleteCalculationHistory(5L, 1L);
     }
 
     @Test
