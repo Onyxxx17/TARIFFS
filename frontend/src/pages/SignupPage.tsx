@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate,Link } from "react-router-dom";
 import { BASE_URL } from "../config";
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -161,9 +162,12 @@ export default function SignupPage() {
                     border border-slate-200 bg-white
                     px-4 py-3 text-base sm:text-sm text-slate-900 placeholder-slate-400
                     focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                    transition transition-colors
+                    transition-colors
                   "
               />
+              
+              <PasswordStrengthIndicator password={password} />
+              
               <p className="mt-1 text-xs text-slate-500">
                 Must be 8+ chars with uppercase, lowercase, number & special character.
               </p>
@@ -188,9 +192,13 @@ export default function SignupPage() {
                     border border-slate-200 bg-white
                     px-4 py-3 text-base sm:text-sm text-slate-900 placeholder-slate-400
                     focus:outline-none focus:ring-4 focus:ring-[#2563EB]/15 focus:border-[#2563EB]
-                    transition transition-colors
+                    transition-colors
                   "
               />
+              
+              {confirmPassword && password !== confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+              )}
             </div>
 
             {/* Error */}

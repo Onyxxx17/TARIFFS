@@ -48,6 +48,10 @@ public class User {
     private Boolean emailVerified = false;
     private String provider; // "LOCAL", "GOOGLE", etc.
 
+    // Password reset fields
+    private String resetToken;
+    private java.time.LocalDateTime resetTokenExpiry;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ImportRecord> importRecord;
