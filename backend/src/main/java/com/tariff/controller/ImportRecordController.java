@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@SecurityRequirement(name = "Bearer Authentication")
 @Hidden
 @RestController
 @RequestMapping("/api/import-records")
-@SecurityRequirement(name = "Bearer Authentication")
 public class ImportRecordController {
 
     private final ImportRecordService importRecordService;

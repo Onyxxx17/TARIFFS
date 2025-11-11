@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "AI Chatbot endpoints")
 @CrossOrigin(origins = "*")
-@SecurityRequirement(name = "Bearer Authentication")
 public class ChatController {
 
     @Autowired

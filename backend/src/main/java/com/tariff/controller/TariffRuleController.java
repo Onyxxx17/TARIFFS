@@ -25,9 +25,9 @@ import com.tariff.service.TariffRuleService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/tariff-rules")
-@SecurityRequirement(name = "Bearer Authentication")
 public class TariffRuleController {
 
     private TariffRuleService tariffRuleService;
@@ -79,10 +79,12 @@ public class TariffRuleController {
         return ResponseEntity.ok(new PageResponse<>(page));
     }
 
+
     @PostMapping
     public TariffRule createTariffRule(@RequestBody TariffRule tariffRule) {
         return tariffRuleService.addTariffRule(tariffRule);
     }
+    
 
     // Backward compatibility - sets both from and to country to the same country
     // @PostMapping("/country/{countryCode}/product/{productId}")
@@ -177,5 +179,15 @@ public class TariffRuleController {
             @RequestParam Long productId) {
         TariffComparisonDTO comparison = tariffRuleService.compareTariffRates(country1Code, country2Code, productId);
         return ResponseEntity.ok(comparison);
+    }
+
+    // New endpoint for getting all tariff rules by from-country, to-country, and product (all years)
+    @GetMapping("/by-countries-and-product")
+    public ResponseEntity<List<TariffRule>> getTariffRulesByCountriesAndProduct(
+            @RequestParam String fromCountryCode,
+            @RequestParam String toCountryCode,
+            @RequestParam Long productId) {
+        List<TariffRule> rules = tariffRuleService.getTariffRulesByCountriesAndProduct(fromCountryCode, toCountryCode, productId);
+        return ResponseEntity.ok(rules);
     }
 }

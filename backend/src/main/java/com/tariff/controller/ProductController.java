@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/products")
-@SecurityRequirement(name = "Bearer Authentication")
 public class ProductController {
     
     private ProductService productService;
