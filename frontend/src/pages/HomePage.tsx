@@ -1,4 +1,7 @@
 import TariffCalculatorSection from "../components/TariffCalculationSection";
+// import NewsList from "../components/NewsList";
+// import { Link } from "react-router-dom";
+// import { ArrowRight } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -67,6 +70,33 @@ export default function HomePage() {
 
         </div>
       </section>
+
+      {/* <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Latest Trade & Tariff News
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Stay informed with the latest developments in international trade, tariff policies, and economic updates.
+            </p>
+          </div>
+          
+          <div className="mb-8">
+            <NewsList type="latest" initialSize={6} />
+          </div>
+          
+          <div className="text-center">
+            <Link 
+              to="/news"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View All News
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section> */}
 
       {/* the map and form  */}
       <TariffCalculatorSection />

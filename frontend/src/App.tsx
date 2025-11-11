@@ -10,6 +10,7 @@ import ResetPassword from "./pages/ResetPassword";
 
 import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
+import NewsPage from "./pages/NewsPage";
 
 // import TariffAIChat from "./pages/TariffAiChat"; // Now using FloatingChatbot component in Layout
 
@@ -47,6 +48,9 @@ export default function App() {
           {/* Blog list + detail */}
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+
+          {/* News */}
+          <Route path="/news" element={<NewsPage />} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
