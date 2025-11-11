@@ -16,4 +16,8 @@ public class ToolDefinition {
     private String name;
     private String description;
     private Map<String, Object> inputSchema;
+
+    public String getName() {
+        return name;
+    }
 }

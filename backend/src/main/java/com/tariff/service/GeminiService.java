@@ -113,6 +113,8 @@ public class GeminiService {
                     || normalized.contains("additional fee") || (normalized.contains("from") && normalized.contains("to"))) {
 
                 Map<String, String> countries = extractCountries(userMessage);
+                Integer effectiveYear = extractYear(userMessage); // Extract the year
+
                 if (countries != null && countries.containsKey("from") && countries.containsKey("to")) {
                     // Try to extract product name from the query
                     String productQuery = extractProductFromTariffQuery(userMessage);
@@ -151,6 +153,9 @@ public class GeminiService {
                             if (productId != null) {
                                 args.put("productId", productId);
                             }
+                             if (effectiveYear != null) {
+                                args.put("effectiveYear", effectiveYear);
+                            }
                             // Pass metadata to help with formatting
                             args.put("_productRequested", productWasRequested);
                             args.put("_productFound", productWasFound);
@@ -168,6 +173,16 @@ public class GeminiService {
             return null;
         }
 
+        return null;
+    }
+
+    private Integer extractYear(String message) {
+        if (message == null) return null;
+        Pattern yearPattern = Pattern.compile("\\b(199[6-9]|20[0-2][0-9])\\b"); // Matches years 1996-2029
+        Matcher matcher = yearPattern.matcher(message);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
         return null;
     }
 
