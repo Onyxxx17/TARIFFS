@@ -208,7 +208,7 @@ export default function Header() {
                   to="/logging"
                   className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
                 >
-                  Calcultion History
+                  Calculation History
                 </Link>
                 <Link
                   to="/tariff-prediction"

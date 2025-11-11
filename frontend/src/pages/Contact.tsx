@@ -2,8 +2,18 @@ import { Linkedin, Instagram, Twitter } from 'lucide-react';
 
 const contacts = [
   {
+    name: 'Aung',
+    role: 'Backend Developer & Product Owner',
+    avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Aung',
+    socials: {
+      linkedin: 'https://linkedin.com/in/aungyethanthein',
+      instagram: 'https://instagram.com/aung',
+      x: 'https://x.com/aung',
+    },
+  },
+  {
     name: 'Yi Nam',
-    role: 'Project Lead & Backend Developer',
+    role: 'Frontend Developer/ UX Designer',
     avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=YiNam',
     socials: {
       linkedin: 'https://linkedin.com/in/yinam',
@@ -12,18 +22,8 @@ const contacts = [
     },
   },
   {
-    name: 'Aung',
-    role: 'Backend & Machine Learning',
-    avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Aung',
-    socials: {
-      linkedin: 'www.linkedin.com/in/aungyethanthein',
-      instagram: 'https://instagram.com/aung',
-      x: 'https://x.com/aung',
-    },
-  },
-  {
     name: 'Chue',
-    role: 'Frontend Developer',
+    role: 'Frontend Developer/ UI Designer',
     avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Chue',
     socials: {
       linkedin: 'https://linkedin.com/in/chue',
@@ -32,8 +32,8 @@ const contacts = [
     },
   },
   {
-    name: 'Lin',
-    role: 'UI/UX Designer & Frontend',
+    name: 'Lin Khant',
+    role: 'Machine Learning & Backend Developer',
     avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Lin',
     socials: {
       linkedin: 'https://linkedin.com/in/lin',
@@ -43,7 +43,7 @@ const contacts = [
   },
   {
     name: 'Jonathan',
-    role: 'Data Scientist & Frontend',
+    role: 'Backend Developer & Database Engineer',
     avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Jonathan',
     socials: {
       linkedin: 'https://linkedin.com/in/jonathan',
