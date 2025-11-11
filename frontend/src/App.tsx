@@ -5,6 +5,8 @@ import LoginPage from "./pages/LoginPage";
 import TariffLoggingDisplay from "./pages/TariffLogging";
 import SignupPage from "./pages/SignupPage";
 import AuthCallback from "./pages/AuthCallback";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
@@ -26,6 +28,8 @@ export default function App() {
           <Route index element={<HomePage />} />       {/* Home */}
           <Route path="login" element={<LoginPage />} /> {/* Login */}
           <Route path="signup" element={<SignupPage />} /> {/* Signup */}
+          <Route path="forgot-password" element={<ForgotPassword />} /> {/* Forgot Password */}
+          <Route path="reset-password" element={<ResetPassword />} /> {/* Reset Password */}
           <Route path="auth/callback" element={<AuthCallback />} /> {/* OAuth2 Callback */}
           <Route path="logging" element={<TariffLoggingDisplay />} />
           <Route path="/tariff-prediction" element={<TariffPredictionDisplay />} />
