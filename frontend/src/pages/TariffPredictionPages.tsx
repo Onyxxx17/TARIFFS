@@ -23,6 +23,20 @@ interface TariffPredictionResponse {
   historicalRates?: { year: number; rate: number }[];
 }
 
+// Helper function to fetch country name from the country table
+const getCountryName = async (countryCode: string): Promise<string> => {
+  try {
+    const res = await fetchWithAuth(`/api/countries/${countryCode}`);
+    if (res.ok) {
+      const data = await res.json();
+      return data.name || countryCode;
+    }
+  } catch (err) {
+    console.error(`Error fetching country name for ${countryCode}:`, err);
+  }
+  return countryCode;
+};
+
 export default function TariffPredictionPage() {
   const [fromCountry, setFromCountry] = useState<CountryOption | null>(null);
   const [toCountry, setToCountry] = useState<CountryOption | null>(null);
@@ -31,6 +45,8 @@ export default function TariffPredictionPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<TariffPredictionResponse | null>(null);
+  const [fromCountryName, setFromCountryName] = useState<string>("");
+  const [toCountryName, setToCountryName] = useState<string>("");
 
   // Generate future years dropdown
   const years = Array.from({ length: 2050 - 2026 + 1 }, (_, i) => 2026 + i);
@@ -91,6 +107,12 @@ export default function TariffPredictionPage() {
 
       const data: TariffPredictionResponse = await res.json();
       setResult(data);
+
+      // Fetch country names from the country table
+      const fromName = await getCountryName(data.fromCountryCode);
+      const toName = await getCountryName(data.toCountryCode);
+      setFromCountryName(fromName);
+      setToCountryName(toName);
     } catch (err: any) {
       console.error("Prediction error:", err);
       setError(err.message || "An unexpected error occurred.");
@@ -158,10 +180,10 @@ export default function TariffPredictionPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 text-slate-800 text-sm">
               <p>
-                <span className="font-semibold">From:</span> {result.fromCountryCode}
+                <span className="font-semibold">From:</span> {fromCountryName}
               </p>
               <p>
-                <span className="font-semibold">To:</span> {result.toCountryCode}
+                <span className="font-semibold">To:</span> {toCountryName}
               </p>
               <p>
                 <span className="font-semibold">Product ID:</span> {result.productId}
