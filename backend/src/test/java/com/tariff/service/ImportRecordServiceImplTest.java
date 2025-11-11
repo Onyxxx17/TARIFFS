@@ -25,6 +25,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import org.springframework.security.core.Authentication;
 
 class ImportRecordServiceImplTest {
 
@@ -287,4 +293,99 @@ class ImportRecordServiceImplTest {
                 -> importRecordService.deleteImportRecordByProductAndUser(1L, 1L, 1L));
     }
 
+    // --- NEW TESTS FOR HIGHLIGHTED CODE ---
+
+    @Test
+    void testGetUserIdFromAuthentication_Success() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("test@example.com");
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        Long userId = importRecordService.getUserIdFromAuthentication(authentication);
+
+        assertEquals(1L, userId);
+    }
+
+    @Test
+    void testGetUserIdFromAuthentication_UserNotFound() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("notfound@example.com");
+        when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> importRecordService.getUserIdFromAuthentication(authentication));
+    }
+
+    @Test
+    void testGetUserCalculationHistory_Success() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ImportRecord> page = new PageImpl<>(Arrays.asList(importRecord));
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(importRecordRepository.findByUserId(1L, pageable)).thenReturn(page);
+
+        Page<ImportRecord> result = importRecordService.getUserCalculationHistory(1L, pageable);
+
+        assertEquals(1, result.getTotalElements());
+        verify(importRecordRepository).findByUserId(1L, pageable);
+    }
+
+    @Test
+    void testGetUserCalculationHistory_UserNotFound() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(userRepository.existsById(2L)).thenReturn(false);
+
+        assertThrows(UserNotFoundException.class, () -> importRecordService.getUserCalculationHistory(2L, pageable));
+    }
+
+    @Test
+    void testGetAllCalculationHistory() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ImportRecord> page = new PageImpl<>(Arrays.asList(importRecord));
+        when(importRecordRepository.findAll(pageable)).thenReturn(page);
+
+        Page<ImportRecord> result = importRecordService.getAllCalculationHistory(pageable);
+
+        assertEquals(1, result.getTotalElements());
+        verify(importRecordRepository).findAll(pageable);
+    }
+
+    @Test
+    void testDeleteCalculationHistory_Success() {
+        when(importRecordRepository.findById(1L)).thenReturn(Optional.of(importRecord));
+
+        assertDoesNotThrow(() -> importRecordService.deleteCalculationHistory(1L, 1L));
+
+        verify(importRecordRepository).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteCalculationHistory_RecordNotFound() {
+        when(importRecordRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(ImportRecordNotFoundException.class, () -> importRecordService.deleteCalculationHistory(2L, 1L));
+    }
+
+    @Test
+    void testDeleteCalculationHistory_UserMismatch() {
+        when(importRecordRepository.findById(1L)).thenReturn(Optional.of(importRecord));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> importRecordService.deleteCalculationHistory(1L, 2L));
+        assertEquals("You can only delete your own calculation history", exception.getMessage());
+    }
+
+    @Test
+    void testGetCountryCodeByCountryName_Success() {
+        when(countryRepository.findCountryByName("United States")).thenReturn(Optional.of(fromCountry));
+
+        String countryCode = importRecordService.getCountryCodeByCountryName("United States");
+
+        assertEquals("US", countryCode);
+    }
+
+    @Test
+    void testGetCountryCodeByCountryName_NotFound() {
+        when(countryRepository.findCountryByName("Unknown Country")).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> importRecordService.getCountryCodeByCountryName("Unknown Country"));
+        assertEquals("Country not found: Unknown Country", exception.getMessage());
+    }
 }
