@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/chat")
 @Tag(name = "Chat", description = "AI Chatbot endpoints")
 @CrossOrigin(origins = "*")
-@SecurityRequirement(name = "Bearer Authentication")
 public class ChatController {
 
     @Autowired
     private GeminiService geminiService;
 
     @PostMapping("/message")
+    @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Send a message to the AI chatbot")
     public ResponseEntity<ChatResponse> sendMessage(@RequestBody ChatRequest request) {
         

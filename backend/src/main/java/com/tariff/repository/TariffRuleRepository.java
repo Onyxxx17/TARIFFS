@@ -77,5 +77,13 @@ public interface TariffRuleRepository extends JpaRepository<TariffRule, Long> {
     List<TariffRule> findByToCountryAndProduct(
         @Param("toCountryCode") String toCountryCode,
         @Param("productId") Long productId
-    );  
+    );
+
+    // Get a tariff rule by from country, to country, product, and year
+    Optional<TariffRule> findByFromCountryCountryCodeAndToCountryCountryCodeAndProductIdAndEffectiveYear(
+        String fromCountryCode,
+        String toCountryCode,
+        Long productId,
+        Integer effectiveYear
+    );
 }

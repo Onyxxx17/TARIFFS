@@ -235,4 +235,42 @@ public class TariffRuleServiceImpl implements TariffRuleService {
                 country2Rates
         );
     }
+
+    @Override
+    public List<TariffRule> getTariffRulesByCountriesAndProduct(String fromCountryCode, String toCountryCode, Long productId) {
+        // Validate inputs
+        if (!countryRepository.existsById(fromCountryCode)) {
+            throw new CountryNotFoundException(fromCountryCode);
+        }
+        if (!countryRepository.existsById(toCountryCode)) {
+            throw new CountryNotFoundException(toCountryCode);
+        }
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException(productId);
+        }
+
+        // Get all tariff rules for the given countries and product
+        return tariffRuleRepository.findByFromCountryCountryCodeAndToCountryCountryCodeAndProductId(
+                fromCountryCode, toCountryCode, productId, org.springframework.data.domain.Pageable.unpaged())
+                .getContent();
+    }
+
+    @Override
+    public TariffRule getTariffRuleByCountriesProductAndYear(String fromCountryCode, String toCountryCode, Long productId, Integer year) {
+        // Validate inputs
+        if (!countryRepository.existsById(fromCountryCode)) {
+            throw new CountryNotFoundException(fromCountryCode);
+        }
+        if (!countryRepository.existsById(toCountryCode)) {
+            throw new CountryNotFoundException(toCountryCode);
+        }
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException(productId);
+        }
+
+        // Get tariff rule for the specific year
+        return tariffRuleRepository.findByFromCountryCountryCodeAndToCountryCountryCodeAndProductIdAndEffectiveYear(
+                fromCountryCode, toCountryCode, productId, year)
+                .orElseThrow(() -> new TariffRuleNotFoundException(fromCountryCode, toCountryCode, year, productId));
+    }
 }

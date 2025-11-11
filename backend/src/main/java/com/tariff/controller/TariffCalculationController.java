@@ -11,16 +11,16 @@ import com.tariff.service.TariffCalculationService;
 import com.tariff.service.TariffPredictionService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/tariffs")
+@Tag(name = "Tariff Calculations", description = "Tariff calculation and prediction endpoints")
 public class TariffCalculationController {
 
     @Autowired
@@ -29,16 +29,18 @@ public class TariffCalculationController {
     @Autowired
     private TariffPredictionService tariffPredictionService;
 
-    @Operation(summary = "Calculate tariff", 
-               description = "Calculates tariff amount based on countries, product, unit cost, quantity, and year")
     @PostMapping("/calculate")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Calculate tariff", 
+               description = "Calculates tariff amount based on countries, product, unit cost, quantity, and year - requires authentication")
     public TariffCalculationResponse calculate(@RequestBody TariffCalculationRequest request) {
         return tariffCalculationService.calculateTariff(request);   
     }
 
-    @Operation(summary = "Predict future tariff rate",
-        description = "Estimates a future tariff rate based on historical data")
     @PostMapping("/predict")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Predict future tariff rate",
+        description = "Estimates a future tariff rate based on historical data - requires authentication")
     public TariffPredictionResponse predict(@RequestBody TariffPredictionRequest request) {
         return tariffPredictionService.predictFutureTariffRate(request);
     }

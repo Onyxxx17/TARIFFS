@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/industries")
-@SecurityRequirement(name = "Bearer Authentication")
 public class CategoryController {
     
     private CategoryService categoryService;
