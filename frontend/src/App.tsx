@@ -16,6 +16,10 @@ import BlogPost from "./pages/BlogPost";
 import AnalyticsDashboard from "./pages/AgricultureTariffChart";
 import TariffPredictionDisplay from "./pages/TariffPredictionPages";
 
+// bring in the dashboard and contact pages
+import Dashboard from "./pages/Dashboard";
+import Contact from"./pages/Contact";
+
 function NotFound() {
   return <div className="mx-auto max-w-3xl p-6">Page not found.</div>;
 }
@@ -35,8 +39,8 @@ export default function App() {
           <Route path="/tariff-prediction" element={<TariffPredictionDisplay />} />
            {/* AI Chat now available as floating chatbot on all pages */}
            <Route path="/dashboard/analytics" element={<AnalyticsDashboard />} />
-          {/* <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contact" element={<Contact />} /> */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/contact" element={<Contact />} />
           
 
           {/* Blog list + detail */}

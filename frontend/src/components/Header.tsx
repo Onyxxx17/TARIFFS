@@ -221,12 +221,7 @@ export default function Header() {
                 >
                   Tariff Prediction
                 </Link>
-                <Link
-                  to="/ai-chat"
-                  className="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
-                >
-                  AI Assistant
-                </Link>
+                
               </div>
             )}
           </div>
