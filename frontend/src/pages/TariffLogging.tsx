@@ -167,6 +167,7 @@ export default function TariffLoggingDisplay() {
                 <th className="px-6 py-3">Base Tariff ($)</th>
                 <th className="px-6 py-3">Additional Fee Rate (%)</th>
                 <th className="px-6 py-3">Additional Fee ($)</th>
+                <th className="px-6 py-3">Base Tariff + Additional Fee ($)</th>
                 <th className="px-6 py-3">Calculation Type</th>
                 <th className="px-6 py-3">Total Cost ($)</th>
                 <th className="px-6 py-3 text-right">Actions</th>
@@ -180,9 +181,12 @@ export default function TariffLoggingDisplay() {
                   <td className="px-6 py-4">${log.value.toLocaleString()}</td>
                   <td className="px-6 py-4">{log.year}</td>
                   <td className="px-6 py-4">{log.tariffRate.toFixed(2)}%</td>
-                  <td className="px-6 py-4">${log.calculatedTariff.toLocaleString()}</td>
+                  <td className="px-6 py-4">${(log.calculatedTariff - log.totalAdditionalFees).toLocaleString()}</td>
                   <td className="px-6 py-4">{log.additionalFee.toFixed(2)}%</td>
-                  <td className="px-6 py-4">${log.totalAdditionalFees.toLocaleString()}</td>
+                  <td className="px-6 py-4">${log.totalAdditionalFees.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4">${log.calculatedTariff.toLocaleString()}
+                  </td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${

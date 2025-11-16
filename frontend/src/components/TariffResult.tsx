@@ -71,15 +71,15 @@ export default function TariffResult({
             </div>
             <div className="text-slate-700">
               <div className="text-xs uppercase tracking-wide text-blue-900/80">
-                Total Additional Fees
+                Additional Fee Rate
               </div>
               <div className="mt-1 text-2xl font-semibold text-blue-900 dark:text-blue-200">
-                {usd(tariffResult.totalAdditionalFees ?? 0)}
+                {`${(tariffResult.additionalFees?.reduce((a, b) => a + b, 0) ?? 0).toFixed(2)}%`}
               </div>
             </div>
             <div className="text-slate-700">
               <div className="text-xs uppercase tracking-wide text-blue-900/80">
-                Total Tariff
+                Total Fee
               </div>
               <div className="mt-1 text-xl sm:text-2xl font-semibold text-blue-900">
                 {usd(tariffResult.calculatedTariff ?? 0)}
@@ -111,7 +111,7 @@ export default function TariffResult({
           {/* Tariff Breakdown */}
           <div className="rounded-lg border border-slate-200 p-4 sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-slate-500 mb-3">
-              Tariff Breakdown
+              Breakdown
               {tariffResult.calculationType && (
                 <span className="ml-2 text-blue-600 font-medium">
                   ({tariffResult.calculationType === "WEIGHT" ? "per kg" : "per unit"})
@@ -124,7 +124,7 @@ export default function TariffResult({
                 <span className="font-medium text-slate-900 dark:text-white">{usd(((tariffResult.calculatedTariff ?? 0) - (tariffResult.totalAdditionalFees ?? 0)))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Total additional fees:</span>
+                <span className="text-slate-600 dark:text-slate-400">Total additional fee:</span>
                 <span className="font-medium text-slate-900 dark:text-white">{usd(tariffResult.totalAdditionalFees ?? 0)}</span>
               </div>
               {tariffResult.additionalFees && tariffResult.additionalFees.length > 0 && (
@@ -138,7 +138,7 @@ export default function TariffResult({
                 </div>
               )}
               <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-semibold text-slate-900 dark:text-white">
-                <span>Total tariff:</span>
+                <span>Total Fee:</span>
                 <span>{usd(tariffResult.calculatedTariff ?? 0)}</span>
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function TariffResult({
           {/* labels */}
           <div className="rounded-lg border border-slate-200 p-4 sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-slate-500">
-              Total Cost Before Tariff {getUnitLabel()}
+              Original Cost {getUnitLabel()}
             </p>
             <p className="mt-1 text-lg font-semibold text-slate-900">
               {usd(beforeTariff)}
@@ -156,7 +156,7 @@ export default function TariffResult({
 
           <div className="rounded-lg border border-slate-200 p-4 sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-slate-500">
-              Total Cost After Tariff {getUnitLabel()}
+              Final Cost {getUnitLabel()}
             </p>
             <p className="mt-1 text-lg font-semibold text-slate-900">
               {usd(tariffResult.totalCost ?? 0)}
