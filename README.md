@@ -1,84 +1,115 @@
 # TARIFFS
 
-This project is a full-stack application featuring React frontend and a Java Springboot backend. It includes a tariff calculation engine, an interactive dashboard, and an AI chatbot.
+A full-stack web application built with a React frontend and a Spring Boot backend. This project features a tariffs calculation engine, an interactive dashboard for data visualization, mobile responsiveness, an AI-powered chatbot, API documentation via Swagger, comprehensive unit testing, and a contact form for inquiries.
 
-Features
-Tariff Calculation: Complex calculation engine for handling tariffs.
+## Team Members 
+- Aung Ye Thant Hein
+- Chue Myat Sandy
+- Lam Yi Nam
+- Lin Khant Pe Thein
+- Jonathan
 
-Interactive Dashboard: Visualizing key data and metrics.
+## Features
 
-Mobile-Responsive: Fully functional and usable on all screen sizes.
+- **Tariffs Calculation Engine**: A sophisticated engine designed to handle complex tariffs calculations efficiently.
+- **Interactive Dashboard**: Provides visualizations of key data and metrics for better insights.
+- **Mobile-Responsive Design**: Fully functional and optimized for all screen sizes and devices.
+- **AI Chatbot**: An integrated assistant to support users with queries and assistance.
+- **API Documentation**: Live, interactive API docs accessible via Swagger UI for easy endpoint exploration and testing.
+- **Unit Testing**: Backend logic is thoroughly covered by a robust suite of unit tests.
+- **Contact Form**: Allows users to send emails for inquiries and support.
 
-AI Chatbot: Integrated assistant for user support.
+## Technologies
 
-API Documentation: Live API documentation via Swagger UI.
+- **Frontend**: React, TypeScript, Vite
+- **Backend**: Java Spring Boot, Maven
+- **Other**: Node.js, npm, Swagger UI
 
-Unit Tested: Backend logic is covered by a robust suite of unit tests.
+## Prerequisites
 
-Contact page: Able to send emails for queries
+Before running the application, ensure the following are installed on your system:
 
-Prerequisites
-Before you begin, ensure you have the following installed on your system:
+- Java JDK: Version 17 or later
+- Apache Maven: For building and running the backend
+- Node.js: For building and running the frontend (includes npm)
 
-Java JDK: Version 17 or newer.
+## Installation and Setup
 
-Apache Maven: To build and run the backend.
+Follow these steps to set up and run the application locally.
 
-Node.js: To build and run the frontend (includes npm).
+### 1. Backend Setup (Spring Boot)
 
-Getting Started
-To get a local copy up and running, follow these steps.
+The backend provides the core API and business logic.
 
-1. Backend Setup (Spring Boot)
-The backend server provides the core API and business logic.
-
-Bash
-
+```bash
 # Navigate to the backend directory
 cd backend
 
 # Run the Spring Boot application
 mvn spring-boot:run
-The backend will now be running at http://localhost:8080.
+```
 
-2. Frontend Setup
-The frontend is the user-facing application. Open a new terminal for this step.
+The backend will be available at `http://localhost:8080`.
 
-Bash
+### 2. Frontend Setup
 
+The frontend is the user-facing interface. Open a new terminal for this step.
+
+```bash
 # Navigate to the frontend directory
 cd frontend
 
-# Install all necessary dependencies
+# Install dependencies
 npm install
 
-# Run the frontend development server
+# Start the development server
 npm run dev
-The frontend application will be accessible at http://localhost:3000 (or check your terminal for the correct port).
+```
 
-API Documentation (Swagger)
-Once the backend is running, you can explore the full API documentation. This interactive UI allows you to see all available endpoints and test them directly from your browser.
+The frontend will be accessible at `http://localhost:3000` (check your terminal for the exact port).
 
-Swagger UI URL: http://localhost:8080/swagger-ui.html
+## API Documentation
 
-Testing the Backend
-The backend is configured with Maven for compiling and testing.
+Once the backend is running, explore the full API documentation through Swagger UI. This interactive interface allows you to view and test all available endpoints directly in your browser.
 
-Check Compilation
-To check for any compilation errors without running the full application:
+- **Swagger UI URL**: `http://localhost:8080/swagger-ui.html`
 
-Bash
+## Testing
 
-# From the /backend directory
+The backend uses Maven for compilation and testing.
+
+### Check Compilation
+
+To verify for compilation errors without running the full application:
+
+```bash
+# From the backend directory
 mvn clean compile
-Run Unit Tests
+```
+
+### Run Unit Tests
+
 To execute the complete unit test suite:
 
-Bash
-
-# From the /backend directory
+```bash
+# From the backend directory
 mvn test
-View Test Reports
-After running mvn test, a detailed HTML report is generated. You can open the following file in your browser to view the results:
+```
 
-Report Path: backend/target/sites/index.html
+### View Test Reports
+
+After running tests, an HTML report is generated. Open the following file in your browser for detailed results:
+
+- **Report Path**: `backend/target/sites/index.html`
+
+## Contributing
+
+Contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request. Ensure all changes include appropriate tests and follow the project's coding standards.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) – see the LICENSE file for details.
+
+## Acknowledgments
+
+- Special thanks to the open-source community for tools like React, Spring Boot, and Swagger.
